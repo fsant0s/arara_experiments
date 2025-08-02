@@ -1,0 +1,15 @@
+[project]
+name = "arara_experiments"
+version = "0.1.0"
+description = "roject demonstrating all experiments conducted using the ARARA framework."
+authors = [
+  { name = "Fillipe dos Santos", email = "fillipesantos00@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "tensorboard>=2.19.0",
+    "tensorflow>=2.19.0",
+]
+
+[tool.uv]
+# Isso garante que o uv instale direto do PyPI com resolução moderna
