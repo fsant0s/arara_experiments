@@ -87,4 +87,3 @@ def preprocess_matching(recommended_items, actual_items, threshold=0.8):
         else:
             new_recommended_items.append(recommended_item)
     return new_recommended_items
-

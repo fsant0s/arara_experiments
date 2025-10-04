@@ -1,50 +1,23 @@
 import os
+import sys
 
-from agents import Agent
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from users import ExplicitUser
-from capabilities.memory import ListMemory, MemoryContent
-from clients import ollama_llama32
-from dataloader import Dataloader
-from user_history import get_filtered_user_history
+from mas import conversational
 
-user = ExplicitUser()
-sequential_memory = ListMemory(name="chat_history")
+from datasets.recassistbench import Dataloader
 
 dataloader = Dataloader("movie/ExplicitQuery.json")
 dataset = dataloader.load()
 data = dataset[1]
 
-
-# ===== Avalia Arara =====
-user_history = get_filtered_user_history(
-    user_id=data['source_user'], 
-    groundtruth_movie_ids=data['movieSubsetId'], 
-    neo4j_conditions=data['sharedRelationships'],
-    percentage=0.1
-)
-prompt_user_history = f"Este é o histórico do usuário: {', '.join(user_history)}"  
-
-print(prompt_user_history)
-# sequential_memory.add(MemoryContent(content=prompt_user_history))
-
-conversational = Agent(
-    name="conversational",
-    description=
-        "Conversational agent for casual anime discussions and general chat. " \
-        "Handles casual conversations about anime topics, but directs recommendation requests to the Planner."
-    ,
-    system_message=f"""
-      system: |
-        Você é um gerador de listas. Sempre retorne os itens separados por [SEP] e nada mais.
-        Exemplo: Item1 [SEP] Item2 [SEP] Item3
-    """,
-    llm_config=ollama_llama32,
-    # memory=[sequential_memory],
-)
-
-user.talk_to(conversational, message=data['direct_description_query'])
+user = ExplicitUser()
+user.talk_to(conversational, message=data['direct_description_query'], silent=False)
 arara_response = conversational.last_message()['content']
-# Avalia em tempo real
 arara_eval = dataloader.evaluate_response(arara_response, data_idx=data['data_idx'])
 
 print(f"FTR:       {arara_eval['ftr']}")

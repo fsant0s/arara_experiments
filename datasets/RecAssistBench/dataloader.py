@@ -1,34 +1,24 @@
 import json
+import os
 from typing import List, Dict, Any, Optional
 
-# Importa funções de avaliação do módulo local
-try:
-    # Tenta import quando executado como módulo
-    from .eval_utils import (
-        recall,
-        precision,
-        ndcg,
-        ftr,
-        get_predicted_movie_titles,
-        preprocess_matching
-    )
-except ImportError:
-    # Import quando executado diretamente
-    from eval_utils import (
-        recall,
-        precision,
-        ndcg,
-        ftr,
-        get_predicted_movie_titles,
-        preprocess_matching
-    )
+from .eval_utils import (
+    recall,
+    precision,
+    ndcg,
+    ftr,
+    get_predicted_movie_titles,
+    preprocess_matching
+)
 
 
 class Dataloader:
 
     def __init__(self, dataset: str):
-        self.path = "datasets/RecAssistBench/dataset/"
-        self.dataset = self.path + dataset
+        # Base directory relative to this file so imports work from any CWD
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.path = os.path.join(base_dir, "dataset") + "/"
+        self.dataset = os.path.join(self.path, dataset)
         self._data = None
 
     def load(
@@ -112,7 +102,8 @@ class Dataloader:
         # Extrai domain e query_type (ex: "movie/ExplicitQuery.json" -> "movie-ExplicitQuery")
         dataset_parts = self.dataset.replace(self.path, '').replace('.json', '').split('/')
         base_filename = f"{dataset_parts[0]}-{dataset_parts[1]}"
-        path_results = f"{self.path}../llm_results/{model_name}/{base_filename}_{model_name}-prediction.jsonl"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        path_results = os.path.join(base_dir, "llm_results", model_name, f"{base_filename}_{model_name}-prediction.jsonl")
         
         predictions = {}
         with open(path_results, 'r') as file:
@@ -150,7 +141,8 @@ class Dataloader:
         # Extrai domain e query_type (ex: "movie/ExplicitQuery.json" -> "movie-ExplicitQuery")
         dataset_parts = self.dataset.replace(self.path, '').replace('.json', '').split('/')
         base_filename = f"{dataset_parts[0]}-{dataset_parts[1]}"
-        path_eval = f"{self.path}../eval_results/{base_filename}_{model_name}-prediction.json"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        path_eval = os.path.join(base_dir, "eval_results", f"{base_filename}_{model_name}-prediction.json")
         
         with open(path_eval, 'r') as file:
             eval_results = json.load(file)
