@@ -1,5 +1,16 @@
 import os
 
+ollama_llama32 = {
+    "config_list": [
+        {
+            "client": "ollama",
+            "temperature": 0.7,
+            "model": "llama3.2:latest",
+            "base_url": "http://localhost:11434",
+        }
+    ]
+}
+
 groq_llama3370b = {
     "config_list": [
         {
