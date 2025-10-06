@@ -14,15 +14,33 @@ import os
 
 from difflib import SequenceMatcher
 
-def is_similar(name1, name2, threshold=0.8):
+def _normalize_title(s: str) -> str:
+    """Normalize titles for robust comparison.
+    - remove trailing year " (YYYY)"
+    - strip quotes/punctuation
+    - lowercase and collapse spaces
     """
-    Check if two strings are similar
+    s = s.strip().strip("'").strip('"')
+    s = re.sub(r"\s\(\d{4}\)$", "", s)
+    s = s.lower()
+    s = re.sub(r"[^a-z0-9\s]", "", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def is_similar(name1, name2, threshold=0.75):
+    """
+    Check if two strings are similar (with normalization).
     :param name1: First string
     :param name2: Second string
     :param threshold: Similarity threshold
     :return: True if similarity is greater than or equal to threshold, False otherwise
     """
-    similarity = SequenceMatcher(None, name1, name2).ratio()
+    n1 = _normalize_title(name1)
+    n2 = _normalize_title(name2)
+    if not n1 or not n2:
+        return False
+    similarity = SequenceMatcher(None, n1, n2).ratio()
     return similarity >= threshold
 
 def recall(recommended_items, actual_items):
@@ -212,7 +230,7 @@ def get_predicted_movie_titles(prediction_response):
     predicted_movie_titles = [re.sub(r'\s\(\d{4}\)$', '', movie.strip()).strip() for movie in predicted_movie_titles]
     return predicted_movie_titles
 
-def preprocess_matching(recommended_items, actual_items, threshold=0.8):
+def preprocess_matching(recommended_items, actual_items, threshold=0.75):
     """
     Preprocess matching items.
     Output the matching results of predicted list and ground truth list into a new list,

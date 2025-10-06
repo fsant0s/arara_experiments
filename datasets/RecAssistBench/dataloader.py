@@ -2,7 +2,7 @@ import json
 import os
 from typing import List, Dict, Any, Optional
 
-from .eval_utils import (
+from .eval.eval_movie import (
     recall,
     precision,
     ndcg,
@@ -196,55 +196,3 @@ class Dataloader:
         results["ground_truth"] = groundtruth['movieSubset']
         
         return results
-
-
-if __name__ == "__main__":
-    # Exemplo de uso
-    dataloader = Dataloader("movie/ExplicitQuery.json")
-    
-    # Pega um item do dataset
-    dataset = dataloader.load()
-    data = dataset[0]
-    
-    print("=" * 80)
-    print("=== Groundtruth ===")
-    print(f"Query: {data['direct_description_query']}")
-    print(f"Filmes corretos: {data['movieSubset']}")
-    
-    # ===== Avalia modelo existente =====
-    model_name = "llama-3.1-70b-instruct"
-    prediction = dataloader.get_result(data_idx=data['data_idx'], model_name=model_name)
-    
-    print(f"\n{'=' * 80}")
-    print(f"=== Predição do {model_name} ===")
-    if prediction:
-        print(f"Response: {prediction['response']}")
-        
-        # Pega resultado da avaliação pré-calculada
-        eval_result = dataloader.get_eval_result(data_idx=data['data_idx'], model_name=model_name)
-        
-        print(f"\n=== Métricas (pré-calculadas) ===")
-        if eval_result:
-            print(f"Recall:          {eval_result.get('recall', 'N/A'):.3f}")
-            print(f"Precision:       {eval_result.get('precision', 'N/A'):.3f}")
-            print(f"NDCG:            {eval_result.get('ndcg', 'N/A'):.3f}")
-            print(f"Satisfied Ratio: {eval_result.get('satisfied_ratio', 'N/A'):.3f}")
-
-    # ===== Avalia resposta do Arara em tempo real =====
-    arara_response = "Do the Right Thing [SEP] Malcolm X [SEP] 25th Hour [SEP] She's Gotta Have It [SEP] Mo' Better Blues [SEP] Crooklyn"
-    
-    print(f"\n{'=' * 80}")
-    print(f"=== Predição do Arara (tempo real) ===")
-    print(f"Response: {arara_response}")
-    
-    # Avalia em tempo real
-    arara_eval = dataloader.evaluate_response(arara_response, data_idx=data['data_idx'])
-    
-    print(f"FTR:       {arara_eval['ftr']}")
-    print(f"Recall:    {arara_eval['recall']:.3f}")
-    print(f"Precision: {arara_eval['precision']:.3f}")
-    print(f"NDCG:      {arara_eval['ndcg']:.3f}")
-    print(f"\nFilmes preditos: {arara_eval['predicted_titles']}")
-    print(f"Filmes matched:  {arara_eval['matched_titles']}")
-    print(f"Ground truth:    {arara_eval['ground_truth']}")
-    print("=" * 80)
