@@ -1,5 +1,6 @@
 import os
 import sys
+import ast
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
@@ -24,7 +25,7 @@ if not connect_to_neo4j():
 model_name = "llama-3.1-70b-instruct"
 dataloader = Dataloader("movie/ExplicitQuery.json")
 dataset = dataloader.load()
-data = dataset[3000]
+data = dataset[0]
 print("data", data)
 prediction = dataloader.get_result(data_idx=data["data_idx"], model_name=model_name)
 
@@ -55,13 +56,15 @@ conversational = Agent(
         
         IMPORTANTE: Retorne APENAS os títulos separados por [SEP], sem JSON, sem explicações, sem numeração.
         
+        ***TROQUE AS DATAS DOS FILMES POR [SEP]
+
         Retorne exatamente {prediction_length} itens.
         Exemplo de formato correto: Bamboozled (2000) [SEP] Do the Right Thing (1989) [SEP] Clockers (1995)
     """,
     llm_config=groq_llama3370b,
     # memory=[sequential_memory],
     tools=movies.tools,
-    tool_call_summary_format=f"Tool call: {result[0]}",
+    tool_call_summary_format="{result}",  # Apenas o resultado bruto
 )
 
 user.talk_to(conversational, message=data['direct_description_query'], silent=False)

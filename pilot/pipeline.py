@@ -77,6 +77,7 @@ def main(*args):
         """,
         tools=movies.tools,
         llm_config=groq_llama3370b,
+        tool_call_summary_format="{result}",  # Passa apenas o resultado bruto
         # memory=[memory] if memory else None,
       )
 

@@ -1,6 +1,25 @@
 from typing import List, Dict, Any, Optional
+import re
 import neo4j_client
 from neo4j_client import connect_to_neo4j, NEO4J_DATABASE, close_connection
+
+
+def _replace_dates_with_sep(titles: List[str]) -> List[str]:
+    """
+    Replace dates in movie titles with [SEP].
+    
+    Args:
+        titles: List of movie titles with dates like "Movie Title (1999)"
+        
+    Returns:
+        List of titles with dates replaced by [SEP], e.g., "Movie Title [SEP]"
+    """
+    processed = []
+    for title in titles:
+        # Replace (YYYY) with [SEP]
+        processed_title = re.sub(r'\s*\(\d{4}\)', ' [SEP]', title)
+        processed.append(processed_title)
+    return processed
 
 
 def _execute_query(query: str, params: Dict[str, Any] = None) -> List[Dict[str, Any]]:
@@ -49,7 +68,91 @@ def get_existing_nodes() -> List[str]:
     results = _execute_query(query)
     return [r["label"] for r in results]
 
-def get_movies_by_relation(relation: str, target_name: str, limit: int = 20) -> List[Dict[str, Any]]:
+def list_nodes_by_type(node_type: str, limit: int = 50) -> List[str]:
+    """
+    List all nodes of a specific type, filtering out invalid names.
+    
+    Args:
+        node_type: Type of node (e.g., 'Actor', 'Director', 'Genre', 'Language', 'Company')
+        limit: Maximum number of results
+        
+    Returns:
+        List of valid node names (excludes names starting with special characters)
+    
+    Examples:
+        - list_nodes_by_type("Actor", 20) -> Returns names of 20 actors
+        - list_nodes_by_type("Director") -> Returns names of directors
+        - list_nodes_by_type("Company") -> Returns production company names
+    """
+    # Mapeia tipos e define queries específicas
+    node_type_lower = node_type.lower()
+    
+    # Para atores e diretores, filtra Person nodes conectados a filmes
+    if node_type_lower in ["actor", "actors"]:
+        query = """
+        MATCH (p:Person)<-[:Starring]-(m:Movie)
+        WHERE p.name IS NOT NULL 
+          AND NOT p.name STARTS WITH '('
+          AND NOT p.name STARTS WITH '"'
+          AND NOT p.name STARTS WITH '['
+        RETURN DISTINCT p.name as name
+        ORDER BY p.name
+        LIMIT $limit
+        """
+    elif node_type_lower in ["director", "directors"]:
+        query = """
+        MATCH (p:Person)<-[:Directed_by]-(m:Movie)
+        WHERE p.name IS NOT NULL 
+          AND NOT p.name STARTS WITH '('
+          AND NOT p.name STARTS WITH '"'
+          AND NOT p.name STARTS WITH '['
+          AND NOT p.name =~ '^[0-9]+$'
+          AND size(p.name) > 2
+        RETURN DISTINCT p.name as name
+        ORDER BY p.name
+        LIMIT $limit
+        """
+    elif node_type_lower in ["company", "companies", "corporation"]:
+        query = """
+        MATCH (c:Corporation)
+        WHERE c.name IS NOT NULL 
+          AND NOT c.name STARTS WITH '('
+          AND NOT c.name STARTS WITH '/'
+        RETURN DISTINCT c.name as name
+        ORDER BY c.name
+        LIMIT $limit
+        """
+    elif node_type_lower in ["genre", "genres"]:
+        query = """
+        MATCH (g:Genre)
+        WHERE g.name IS NOT NULL
+          AND NOT g.name =~ '^[0-9]+$'
+        RETURN DISTINCT g.name as name
+        ORDER BY g.name
+        LIMIT $limit
+        """
+    elif node_type_lower in ["language", "languages"]:
+        query = """
+        MATCH (l:Country)
+        WHERE l.name IS NOT NULL
+        RETURN DISTINCT l.name as name
+        ORDER BY l.name
+        LIMIT $limit
+        """
+    else:
+        # Query genérica para outros tipos
+        query = f"""
+        MATCH (n:{node_type})
+        WHERE n.name IS NOT NULL
+        RETURN DISTINCT n.name as name
+        ORDER BY n.name
+        LIMIT $limit
+        """
+    
+    results = _execute_query(query, {"limit": limit})
+    return [r["name"] for r in results if r.get("name")]
+
+def get_movies_by_relation(relation: str, target_name: str, limit: int = 20) -> List[str]:
     """
     Get movies connected to a target node via a specific relationship.
     
@@ -59,17 +162,19 @@ def get_movies_by_relation(relation: str, target_name: str, limit: int = 20) -> 
         limit: Maximum number of results to return
         
     Returns:
-        List of movies with movieId, title, and release_date
+        List of movie titles with dates replaced by [SEP]
     """
     query = f"""
     MATCH (m:Movie)-[:{relation}]->(t {{name: $target_name}})
-    RETURN m.Title as title, m.release_date as release_date
-    ORDER BY m.release_date DESC
+    RETURN m.Title as title
+    ORDER BY m.Title
     LIMIT $limit
     """
-    return _execute_query(query, {"target_name": target_name, "limit": limit})
+    results = _execute_query(query, {"target_name": target_name, "limit": limit})
+    titles = [r["title"] for r in results]
+    return _replace_dates_with_sep(titles)
 
-def get_movies_by_genre(genre: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_movies_by_genre(genre: str, limit: int = 20) -> List[str]:
     """
     Get movies filtered by genre.
     
@@ -78,11 +183,11 @@ def get_movies_by_genre(genre: str, limit: int = 20) -> List[Dict[str, Any]]:
         limit: Maximum number of results
         
     Returns:
-        List of movies matching the genre
+        List of movie titles
     """
     return get_movies_by_relation("Genre", genre, limit)
 
-def get_movies_by_director(director_name: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_movies_by_director(director_name: str, limit: int = 20) -> List[str]:
     """
     Get movies directed by a specific director.
     
@@ -91,11 +196,11 @@ def get_movies_by_director(director_name: str, limit: int = 20) -> List[Dict[str
         limit: Maximum number of results
         
     Returns:
-        List of movies directed by the director
+        List of movie titles
     """
     return get_movies_by_relation("Directed_by", director_name, limit)
 
-def get_movies_by_actor(actor_name: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_movies_by_actor(actor_name: str, limit: int = 20) -> List[str]:
     """
     Get movies starring a specific actor.
     
@@ -104,11 +209,11 @@ def get_movies_by_actor(actor_name: str, limit: int = 20) -> List[Dict[str, Any]
         limit: Maximum number of results
         
     Returns:
-        List of movies starring the actor
+        List of movie titles
     """
     return get_movies_by_relation("Starring", actor_name, limit)
 
-def get_movies_by_language(language: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_movies_by_language(language: str, limit: int = 20) -> List[str]:
     """
     Get movies in a specific language.
     
@@ -117,11 +222,11 @@ def get_movies_by_language(language: str, limit: int = 20) -> List[Dict[str, Any
         limit: Maximum number of results
         
     Returns:
-        List of movies in the specified language
+        List of movie titles
     """
     return get_movies_by_relation("Language", language, limit)
 
-def get_movies_by_production_company(company: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_movies_by_production_company(company: str, limit: int = 20) -> List[str]:
     """
     Get movies produced by a specific company.
     
@@ -130,11 +235,11 @@ def get_movies_by_production_company(company: str, limit: int = 20) -> List[Dict
         limit: Maximum number of results
         
     Returns:
-        List of movies produced by the company
+        List of movie titles
     """
     return get_movies_by_relation("Produced_by", company, limit)
 
-def get_movies_by_year(year: int, limit: int = 20) -> List[Dict[str, Any]]:
+def get_movies_by_year(year: int, limit: int = 20) -> List[str]:
     """
     Get movies released in a specific year.
     
@@ -143,16 +248,18 @@ def get_movies_by_year(year: int, limit: int = 20) -> List[Dict[str, Any]]:
         limit: Maximum number of results
         
     Returns:
-        List of movies released in the specified year
+        List of movie titles with dates replaced by [SEP]
     """
     query = """
     MATCH (m:Movie)
     WHERE m.release_date CONTAINS $year
-    RETURN m.movieId as movieId, m.Title as title, m.release_date as release_date
-    ORDER BY m.release_date DESC
+    RETURN m.Title as title
+    ORDER BY m.Title
     LIMIT $limit
     """
-    return _execute_query(query, {"year": str(year), "limit": limit})
+    results = _execute_query(query, {"year": str(year), "limit": limit})
+    titles = [r["title"] for r in results]
+    return _replace_dates_with_sep(titles)
 
 def get_movie_details(movie_id: str) -> Optional[Dict[str, Any]]:
     """
@@ -203,7 +310,7 @@ def get_movie_details(movie_id: str) -> Optional[Dict[str, Any]]:
         print(f"Query error: {e}")
         return None
 
-def search_movies_by_title(title_query: str, limit: int = 20) -> List[Dict[str, Any]]:
+def search_movies_by_title(title_query: str, limit: int = 20) -> List[str]:
     """
     Search for movies by title using case-insensitive partial matching.
     
@@ -212,16 +319,18 @@ def search_movies_by_title(title_query: str, limit: int = 20) -> List[Dict[str, 
         limit: Maximum number of results
         
     Returns:
-        List of movies matching the search query
+        List of movie titles with dates replaced by [SEP]
     """
     query = """
     MATCH (m:Movie)
     WHERE toLower(m.Title) CONTAINS toLower($title_query)
-    RETURN m.movieId as movieId, m.Title as title, m.release_date as release_date
+    RETURN m.Title as title
     ORDER BY m.Title
     LIMIT $limit
     """
-    return _execute_query(query, {"title_query": title_query, "limit": limit})
+    results = _execute_query(query, {"title_query": title_query, "limit": limit})
+    titles = [r["title"] for r in results]
+    return _replace_dates_with_sep(titles)
 
 def get_available_genres() -> List[str]:
     """
@@ -270,6 +379,7 @@ def explore_database_schema() -> Dict[str, Any]:
 tools = [
     # get_existing_relations,
     # get_existing_nodes,
+    list_nodes_by_type,
     # get_available_genres,
     # get_available_languages,
     # explore_database_schema,
