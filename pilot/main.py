@@ -8,18 +8,24 @@ if PROJECT_ROOT not in sys.path:
 
 from users import ExplicitUser
 from agents import Agent
-from clients import groq_llama3370b
+from clients import groq_llama3370b, ollama_llama32
 
 from evaluation import report_metrics
-from datasets.recassistbench import Dataloader
 
 from capabilities.memory import ListMemory, MemoryContent
 from user_history import get_filtered_user_history
+from tools import movies
+from datasets.RecAssistBench import Dataloader
+from neo4j_client import connect_to_neo4j
+
+if not connect_to_neo4j():
+    sys.exit(1)
 
 model_name = "llama-3.1-70b-instruct"
 dataloader = Dataloader("movie/ExplicitQuery.json")
 dataset = dataloader.load()
-data = dataset[0]
+data = dataset[3000]
+print("data", data)
 prediction = dataloader.get_result(data_idx=data["data_idx"], model_name=model_name)
 
 user = ExplicitUser()
@@ -42,12 +48,20 @@ conversational = Agent(
     ,
     system_message=f"""
       system: |
-        Você é um gerador de listas. Sempre retorne os itens separados por [SEP] e nada mais.
+        Você é um gerador de listas de filmes. 
+        
+        Quando o usuário pedir filmes, use as tools disponíveis para buscar.
+        Depois de receber os resultados das tools, formate a resposta APENAS com os títulos dos filmes separados por [SEP].
+        
+        IMPORTANTE: Retorne APENAS os títulos separados por [SEP], sem JSON, sem explicações, sem numeração.
+        
         Retorne exatamente {prediction_length} itens.
-        Exemplo: Item1 [SEP] Item2 [SEP] Item3
+        Exemplo de formato correto: Bamboozled (2000) [SEP] Do the Right Thing (1989) [SEP] Clockers (1995)
     """,
     llm_config=groq_llama3370b,
-    memory=[sequential_memory],
+    # memory=[sequential_memory],
+    tools=movies.tools,
+    tool_call_summary_format=f"Tool call: {result[0]}",
 )
 
 user.talk_to(conversational, message=data['direct_description_query'], silent=False)

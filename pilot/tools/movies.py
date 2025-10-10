@@ -1,5 +1,6 @@
 from typing import List, Dict, Any, Optional
-from neo4j_client import connect_to_neo4j, driver, NEO4J_DATABASE, close_connection
+import neo4j_client
+from neo4j_client import connect_to_neo4j, NEO4J_DATABASE, close_connection
 
 
 def _execute_query(query: str, params: Dict[str, Any] = None) -> List[Dict[str, Any]]:
@@ -13,19 +14,18 @@ def _execute_query(query: str, params: Dict[str, Any] = None) -> List[Dict[str, 
     Returns:
         List of records as dictionaries, empty list if error occurs
     """
-    if not connect_to_neo4j():
-        return []
+    # Verifica se o driver existe, caso contrário conecta
+    if neo4j_client.driver is None:
+        if not connect_to_neo4j():
+            return []
     
     try:
-        with driver.session(database=NEO4J_DATABASE) as session:
+        with neo4j_client.driver.session(database=NEO4J_DATABASE) as session:
             result = session.run(query, **(params or {}))
             return [dict(record) for record in result]
     except Exception as e:
         print(f"Query error: {e}")
         return []
-    finally:
-        close_connection()
-
 
 def get_existing_relations() -> List[str]:
     """
@@ -63,7 +63,7 @@ def get_movies_by_relation(relation: str, target_name: str, limit: int = 20) -> 
     """
     query = f"""
     MATCH (m:Movie)-[:{relation}]->(t {{name: $target_name}})
-    RETURN m.movieId as movieId, m.Title as title, m.release_date as release_date
+    RETURN m.Title as title, m.release_date as release_date
     ORDER BY m.release_date DESC
     LIMIT $limit
     """
@@ -165,8 +165,10 @@ def get_movie_details(movie_id: str) -> Optional[Dict[str, Any]]:
         Dictionary containing movie data and related entities (directors, actors, genres, etc.),
         or None if movie not found
     """
-    if not connect_to_neo4j():
-        return None
+    # Verifica se o driver existe, caso contrário conecta
+    if neo4j_client.driver is None:
+        if not connect_to_neo4j():
+            return None
     
     query = """
     MATCH (m:Movie {movieId: $movie_id})
@@ -184,7 +186,7 @@ def get_movie_details(movie_id: str) -> Optional[Dict[str, Any]]:
     """
     
     try:
-        with driver.session(database=NEO4J_DATABASE) as session:
+        with neo4j_client.driver.session(database=NEO4J_DATABASE) as session:
             result = session.run(query, movie_id=movie_id)
             record = result.single()
             if record:
@@ -200,8 +202,6 @@ def get_movie_details(movie_id: str) -> Optional[Dict[str, Any]]:
     except Exception as e:
         print(f"Query error: {e}")
         return None
-    finally:
-        close_connection()
 
 def search_movies_by_title(title_query: str, limit: int = 20) -> List[Dict[str, Any]]:
     """
@@ -278,7 +278,7 @@ tools = [
     get_movies_by_director,
     get_movies_by_actor,
     # get_movies_by_language,
-    # get_movies_by_production_company,
+    get_movies_by_production_company,
     # get_movies_by_year,
     # get_movie_details,
     # search_movies_by_title,

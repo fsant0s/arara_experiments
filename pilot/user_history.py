@@ -109,7 +109,6 @@ def get_filtered_user_history(user_id: int, groundtruth_movie_ids: List[int] = N
         try:
             if connect_to_neo4j():
                 neo4j_titles = get_items_from_query(neo4j_conditions)
-                close_connection()
                 user_movie_titles = [title for title in user_movie_titles if title not in neo4j_titles]
         except Exception as e:
             print(f"❌ Erro ao conectar com Neo4j: {e}")
