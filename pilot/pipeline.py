@@ -22,24 +22,32 @@ def load_memory(data):
     groundtruth_movie_ids=data["movieSubsetId"],
     neo4j_conditions=data["sharedRelationships"]
   )
+  
+  # Limita o histórico para reduzir tokens (pega últimos 20 itens)
+  limited_history = user_history[-20:] if len(user_history) > 20 else user_history
 
   memory = ListMemory(name="chat_history")
-  memory.add(MemoryContent(content=" ".join(user_history)))
+  memory.add(MemoryContent(content=" ".join(limited_history)))
   return memory
 
 def save_response(dataset_name, query_type, with_memory, results):
   """Salva todas as respostas em formato JSONL"""
-  os.makedirs(dataset_name, exist_ok=True)
-  filepath = f"{dataset_name}/{query_type}Query_arara-history{with_memory}_prediction.jsonl"
+  # Usa caminho absoluto relativo ao script
+  output_dir = os.path.join(CURRENT_DIR, "llm_results", "arara")
+  os.makedirs(output_dir, exist_ok=True)
+  filepath = f"{output_dir}/{dataset_name}-{query_type}Query_arara-history{with_memory}_prediction.jsonl"
+  
+  print(f"📁 Salvando em: {filepath}")
   
   with open(filepath, "w") as f:
     for result in results:
       f.write(json.dumps(result) + "\n")
+  
+  print(f"✅ Arquivo salvo com {len(results)} resultados")
 
 def main(*args):
   # Conecta ao Neo4j no início
   if not connect_to_neo4j():
-    print("❌ Erro: Não foi possível conectar ao Neo4j")
     sys.exit(1)
   
   dataset_name = args[0] if len(args) > 0 and args[0] else "movie"
@@ -53,45 +61,76 @@ def main(*args):
   dataset = dataloader.load()
   
   results = []
-
-  for data in dataset:
-      memory = load_memory(data) if with_memory else None
-      user = ExplicitUser()
-
-      conversational = Agent(
-        name="conversational",
-        description=
-            "You are a recommendation assistant focused on recommending items based on the user's query. " \
-            "Your goal is to recommend items that are relevant to the user's query."
-        ,
-        system_message="""
-          system: |
-            You are a movie recommendation assistant.
-            
-            When the user asks for movies, use the available tools to search.
-            After receiving the tool results, format your response with ONLY the movie titles separated by [SEP].
-            
-            IMPORTANT: Return ONLY the titles separated by [SEP], without JSON, without explanations, without numbering.
-            
-            Correct format example: Bamboozled (2000) [SEP] Do the Right Thing (1989) [SEP] Clockers (1995)
-        """,
-        tools=movies.tools,
-        llm_config=groq_llama3370b,
-        tool_call_summary_format="{result}",  # Passa apenas o resultado bruto
-        # memory=[memory] if memory else None,
-      )
-
-      user.talk_to(conversational, message=data['direct_description_query'], silent=False)
-      arara_response = conversational.last_message()['content']
-      
-      result = {
-        "id": str(data["data_idx"]),
-        "response": arara_response
-      }
-      results.append(result)
+  total = len(dataset)  # Total de itens a processar
   
-  # Salva todas as respostas de uma vez
+  print(f"🚀 Iniciando processamento: {total} itens")
+  print("=" * 60)
+  
+  try:
+      for idx, data in enumerate(dataset, start=1):
+          print(f"\n📊 [{idx}/{total}] Processando data_idx={data['data_idx']}")
+          
+          memory = load_memory(data) if with_memory else None
+          user = ExplicitUser()
+
+          conversational = Agent(
+              name="conversational",
+              description=
+                  "Assistente de recomendação de filmes que usa ferramentas para buscar informações " \
+                  "e faz recomendações personalizadas baseadas no contexto do usuário."
+              ,
+              system_message="""Movie recommendation assistant.
+
+PROCESS:
+1. Analyze user request
+2. Use tools to search for information
+3. Select the best movies
+
+OUTPUT:
+Return ONLY movie titles separated by [SEP]. No JSON, no explanations, no numbering.
+IMPORTANT: Keep original movie titles in English.
+
+Example: City Lights [SEP] Modern Times [SEP] The Great Dictator [SEP]""",
+              llm_config=groq_llama3370b,
+              tools=movies.tools,
+              reflect_on_tool_use=True,
+              tool_call_summary_format="{result}",  # Apenas o resultado bruto
+              # memory=[memory] if memory else None,
+          )
+
+          try:
+              user.talk_to(conversational, message=data['direct_description_query'], silent=True)
+              arara_response = conversational.last_message()['content']
+              
+              result = {
+                "id": str(data["data_idx"]),
+                "response": arara_response
+              }
+              results.append(result)
+              print(f"✅ [{idx}/{total}] Concluído com sucesso")
+          except Exception as e:
+              print(f"❌ [{idx}/{total}] Erro: {str(e)}")
+              result = {
+                "id": str(data["data_idx"]),
+                "response": f"ERROR: {str(e)}"
+              }
+              results.append(result)
+          
+          # Salva a cada 10 itens para não perder progresso
+          if idx % 10 == 0:
+              print(f"\n💾 Salvamento intermediário ({idx} itens)...")
+              save_response(dataset_name, query_type, with_memory, results)
+  
+  except KeyboardInterrupt:
+      print("\n\n⚠️  Processo interrompido pelo usuário (Ctrl+C)")
+      print(f"📊 Processados {len(results)}/{total} itens até agora")
+  
+  # Salva todas as respostas uma última vez
+  print("\n" + "=" * 60)
+  print(f"💾 Salvamento final de {len(results)} resultados...")
   save_response(dataset_name, query_type, with_memory, results)
+  print(f"✅ Pipeline concluído! {len(results)}/{total} itens processados")
+  print("=" * 60)
 
 if __name__ == "__main__":
   # args: dataset_name="movie" query_type="Implicit"

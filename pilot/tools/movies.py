@@ -1,26 +1,7 @@
 from typing import List, Dict, Any, Optional
 import re
 import neo4j_client
-from neo4j_client import connect_to_neo4j, NEO4J_DATABASE, close_connection
-
-
-def _replace_dates_with_sep(titles: List[str]) -> List[str]:
-    """
-    Replace dates in movie titles with [SEP].
-    
-    Args:
-        titles: List of movie titles with dates like "Movie Title (1999)"
-        
-    Returns:
-        List of titles with dates replaced by [SEP], e.g., "Movie Title [SEP]"
-    """
-    processed = []
-    for title in titles:
-        # Replace (YYYY) with [SEP]
-        processed_title = re.sub(r'\s*\(\d{4}\)', ' [SEP]', title)
-        processed.append(processed_title)
-    return processed
-
+from neo4j_client import connect_to_neo4j, NEO4J_DATABASE
 
 def _execute_query(query: str, params: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """
@@ -172,7 +153,7 @@ def get_movies_by_relation(relation: str, target_name: str, limit: int = 20) -> 
     """
     results = _execute_query(query, {"target_name": target_name, "limit": limit})
     titles = [r["title"] for r in results]
-    return _replace_dates_with_sep(titles)
+    return titles
 
 def get_movies_by_genre(genre: str, limit: int = 20) -> List[str]:
     """
@@ -200,18 +181,17 @@ def get_movies_by_director(director_name: str, limit: int = 20) -> List[str]:
     """
     return get_movies_by_relation("Directed_by", director_name, limit)
 
-def get_movies_by_actor(actor_name: str, limit: int = 20) -> List[str]:
+def get_movies_by_actor(actor_name: str) -> List[str]:
     """
-    Get movies starring a specific actor.
+    Get movies starring a specific actor (ex: "Charlie Chaplin").
     
     Args:
         actor_name: Actor's name
-        limit: Maximum number of results
         
     Returns:
         List of movie titles
     """
-    return get_movies_by_relation("Starring", actor_name, limit)
+    return get_movies_by_relation("Starring", actor_name, 20)
 
 def get_movies_by_language(language: str, limit: int = 20) -> List[str]:
     """
@@ -377,19 +357,19 @@ def explore_database_schema() -> Dict[str, Any]:
     }
 
 tools = [
-    # get_existing_relations,
-    # get_existing_nodes,
+    get_existing_relations,
+    get_existing_nodes,
     list_nodes_by_type,
-    # get_available_genres,
-    # get_available_languages,
-    # explore_database_schema,
-    # get_movies_by_relation,
-    # get_movies_by_genre,
+    get_available_genres,
+    get_available_languages,
+    explore_database_schema,
+    get_movies_by_relation,
+    get_movies_by_genre,
     get_movies_by_director,
     get_movies_by_actor,
-    # get_movies_by_language,
+    get_movies_by_language,
     get_movies_by_production_company,
-    # get_movies_by_year,
-    # get_movie_details,
-    # search_movies_by_title,
+    get_movies_by_year,
+    get_movie_details,
+    search_movies_by_title,
 ]

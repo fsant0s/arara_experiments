@@ -31,6 +31,10 @@ def report_metrics(
     Returns:
         Um dicionário com as métricas do Arara (tempo real) e, se disponível, do modelo.
     """
+
+    print("arara_response", arara_response)
+
+
     results: Dict[str, Any] = {}
 
     # ===== Avaliação do Arara (tempo real) =====
@@ -43,11 +47,14 @@ def report_metrics(
     print(f"Predicted: {", ".join(arara_eval['predicted_titles'])}")
     print("-"*40)
     print(f"Matches: {", ".join(arara_eval['matched_titles'])}")
+    print(f"Ground truth: {", ".join(arara_eval['ground_truth'])}")
+    print("-"*40)
     print("-- Metrics --")
     print(f"FTR:       {arara_eval['ftr']}")
     print(f"Recall:    {_fmt_num(arara_eval['recall'])}")
     print(f"Precision: {_fmt_num(arara_eval['precision'])}")
     print(f"NDCG:      {_fmt_num(arara_eval['ndcg'])}")
+    # print(f"Satisfied Ratio: {_fmt_num(arara_eval['satisfied_ratio'])}")
 
     # ===== Modelo existente primeiro (se disponível) =====
     if model_name:
