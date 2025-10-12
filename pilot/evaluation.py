@@ -44,13 +44,13 @@ def report_metrics(
     # ===== Depois: resultados do ARARA =====
     print("=" * 80)
     print("=== ARARA ===")
+    print(f"FTR (Failed To Recommend):       {arara_eval['ftr']}")
     print(f"Predicted: {", ".join(arara_eval['predicted_titles'])}")
     print("-"*40)
     print(f"Matches: {", ".join(arara_eval['matched_titles'])}")
     print(f"Ground truth: {", ".join(arara_eval['ground_truth'])}")
     print("-"*40)
     print("-- Metrics --")
-    print(f"FTR:       {arara_eval['ftr']}")
     print(f"Recall:    {_fmt_num(arara_eval['recall'])}")
     print(f"Precision: {_fmt_num(arara_eval['precision'])}")
     print(f"NDCG:      {_fmt_num(arara_eval['ndcg'])}")
@@ -63,17 +63,17 @@ def report_metrics(
         results["model_eval"] = eval_result
 
         print("=" * 80)
-        print(f"=== Modelo existente: {model_name} ===")
+        print(f"=== Used model: {model_name} ===")
         if prediction:
             print(f"Predicted: {prediction.get('response', '')}")
         else:
             print("Predicted: N/A")
         print("-- Metrics --")
         if eval_result:
-            print(f"Recall:          {_fmt_num(eval_result.get('recall'))}")
-            print(f"Precision:       {_fmt_num(eval_result.get('precision'))}")
-            print(f"NDCG:            {_fmt_num(eval_result.get('ndcg'))}")
-            print(f"Satisfied Ratio: {_fmt_num(eval_result.get('satisfied_ratio'))}")
+            print(f"Recall:          {_fmt_num(eval_result.get('recall'))}")  #how many of the relevant movies were successfully recommended — it reflects coverage of the recommendations
+            print(f"Precision:       {_fmt_num(eval_result.get('precision'))}") #how many of the recommended movies are actually relevant — it reflects accuracy of the recommendations.
+            print(f"NDCG (ranking quality):            {_fmt_num(eval_result.get('ndcg'))}") #how well the order of the recommended movies matches the ideal (ground truth) order.
+            #print(f"Satisfied Ratio: {_fmt_num(eval_result.get('satisfied_ratio'))}")
         else:
             print("Sem métricas pré-calculadas.")
 
