@@ -24,7 +24,7 @@ if not connect_to_neo4j():
 
 llm_config = groq_llama3370b
 model_name = "llama-3.1-70b-instruct"
-dataloader = Dataloader("movie/ImplicitQuery.json")
+dataloader = Dataloader("movie/ExplicitQuery.json")
 dataset = dataloader.load()
 data = dataset[1]
 print("--------------------------------")
@@ -48,7 +48,7 @@ user = ExplicitUser() #TODO: User can be implicit or explicit
 main_module = Module(
     admin_name="main_module",
     agents=[user, explicit_orchestrator],
-    speaker_selection_method="auto",
+    speaker_selection_method="round_robin",
 )
 
 # ------------------ Orchestrator principal ------------------
@@ -61,7 +61,7 @@ main_orchestrator = Orchestrator(
 )
 
 user.talk_to(main_orchestrator, message=data['direct_description_query'], silent=False)
-arara_response = main_orchestrator.last_message()['content']
+arara_response = main_orchestrator.last_message(user)['content']
 
 arara_eval = dataloader.evaluate_response(arara_response, data_idx=data['data_idx'])
 
