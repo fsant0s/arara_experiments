@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
 """
 Script para construir o Knowledge Graph de filmes no Neo4j
-
-Usa:
-- eval/movie-schema.json: Schema com definições de nós e relações
-- dataset/movie/movie_info.jsonl: Informações dos filmes
-- dataset/movie/movies.dat: IDs dos filmes
-
-Uso:
-    python build_movie_kg.py --password SUA_SENHA --clear
 """
 
 import json
-import argparse
 import re
 from neo4j import GraphDatabase
 from tqdm import tqdm
-import logging
 import os
 
-logging.basicConfig(level=logging.INFO, format='%(message)s')
-logger = logging.getLogger(__name__)
+# ============================================================================
+# CONFIGURAÇÕES
+# ============================================================================
+NEO4J_URI = "neo4j://127.0.0.1:7687"
+NEO4J_USERNAME = "neo4j"
+NEO4J_PASSWORD = "arara123"
+NEO4J_DATABASE = "neo4j"
+
+SCHEMA_FILE = "datasets/recassistbench/eval/movie-schema.json"
+MOVIE_INFO_FILE = "datasets/recassistbench/dataset/movie/movie_info_filtered.jsonl"  # Usar o filtrado!
+MOVIES_DAT_FILE = "datasets/recassistbench/dataset/movie/movies.dat"
+
+CLEAR_DATABASE = True  # True para limpar banco antes de construir
 
 
 class MovieKGBuilder:
@@ -48,35 +49,28 @@ class MovieKGBuilder:
         for rel in self.schema['relations']:
             self.relation_targets[rel['type']] = rel['target']
         
-        logger.info(f"✓ Schema carregado com {len(self.relation_map)} mapeamentos de relações")
-        
-        # Log dos mapeamentos carregados
-        logger.info("📋 Mapeamentos de relações:")
-        for relation, variants in self.relation_mappings.items():
-            logger.info(f"   {relation}: {variants}")
+        print(f"✓ Schema carregado: {len(self.relation_map)} mapeamentos")
     
     def test_connection(self):
         """Testa conexão com Neo4j"""
         try:
             with self.driver.session(database=self.database) as session:
                 session.run("RETURN 1")
-            logger.info("✓ Conexão com Neo4j estabelecida")
+            print("✓ Conexão OK")
             return True
         except Exception as e:
-            logger.error(f"❌ Erro ao conectar ao Neo4j: {e}")
+            print(f"❌ Erro: {e}")
             return False
     
     def clear_database(self):
         """Limpa o banco de dados"""
-        logger.info("🗑️  Limpando banco de dados...")
+        print("Limpando banco...")
         with self.driver.session(database=self.database) as session:
             session.run("MATCH (n) DETACH DELETE n")
-        logger.info("✓ Banco limpo")
+        print("✓ Banco limpo")
     
     def create_indexes(self):
         """Cria índices para melhorar performance"""
-        logger.info("📇 Criando índices...")
-        
         indexes = [
             "CREATE INDEX movie_title IF NOT EXISTS FOR (m:Movie) ON (m.Title)",
             "CREATE INDEX movie_id IF NOT EXISTS FOR (m:Movie) ON (m.movieId)",
@@ -94,7 +88,7 @@ class MovieKGBuilder:
                 except:
                     pass
         
-        logger.info("✓ Índices criados")
+        print("✓ Índices criados")
     
     def load_movie_ids_and_genres(self, movies_dat_path):
         """Carrega IDs dos filmes e gêneros do movies.dat"""
@@ -107,13 +101,12 @@ class MovieKGBuilder:
                 if len(parts) >= 3:
                     movie_id = int(parts[0])
                     title = parts[1]
-                    genres = parts[2].split('|')  # Gêneros separados por |
+                    genres = parts[2].split('|')
                     
                     title_to_id[title] = movie_id
                     title_to_genres[title] = genres
         
-        logger.info(f"✓ Carregados {len(title_to_id)} IDs de filmes")
-        logger.info(f"✓ Carregados gêneros para {len(title_to_genres)} filmes")
+        print(f"✓ {len(title_to_id)} filmes carregados")
         return title_to_id, title_to_genres
     
     def normalize_title(self, title):
@@ -213,8 +206,6 @@ class MovieKGBuilder:
                 if not standard_relation:
                     continue
                 
-                logger.debug(f"   📝 Mapeando '{field_name}' → {standard_relation}")
-                
                 # Obter tipo do nó alvo
                 target_type = self.relation_targets.get(standard_relation, 'Thing')
                 
@@ -234,7 +225,7 @@ class MovieKGBuilder:
                             MERGE (m)-[:{standard_relation}]->(e)
                         """, entity=entity, title=title)
                     except Exception as e:
-                        logger.debug(f"Erro ao criar relação {standard_relation}: {e}")
+                        pass
             
             # 3. Adicionar gêneros do movies.dat se não existirem no movie_info.jsonl
             if movie_genres and not movie_data.get('Genre') and not movie_data.get('Genres'):
@@ -248,41 +239,26 @@ class MovieKGBuilder:
                                 MERGE (m)-[:Genre]->(g)
                             """, genre=genre.strip(), title=title)
                         except Exception as e:
-                            logger.debug(f"Erro ao criar relação Genre: {e}")
+                            pass
     
     def build_graph(self, movie_info_path, movies_dat_path):
         """Constrói o grafo completo"""
-        
-        # 1. Carregar IDs e gêneros
-        logger.info("Carregando IDs e gêneros dos filmes...")
         title_to_id, title_to_genres = self.load_movie_ids_and_genres(movies_dat_path)
         
-        # 2. Contar filmes
-        logger.info("Contando filmes...")
         with open(movie_info_path, 'r', encoding='utf-8') as f:
             total = sum(1 for _ in f)
         
-        # 3. Processar filmes
-        logger.info(f"Processando {total} filmes...")
-        
-        processed = 0
-        with_id = 0
+        print(f"Processando {total} filmes...")
         
         with open(movie_info_path, 'r', encoding='utf-8') as f:
             for line in tqdm(f, total=total, desc="Construindo KG"):
                 try:
                     movie_data = json.loads(line)
                     self.create_movie_and_relations(movie_data, title_to_id, title_to_genres)
-                    processed += 1
-                    
-                    if self.find_movie_id(movie_data.get('Title', ''), title_to_id):
-                        with_id += 1
-                        
-                except Exception as e:
-                    logger.debug(f"Erro: {e}")
+                except:
+                    pass
         
-        logger.info(f"✓ {processed} filmes processados")
-        logger.info(f"✓ {with_id} filmes com movieId")
+        print(f"✓ Concluído")
     
     def get_stats(self):
         """Retorna estatísticas do grafo"""
@@ -333,106 +309,48 @@ class MovieKGBuilder:
             print(f"  • {item['type']:20s}: {item['count']:,}")
         
         print("\n" + "="*70)
-    
-    def test_query(self):
-        """Testa query do benchmark"""
-        logger.info("\nTestando query do benchmark...")
-        logger.info("   Query: Filmes de guerra com Tom Hanks")
-        
-        with self.driver.session(database=self.database) as session:
-            result = session.run("""
-                MATCH (m:Movie)
-                WHERE (m)-[:Starring]->(p:Person {name: 'Tom Hanks'})
-                  AND (m)-[:Genre]->(g:Genre {name: 'War'})
-                RETURN m.Title AS title, m.movieId AS id
-            """).data()
-            
-            if result:
-                logger.info(f"    Encontrados {len(result)} filmes:")
-                for r in result:
-                    logger.info(f"      • {r['title']} (ID: {r['id']})")
-            else:
-                logger.warning("    Nenhum filme encontrado")
-    
+
     def close(self):
         self.driver.close()
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Construir Knowledge Graph de filmes no Neo4j',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='''
-Exemplos:
-  # Construir KG (limpar banco antes)
-  python build_movie_kg.py --password arara123 --clear
-  
-  # Apenas adicionar dados (não limpar)
-  python build_movie_kg.py --password arara123
-        '''
-    )
+    """Construir Knowledge Graph de filmes no Neo4j"""
     
-    parser.add_argument('--uri', default='bolt://localhost:7687',
-                       help='URI do Neo4j (padrão: bolt://localhost:7687)')
-    parser.add_argument('--username', default='neo4j',
-                       help='Usuário do Neo4j (padrão: neo4j)')
-    parser.add_argument('--password', required=True,
-                       help='Senha do Neo4j')
-    parser.add_argument('--database', default='neo4j',
-                       help='Nome do database (padrão: neo4j)')
-    parser.add_argument('--schema', default='eval/movie-schema.json',
-                       help='Caminho do schema (padrão: eval/movie-schema.json)')
-    parser.add_argument('--movie-info', default='dataset/movie/movie_info.jsonl',
-                       help='Caminho do movie_info.jsonl (usar filtrado para apenas filmes do dataset)')
-    parser.add_argument('--movies-dat', default='dataset/movie/movies.dat',
-                       help='Caminho do movies.dat')
-    parser.add_argument('--clear', action='store_true',
-                       help='Limpar banco antes de construir')
-    
-    args = parser.parse_args()
-    
-    # Verificar se arquivos existem
-    for path in [args.schema, args.movie_info, args.movies_dat]:
+    # Verificar arquivos
+    for path in [SCHEMA_FILE, MOVIE_INFO_FILE, MOVIES_DAT_FILE]:
         if not os.path.exists(path):
-            logger.error(f"Arquivo não encontrado: {path}")
+            print(f"Arquivo não encontrado: {path}")
             return
+    
+    print("="*70)
+    print("CONSTRUINDO KNOWLEDGE GRAPH")
+    print("="*70)
     
     # Construir KG
     builder = MovieKGBuilder(
-        uri=args.uri,
-        username=args.username,
-        password=args.password,
-        database=args.database,
-        schema_path=args.schema
+        uri=NEO4J_URI,
+        username=NEO4J_USERNAME,
+        password=NEO4J_PASSWORD,
+        database=NEO4J_DATABASE,
+        schema_path=SCHEMA_FILE
     )
     
     try:
-        # Testar conexão
         if not builder.test_connection():
             return
         
-        # Limpar se solicitado
-        if args.clear:
+        if CLEAR_DATABASE:
             builder.clear_database()
         
-        # Criar índices
         builder.create_indexes()
-        
-        # Construir grafo
-        builder.build_graph(args.movie_info, args.movies_dat)
-        
-        # Mostrar estatísticas
+        builder.build_graph(MOVIE_INFO_FILE, MOVIES_DAT_FILE)
         builder.print_stats()
         
-        # Testar query
-        builder.test_query()
-        
-        logger.info("\nKnowledge Graph construído com sucesso!")
-        logger.info(f"   Database: {args.database}")
-        logger.info(f"   URI: {args.uri}\n")
+        print("Knowledge Graph construído com sucesso!")
         
     except Exception as e:
-        logger.error(f"\nErro: {e}", exc_info=True)
+        print(f"\n❌ Erro: {e}")
     finally:
         builder.close()
 

@@ -1,6 +1,5 @@
 import os
 import sys
-import ast
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
@@ -8,21 +7,22 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from users import ExplicitUser
-from agents import Agent, Orchestrator, Module
+from agents import Orchestrator, Module
+from modules import explicit_orchestrator
 from clients import groq_llama3370b, ollama_llama32
 from agents.helpers.graph_utils import visualize_speaker_transitions_dict
 
 from evaluation import report_metrics
 
-from capabilities.memory import ListMemory, MemoryContent
 from user_history import get_filtered_user_history
 from tools import movies
-from datasets.RecAssistBench import Dataloader
+from datasets.recassistbench import Dataloader
 from neo4j_client import connect_to_neo4j
 
 if not connect_to_neo4j():
     sys.exit(1)
 
+llm_config = groq_llama3370b
 model_name = "llama-3.1-70b-instruct"
 dataloader = Dataloader("movie/ImplicitQuery.json")
 dataset = dataloader.load()
@@ -34,9 +34,6 @@ print("--------------------------------\n")
 
 
 prediction = dataloader.get_result(data_idx=data["data_idx"], model_name=model_name)
-
-user = ExplicitUser()
-
 user_history = get_filtered_user_history(
     user_id=data['source_user'],
     groundtruth_movie_ids=data['movieSubsetId'],
@@ -44,36 +41,27 @@ user_history = get_filtered_user_history(
 )
 # Limita o histórico para reduzir tokens (pega últimos 20 itens)
 limited_history = user_history[-20:] if len(user_history) > 20 else user_history
-sequential_memory = ListMemory(name="chat_history")
-sequential_memory.add(MemoryContent(content=" ".join(limited_history)))
 prediction = dataloader.get_result(data_idx=data["data_idx"], model_name=model_name)
 
-conversational = Agent(
-    name="conversational",
-    description=
-        "Assistente de recomendação de filmes que usa ferramentas para buscar informações " \
-        "e faz recomendações personalizadas baseadas no contexto do usuário."
-    ,
-    system_message=f"""Assistente de recomendação de filmes.
+user = ExplicitUser() #TODO: User can be implicit or explicit
 
-PROCESSO:
-1. Analise o pedido e histórico do usuário
-2. Use tools para buscar informações
-3. Combine resultados das tools com contexto do usuário
-4. Selecione os melhores filmes
-
-SAÍDA:
-Retorne APENAS títulos separados por [SEP]. Sem JSON, explicações ou numeração.
-
-Exemplo: City Lights [SEP] Modern Times [SEP] The Great Dictator [SEP]""",
-    llm_config=groq_llama3370b,
-    tools=movies.tools,
-    reflect_on_tool_use=True,
-    tool_call_summary_format="{result}",  # Apenas o resultado bruto
+main_module = Module(
+    admin_name="main_module",
+    agents=[user, explicit_orchestrator],
+    speaker_selection_method="auto",
 )
 
-user.talk_to(conversational, message=data['direct_description_query'], silent=False)
-arara_response = conversational.last_message()['content']
+# ------------------ Orchestrator principal ------------------
+main_orchestrator = Orchestrator(
+    name="main_orchestrator",
+    module=main_module,
+    llm_config=llm_config,
+    system_message="Só repasse a mensagem.",
+    description="Routes to the Explicit or Implicit module based on the user query.",
+)
+
+user.talk_to(main_orchestrator, message=data['direct_description_query'], silent=False)
+arara_response = main_orchestrator.last_message()['content']
 
 arara_eval = dataloader.evaluate_response(arara_response, data_idx=data['data_idx'])
 
