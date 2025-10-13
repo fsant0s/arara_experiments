@@ -1,25 +1,43 @@
-# --- EXPLICIT MODULE (Constraint → Retrieve+Rank) ---
-# Objetivo: gerar recomendações a partir de consultas explícitas, ex.:
-#   "Can you suggest some movies directed by Mike Judge?"
-#
-# Saída (exatamente uma linha):
-#   Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
-#
-# Simplificado: sem Planner, sem Disambiguator. Só 2 agentes.
-# Fluxo: Constraint Agent → Retrieve+Rank Agent
-
 from agents import Agent, Module, Orchestrator
 from tools import movies
 from clients import groq_llama3370b, gpt_41
 
-llm_config = gpt_41
+from capabilities.memory import ListMemory, MemoryContent
+from user_history import get_filtered_user_history
 
-# ===================== Constraint Agent (Step 1) =====================
-constraint_agent = Agent(
-    name="constraint_agent",
-    llm_config=llm_config,
-    description="Extracts and validates HARD (required) and SOFT (preference) constraints from the explicit query. No candidate retrieval.",
-    system_message="""
+
+def create_explicit_orchestrator(
+    data: dict,
+    llm_config=gpt_41,
+    use_memory: bool = True,
+    memory_size: int = 10,
+) -> Orchestrator:
+    """Build an Explicit module Orchestrator using the provided data row.
+
+    Required keys in `data`: 'source_user', 'movieSubsetId', 'sharedRelationships'.
+    """
+    sequential_memory = None
+    if use_memory:
+        # Limita o histórico para reduzir tokens (pega últimos N itens)
+        user_history = get_filtered_user_history(
+            user_id=data['source_user'],
+            groundtruth_movie_ids=data['movieSubsetId'],
+            neo4j_conditions=data['sharedRelationships']
+        )
+        limited_history = user_history[-memory_size:] if len(user_history) > memory_size else user_history
+        if limited_history:
+            sequential_memory = ListMemory(name="chat_history")
+            history_line = " ".join(limited_history)
+            sequential_memory.add(MemoryContent(content=history_line))
+
+    # ===================== Constraint Agent (Step 1) =====================
+    _mem_kwargs = {"memory": [sequential_memory]} if sequential_memory else {}
+
+    constraint_agent = Agent(
+        name="constraint_agent",
+        llm_config=llm_config,
+        description="Extracts and validates HARD (required) and SOFT (preference) constraints from the explicit query. No candidate retrieval.",
+        system_message="""
 You are the CONSTRAINT AGENT (Step 1) for explicit recommendations.
 
 Input:
@@ -48,7 +66,8 @@ SOFT:
 - <Relation>: <Value>
 - ...
 
-No code, no JSON, no logs.
+Do not add explanations, reasoning, JSON, code, or logs.
+Return only these two labeled sections as plain text.
 
 Implicit configuration (do not print):
 - normalize_for_match: true
@@ -58,28 +77,29 @@ Implicit configuration (do not print):
 - ranking: use_soft_hints (small); tie_break: lexicographic
 - empty_policy: do_not_relax_hard → return empty string
 """,
-    tools=[
-        movies.list_nodes_by_type,
-        movies.get_available_genres,
-        movies.get_available_languages,
-        movies.get_existing_relations,
-        movies.get_existing_nodes,
-        movies.search_movies_by_title,
-        movies.get_movies_by_director,  # existence check only
-        movies.get_movies_by_actor,     # existence check only
-    ],
-    reflect_on_tool_use=True,
-)
+        tools=[
+            movies.list_nodes_by_type,
+            movies.get_available_genres,
+            movies.get_available_languages,
+            movies.get_existing_relations,
+            movies.get_existing_nodes,
+            movies.search_movies_by_title,
+            movies.get_movies_by_director,  # existence check only
+            movies.get_movies_by_actor,     # existence check only
+        ],
+        reflect_on_tool_use=True,
+        **_mem_kwargs,
+    )
 
-# ===================== Retrieve + Rank Agent (Step 2) =====================
-retrieve_rank_agent = Agent(
-    name="retrieve_rank_agent",
-    llm_config=llm_config,
-    description=(
-        "Retrieves movie candidates per HARD constraints, intersects results (AND/CMR-Gate), "
-        "ranks with SOFT hints, and formats a single '[SEP]' line."
-    ),
-    system_message="""
+    # ===================== Retrieve + Rank Agent (Step 2) =====================
+    retrieve_rank_agent = Agent(
+        name="retrieve_rank_agent",
+        llm_config=llm_config,
+        description=(
+            "Retrieves movie candidates per HARD constraints, intersects results (AND/CMR-Gate), "
+            "ranks with SOFT hints, and formats a single '[SEP]' line."
+        ),
+        system_message="""
 You are the RETRIEVE+RANK AGENT (Step 2).
 
 Input:
@@ -113,50 +133,55 @@ Algorithm:
    - Truncate to top_k=20.
 
 4) Formatting:
-   - If possible, include years as "Title (YYYY)".
-   - Join ORIGINAL titles with ' [SEP] ' (no trailing separator).
+   - Include years as "Title (YYYY)" when available.
+   - Join ORIGINAL titles with ' [SEP] ' (single spaces around [SEP]).
+   - The output must contain exactly ONE LINE and nothing else.
    - If empty, return an empty string.
 
 Output:
 Exactly ONE LINE:
 Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
 
-Constraints:
-- No JSON, no code, no logs.
+Do not include any explanations, numbered lists, labels, reasoning, or extra lines.
+Never output text like “Retrieved movies” or “Ranked movies”.
+Only output the final formatted line as shown above.
 """,
-    tools=[
-        movies.get_movies_by_director,
-        movies.get_movies_by_actor,
-        movies.get_movies_by_genre,
-        movies.get_movies_by_language,
-        movies.get_movies_by_production_company,
-        movies.get_movies_by_year,
-        movies.get_movies_by_relation,
-    ],
-    reflect_on_tool_use=True,
-)
+        tools=[
+            movies.get_movies_by_director,
+            movies.get_movies_by_actor,
+            movies.get_movies_by_genre,
+            movies.get_movies_by_language,
+            movies.get_movies_by_production_company,
+            movies.get_movies_by_year,
+            movies.get_movies_by_relation,
+        ],
+        reflect_on_tool_use=True,
+        **_mem_kwargs,
+    )
 
-# ===================== Wiring =====================
-allowed_transitions = {
-    constraint_agent: [retrieve_rank_agent],
-}
+    # ===================== Wiring =====================
+    allowed_transitions = {
+        constraint_agent: [retrieve_rank_agent],
+    }
 
-module = Module(
-    admin_name="explicit_module",
-    agents=[constraint_agent, retrieve_rank_agent],
-    speaker_selection_method="auto",
-    allowed_or_disallowed_speaker_transitions=allowed_transitions,
-    speaker_transitions_type="allowed",
-)
+    module = Module(
+        admin_name="explicit_module",
+        agents=[constraint_agent, retrieve_rank_agent],
+        speaker_selection_method="auto",
+        allowed_or_disallowed_speaker_transitions=allowed_transitions,
+        speaker_transitions_type="allowed",
+    )
 
-orchestrator = Orchestrator(
-    name="explicit_orchestrator",
-    module=module,
-    llm_config=llm_config,
-    system_message="Forward messages only. Do not interpret or modify content.",
-    description=(
-        "Explicit recommendation module: Constraint Agent extracts and validates HARD/SOFT constraints; "
-        "Retrieve+Rank Agent fetches per HARD, intersects (AND), ranks with SOFT hints, "
-        "and outputs a single '[SEP]' line."
-    ),
-)
+    orchestrator = Orchestrator(
+        name="explicit_orchestrator",
+        module=module,
+        llm_config=llm_config,
+        system_message="Forward messages only. Do not interpret, summarize, or modify content. The Retrieve+Rank Agent output must remain a single '[SEP]' line.",
+        description=(
+            "Explicit recommendation module: Constraint Agent extracts and validates HARD/SOFT constraints; "
+            "Retrieve+Rank Agent fetches per HARD, intersects (AND), ranks with SOFT hints, "
+            "and outputs a single '[SEP]' line (exactly one line, no commentary)."
+        ),
+    )
+
+    return orchestrator

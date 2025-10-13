@@ -72,7 +72,7 @@ def report_metrics(
         if eval_result:
             print(f"Recall:          {_fmt_num(eval_result.get('recall'))}")  #how many of the relevant movies were successfully recommended — it reflects coverage of the recommendations
             print(f"Precision:       {_fmt_num(eval_result.get('precision'))}") #how many of the recommended movies are actually relevant — it reflects accuracy of the recommendations.
-            print(f"NDCG (ranking quality):            {_fmt_num(eval_result.get('ndcg'))}") #how well the order of the recommended movies matches the ideal (ground truth) order.
+            print(f"NDCG:            {_fmt_num(eval_result.get('ndcg'))}") #how well the order of the recommended movies matches the ideal (ground truth) order.
             #print(f"Satisfied Ratio: {_fmt_num(eval_result.get('satisfied_ratio'))}")
         else:
             print("Sem métricas pré-calculadas.")
