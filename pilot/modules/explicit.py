@@ -1,6 +1,5 @@
 from agents import Agent, Module, Orchestrator
 from tools import movies
-from clients import groq_llama3370b, gpt_41
 
 from capabilities.memory import ListMemory, MemoryContent
 from user_history import get_filtered_user_history
@@ -8,7 +7,7 @@ from user_history import get_filtered_user_history
 
 def create_explicit_orchestrator(
     data: dict,
-    llm_config=gpt_41,
+    llm_config=None,
     use_memory: bool = True,
     memory_size: int = 10,
 ) -> Orchestrator:

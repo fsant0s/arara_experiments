@@ -11,7 +11,7 @@ from agents.helpers.graph_utils import visualize_speaker_transitions_dict
 
 
 from modules import create_explicit_orchestrator
-from users import ExplicitUser
+from users import ImplicitExplicitUser
 from clients import groq_llama3370b, gpt_41
 
 from evaluation import report_metrics
@@ -27,14 +27,14 @@ llm_config = gpt_41
 model_name = "llama-3.1-70b-instruct"
 dataloader = Dataloader("movie/ExplicitQuery.json")
 dataset = dataloader.load()
-data = dataset[3]
+data = dataset[1]
 
 print("--------------------------------")
 print("-------- DATA INICIAL ----------")
 print("Data:", data)
 print("--------------------------------\n")
 
-user = ExplicitUser() #TODO: User can be implicit or explicit
+user = ImplicitExplicitUser() #TODO: User can be implicit or explicit
 
 # Toggle to enable/disable memory usage inside explicit module
 USE_MEMORY = True

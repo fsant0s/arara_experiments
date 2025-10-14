@@ -1,9 +1,9 @@
 from typing import Literal, Optional
 from agents import User
 
-class ExplicitUser(User):
+class ImplicitExplicitUser(User):
     def __init__(self, 
-        name: str = "ExplicitUser",
+        name: str = "ImplicitExplicitUser",
         description: Optional[str] = None,
         human_input_mode: Literal["ALWAYS", "NEVER"] = "ALWAYS",
         *kwargs):
