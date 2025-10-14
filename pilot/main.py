@@ -27,7 +27,7 @@ llm_config = gpt_41
 model_name = "llama-3.1-70b-instruct"
 dataloader = Dataloader("movie/ExplicitQuery.json")
 dataset = dataloader.load()
-data = dataset[0]
+data = dataset[3]
 
 print("--------------------------------")
 print("-------- DATA INICIAL ----------")
