@@ -114,18 +114,18 @@ class Dataloader:
         return predictions
     
     def get_result(self, data_idx: int, model_name: str) -> Optional[Dict[str, Any]]:
-        """
-        Retorna o resultado de um modelo para um data_idx específico.
-        
-        Args:
-            data_idx: Índice do item no dataset
-            model_name: Nome do modelo
-            
-        Returns:
-            Dicionário com 'id' e 'response', ou None se não encontrado
-        """
         predictions = self.load_predictions(model_name)
-        return predictions.get(str(data_idx))
+        if not isinstance(predictions, dict):
+            raise TypeError(f"Predictions must be a dict, got {type(predictions)}")
+
+        key_int = data_idx
+        key_str = str(data_idx)
+
+        if key_int in predictions:
+            return predictions[key_int]
+        elif key_str in predictions:
+            return predictions[key_str]
+        return None
     
     def get_eval_result(self, data_idx: int, model_name: str) -> Optional[Dict[str, Any]]:
         """

@@ -23,11 +23,11 @@ from neo4j_client import connect_to_neo4j
 if not connect_to_neo4j():
     sys.exit(1)
 
-llm_config = groq_llama3370b
-model_name = "llama-3.1-70b-instruct"
+llm_config = gpt_41
+model_name = "gpt-4o"
 dataloader = Dataloader("movie/ImplicitQuery.json")
-dataset = dataloader.load()
-data = dataset[1]
+dataset = dataloader.load(data_idx=1671)
+data = dataset[0]
 
 print("--------------------------------")
 print("-------- DATA INICIAL ----------")

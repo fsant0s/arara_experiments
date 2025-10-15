@@ -366,7 +366,7 @@ def eval_batch(args):
     else:
         evaluation_results = []
         start_idx = 0
-
+    
     for i in tqdm(range(start_idx, len(predictions)), desc="Evaluating predictions"):
         if args.query_type == 'condition':
             prediction_response = predictions[i]['response']
@@ -419,7 +419,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate the performance of a recommendation system")
     parser.add_argument("--uri", type=str, default="bolt://localhost:7687", help="URI for Neo4j database")
     parser.add_argument("--username", type=str, default="neo4j", help="Username for Neo4j database")
-    parser.add_argument("--password", type=str, default="", help="Password for Neo4j database")
+    parser.add_argument("--password", type=str, default="arara123", help="Password for Neo4j database")
     parser.add_argument("--database", type=str, default="", help="Target database name")
     parser.add_argument("--schema", type=str, default="movie-schema.json", help="Path to schema file")
     parser.add_argument("--query_type", type=str, default="condition", choices=["condition", "collaborative"], help="query type")

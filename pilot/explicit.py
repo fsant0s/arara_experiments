@@ -24,22 +24,22 @@ if not connect_to_neo4j():
     sys.exit(1)
 
 llm_config = gpt_41
-model_name = "llama-3.1-70b-instruct"
+model_name = "gpt-4o" #"llama-3.1-70b-instruct"
 dataloader = Dataloader("movie/ExplicitQuery.json")
-dataset = dataloader.load()
-data = dataset[1]
+dataset = dataloader.load(data_idx=3826) 
+data = dataset[0]
 
 print("--------------------------------")
 print("-------- DATA INICIAL ----------")
 print("Data:", data)
 print("--------------------------------\n")
 
-user = ImplicitExplicitUser() #TODO: User can be implicit or explicit
 
 # Toggle to enable/disable memory usage inside explicit module
 USE_MEMORY = True
-MEMORY_SIZE = 10  # adjust if needed
+MEMORY_SIZE = 10 # adjust if needed
 
+user = ImplicitExplicitUser() 
 explicit_orchestrator = create_explicit_orchestrator(
     data,
     llm_config=llm_config,

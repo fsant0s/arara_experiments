@@ -26,7 +26,6 @@ def create_implicit_orchestrator(
     movieCount = data.get("movieCount", None)
     top_k_value = movieCount if isinstance(movieCount, int) and movieCount > 0 else 3
 
-    sequential_memory = None
     history_line = ""
     if use_memory:
         user_history = get_filtered_user_history(
@@ -37,10 +36,7 @@ def create_implicit_orchestrator(
         limited_history = user_history[-memory_size:] if len(user_history) > memory_size else user_history
         if limited_history:
             history_line = " ".join(limited_history)
-            sequential_memory = ListMemory(name="chat_history")
-            sequential_memory.add(MemoryContent(content=history_line))
 
-    _mem_kwargs = {"memory": [sequential_memory]} if sequential_memory else {}
 
     # ===================== ProfileAgent (sinais implícitos + canonicalização) =====================
     ProfileAgent = Agent(
@@ -93,7 +89,6 @@ PROFILE:
             movies.get_available_languages,
         ],
         reflect_on_tool_use=True,
-        **_mem_kwargs,
     )
 
     # ===================== ImplicitRetrieverAgent (gera POOL amplo; não corta por K) =====================
@@ -116,13 +111,19 @@ Goal:
 - Include items matching multiple signals first, but DO NOT cut by top-k here.
 
 Tools to call for candidate generation:
-- movies.get_movies_by_genre
+- movies.get_movies_by_genre ← Allowed genres ONLY (see full list below).  
 - movies.get_movies_by_language
 - movies.get_movies_by_year
 - movies.get_movies_by_director
 - movies.get_movies_by_actor
 - movies.get_movies_by_production_company (optional)
-- movies.get_movies_by_relation (fallback for custom relations)
+- movies.get_movies_by_relation ← Allowed relations ONLY:  
+    `['Based_on', 'Cinematography', 'Color_process', 'Directed_by', 'Distributed_by', 'Edited_by', 'Genre', 'Language', 'Music_by', 'Narrated_by', 'Produced_by', 'Production_Country', 'Screenplay_by', 'Starring', 'Written_by']`
+
+⚠️ **Important rule:**  
+Always use the **canonical form** of the relation exactly as listed above.  
+- If a user mentions a near-synonym (e.g., *Cinematographer*), map it to **Cinematography**.  
+- If unsure, **do not invent** a new relation — use only the allowed ones.  
 
 Heuristics:
 - If "Era" resembles a decade (e.g., 90s) map to a year range (1990–1999) and call get_movies_by_year per year or via relation fallback.
@@ -139,6 +140,14 @@ Process:
 OUTPUT (STRICT):
 - Exactly ONE LINE with titles: Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
 - Use ' [SEP] ' (single spaces). No leading/trailing [SEP], no commentary.
+
+---
+
+### Allowed movies relations (use EXACTLY these):
+`['Based_on', 'Cinematography', 'Color_process', 'Directed_by', 'Distributed_by', 'Edited_by', 'Genre', 'Language', 'Music_by', 'Narrated_by', 'Produced_by', 'Production_Country', 'Screenplay_by', 'Starring', 'Written_by']`
+
+### Allowed Genres:
+`['10', '1970s', '20', '26', '29', '35', '42', '61', 'AOR', 'Action', 'Action-adventure', 'Action|Adventure', 'Action|Adventure|Animation', "Action|Adventure|Animation|Children's|Fantasy", 'Action|Adventure|Comedy', 'Action|Adventure|Comedy|Romance', 'Action|Adventure|Drama', 'Action|Adventure|Fantasy', 'Action|Adventure|Horror|Thriller', 'Action|Adventure|Sci-Fi', 'Action|Adventure|Sci-Fi|Thriller', 'Action|Adventure|Sci-Fi|Thriller|War', 'Action|Adventure|Thriller', "Action|Children's", 'Action|Comedy', 'Action|Comedy|Crime|Drama', 'Action|Crime', 'Action|Crime|Drama', 'Action|Crime|Drama|Thriller', 'Action|Drama', 'Action|Drama|Romance', 'Action|Drama|Thriller', 'Action|Drama|Thriller|War', 'Action|Drama|War', 'Action|Horror', 'Action|Horror|Sci-Fi', 'Action|Horror|Sci-Fi|Thriller', 'Action|Horror|Thriller', 'Action|Mystery|Romance|Thriller', 'Action|Sci-Fi', 'Action|Sci-Fi|Thriller', 'Action|Sci-Fi|War', 'Action|Thriller', 'Action|War', 'Action|Western', 'Adventure', "Adventure|Animation|Children's", "Adventure|Animation|Children's|Sci-Fi", "Adventure|Children's", "Adventure|Children's|Comedy|Fantasy", "Adventure|Children's|Fantasy", 'Adventure|Comedy', 'Adventure|Comedy|Musical', 'Adventure|Comedy|Sci-Fi', 'Adventure|Drama', 'Adventure|Drama|Thriller', 'Adventure|Fantasy', 'Adventure|Fantasy|Romance', 'Adventure|Fantasy|Sci-Fi', 'Adventure|Musical', 'Adventure|Musical|Romance', 'Adventure|War', 'Alternative metal', 'Alternative pop/rock', 'Alternative rock', 'Animated sitcom', 'Animation', "Animation|Children's", "Animation|Children's|Comedy", "Animation|Children's|Comedy|Musical", "Animation|Children's|Musical", 'Animation|Comedy', 'Animation|Musical', 'Animation|Sci-Fi', 'Anime', 'Avant-garde', 'Beach party', 'Blues', 'Britpop', 'Children', "Children's", "Children's music", "Children's|Comedy", "Children's|Comedy|Drama", "Children's|Comedy|Fantasy", "Children's|Comedy|Sci-Fi", "Children's|Comedy|Western", "Children's|Drama", 'Christian metal', 'Christian rock', 'Christmas', 'Classical', 'Comedy', 'Comedy-drama', 'Comedy|Crime', 'Comedy|Crime|Drama', 'Comedy|Documentary', 'Comedy|Drama', 'Comedy|Drama|Romance', 'Comedy|Drama|Thriller']`
 """,
         tools=[
             movies.get_movies_by_genre,
@@ -150,7 +159,6 @@ OUTPUT (STRICT):
             movies.get_movies_by_relation,
         ],
         reflect_on_tool_use=True,
-        **_mem_kwargs,
     )
 
     # ===================== ImplicitRecommenderAgent (seleciona exatamente top_k) =====================
@@ -193,7 +201,6 @@ STRICT Output:
 """,
         tools=[],  # sem tools aqui; apenas seleção
         reflect_on_tool_use=True,
-        **_mem_kwargs,
     )
 
     # ===================== Wiring =====================
@@ -205,7 +212,7 @@ STRICT Output:
     module = Module(
         admin_name="implicit_module",
         agents=[ProfileAgent, ImplicitRetrieverAgent, ImplicitRecommenderAgent],
-        speaker_selection_method="auto",
+        speaker_selection_method="round_robin",
         allowed_or_disallowed_speaker_transitions=allowed_transitions,
         speaker_transitions_type="allowed",
     )
@@ -214,12 +221,14 @@ STRICT Output:
         name="implicit_orchestrator",
         module=module,
         llm_config=llm_config,
-        description=(
-            f"Implicit recommendation module: ProfileAgent derives implicit preferences + canonicalizes; "
-            f"ImplicitRetrieverAgent generates a broad pool via catalog tools; "
-            f"ImplicitRecommenderAgent selects exactly top_k={top_k_value} balancing preference, novelty, and diversity, "
-            "outputting a single '[SEP]' line."
-        ),
+        description="""
+            Handles implicit recommendation queries in which the user expresses intent indirectly through examples, without explicitly naming the desired attributes or entities.
+            It focuses on understanding the relational pattern implied by the user’s examples and generating recommendations that follow the same underlying connection or context.
+            Examples of implicit queries:
+                - Please recommend some movies starring the same actor as in The - - Return of the Musketeers (1989) and The Omega Code (1999).
+                - Please recommend some movies featuring the same actor as seen in - Heartburn (1986) and Man Trouble (1992).
+                - Please recommend some movies featuring the same actor who starred -in Bram Stoker's Dracula (1992) and Great Balls of Fire! (1989).
+        """
     )
 
     return orchestrator

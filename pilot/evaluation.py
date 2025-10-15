@@ -32,9 +32,6 @@ def report_metrics(
         Um dicionário com as métricas do Arara (tempo real) e, se disponível, do modelo.
     """
 
-    print("arara_response", arara_response)
-
-
     results: Dict[str, Any] = {}
 
     # ===== Avaliação do Arara (tempo real) =====
@@ -44,19 +41,16 @@ def report_metrics(
     # ===== Depois: resultados do ARARA =====
     print("=" * 80)
     print("=== ARARA ===")
-    print(f"FTR (Failed To Recommend):       {arara_eval['ftr']}")
-    print(f"Predicted: {", ".join(arara_eval['predicted_titles'])}")
-    print("-"*40)
-    print(f"Matches: {", ".join(arara_eval['matched_titles'])}")
-    print(f"Ground truth: {", ".join(arara_eval['ground_truth'])}")
-    print("-"*40)
+    print(f"FTR:        {arara_eval['ftr']}")
+    print(f"Predicted:  {arara_response}")
+    print(f"Matches:    {", ".join(arara_eval['matched_titles'])}")
     print("-- Metrics --")
     print(f"Recall:    {_fmt_num(arara_eval['recall'])}")
     print(f"Precision: {_fmt_num(arara_eval['precision'])}")
     print(f"NDCG:      {_fmt_num(arara_eval['ndcg'])}")
     # print(f"Satisfied Ratio: {_fmt_num(arara_eval['satisfied_ratio'])}")
 
-    # ===== Modelo existente primeiro (se disponível) =====
+     # ===== Modelo existente primeiro (se disponível) =====
     if model_name:
         prediction = dataloader.get_result(data_idx=data["data_idx"], model_name=model_name)
         eval_result = dataloader.get_eval_result(data_idx=data["data_idx"], model_name=model_name)
@@ -68,15 +62,16 @@ def report_metrics(
             print(f"Predicted: {prediction.get('response', '')}")
         else:
             print("Predicted: N/A")
+
         print("-- Metrics --")
         if eval_result:
-            print(f"Recall:          {_fmt_num(eval_result.get('recall'))}")  #how many of the relevant movies were successfully recommended — it reflects coverage of the recommendations
-            print(f"Precision:       {_fmt_num(eval_result.get('precision'))}") #how many of the recommended movies are actually relevant — it reflects accuracy of the recommendations.
-            print(f"NDCG:            {_fmt_num(eval_result.get('ndcg'))}") #how well the order of the recommended movies matches the ideal (ground truth) order.
+            print(f"Recall:    {_fmt_num(eval_result.get('recall'))}")  #how many of the relevant movies were successfully recommended — it reflects coverage of the recommendations
+            print(f"Precision: {_fmt_num(eval_result.get('precision'))}") #how many of the recommended movies are actually relevant — it reflects accuracy of the recommendations.
+            print(f"NDCG:      {_fmt_num(eval_result.get('ndcg'))}") #how well the order of the recommended movies matches the ideal (ground truth) order.
             #print(f"Satisfied Ratio: {_fmt_num(eval_result.get('satisfied_ratio'))}")
         else:
             print("Sem métricas pré-calculadas.")
-
+   
     # ===== Contexto (ground truth) =====
     print("=" * 80)
     print("=== Ground truth ===")
