@@ -403,7 +403,7 @@ def eval_batch(args):
             with open(output_path, "w") as file:
                 json.dump(evaluation_results, file, indent=4)
     # Write to file once at the end
-    #assert len(evaluation_results) == len(predictions)
+    assert len(evaluation_results) == len(predictions)
     with open(output_path, "w") as file:
         json.dump(evaluation_results, file, indent=4)
 

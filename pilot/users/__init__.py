@@ -1,1 +1,0 @@
-from .arara_user import AraraUser

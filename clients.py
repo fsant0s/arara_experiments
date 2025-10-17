@@ -132,3 +132,16 @@ openrouter_llama370bfree = {
         }
     ]
 }
+
+
+openrouter_deepseek_chat = {
+    "config_list": [
+        {
+            "client": "openrouter",
+            "temperature": 0.0,
+            "model": "deepseek/deepseek-chat",
+            "base_url": "https://openrouter.ai/api/v1",
+            "api_key": os.getenv("OPEN_ROUTER_API_KEY")
+        }
+    ]
+}

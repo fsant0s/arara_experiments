@@ -5,10 +5,10 @@ import random
 
 def get_data_path(filename: str) -> str:
     """Retorna o caminho correto para os arquivos de dados."""
-    if os.path.exists("datasets/RecAssistBench/dataset/movie/"):
-        base_path = "datasets/RecAssistBench/dataset/movie/"
+    if os.path.exists("datasets/recassistbench/dataset/movie/"):
+        base_path = "datasets/recassistbench/dataset/movie/"
     else:
-        base_path = "../datasets/RecAssistBench/dataset/movie/"
+        base_path = "../datasets/recassistbench/dataset/movie/"
     return os.path.join(base_path, filename)
 
 

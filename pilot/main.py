@@ -18,10 +18,11 @@ from clients import (
   openrouter_gpt4o,
   openrouter_llama370bfree, 
   gpt_4o,
+  openrouter_deepseek_chat,
 )
 
-from users import AraraUser
-from modules import create_implicit_orchestrator, create_explicit_orchestrator, create_misinformed_orchestrator
+from arara_user import AraraUser
+from modules.movies import create_implicit_orchestrator, create_explicit_orchestrator, create_misinformed_orchestrator
 from datasets.recassistbench import Dataloader
 
 from neo4j_client import connect_to_neo4j
@@ -39,6 +40,7 @@ VALID_MODELS = {
     "openrouter_gpt4o": openrouter_gpt4o,
     "openrouter_llama370bfree": openrouter_llama370bfree,
     "gpt_4o": gpt_4o,
+    "openrouter_deepseek_chat": openrouter_deepseek_chat,
 }
 
 def validate_response(response):
@@ -122,7 +124,9 @@ def main(*args):
   impl_dataloader = Dataloader(f"{dataset_name}/ImplicitQuery.json")
   expl_dataloader = Dataloader(f"{dataset_name}/ExplicitQuery.json")
   mis_dataloader = Dataloader(f"{dataset_name}/MisinformedQuery.json")
-  dataset = expl_dataloader.load()[:3] + impl_dataloader.load()[:3]
+
+  dataset_size = 200
+  dataset = random.sample(mis_dataloader.load(), dataset_size) + random.sample(expl_dataloader.load(), dataset_size) + random.sample(impl_dataloader.load(), dataset_size)
   total = len(dataset)  # Total de itens a processar
   
   print(f"🚀 Iniciando processamento: {total} itens")
@@ -140,10 +144,13 @@ def main(*args):
           name ="User",
           description="""
             Acts as the entry point of the conversational process, providing queries that express individual preferences, goals, or contextual needs.
-            The user can formulate two main types of recommendation requests:
-              - Explicit queries, where the user directly specifies entities or attributes (e.g., “Can you suggest some movies directed by Spike Lee?”).
-              - Implicit queries, where the user conveys intent indirectly through examples or situational cues (e.g., “Please recommend some movies starring the same actor as in The Return of the Musketeers (1989) and The Omega Code (1999).”).
-            The user’s input determines which orchestration path is activated, guiding the system toward either explicit or implicit reasoning and recommendation generation.
+            The user can formulate three main types of recommendation requests:
+
+            - Explicit queries**, where the user directly specifies entities or attributes (e.g., “Can you suggest some movies directed by Spike Lee?”).
+            - Implicit queries**, where the user conveys intent indirectly through examples or situational cues (e.g., “Please recommend some movies starring the same actor as in *The Return of the Musketeers* (1989) and *The Omega Code* (1999).”).
+            - Misinformed queries**, where the user expresses interest based on an incorrect assumption or mistaken belief about a movie fact (e.g., “I recently watched *The Holiday* and really enjoyed Prof. T.’s direction. I’m looking for more movies directed by him.”).
+
+            The user’s input determines which orchestration path is activated, guiding the system toward explicit reasoning, implicit inference, or misinformed clarification before generating the final recommendations.
           """
         )
 
@@ -171,7 +178,7 @@ def main(*args):
           name="main_module",
           agents=[user, explicit_orchestrator, implicit_orchestrator, misinformed_orchestrator],
           speaker_selection_method="auto",
-          #max_round=2,
+          max_round=2,
         )
 
         # ------------------ Orchestrator principal ------------------
@@ -201,7 +208,6 @@ def main(*args):
 
 
       predict_type = list(main_orchestrator._oai_messages.values())[1]
-      print("predict_type", predict_type)
       predict_type_name = predict_type[1]['name']
 
       is_misinformed = bool(data.get("misinformed"))
@@ -222,9 +228,6 @@ def main(*args):
                     arara_response
                     )
       
-      if idx == COUNTER:
-        break
-
   except KeyboardInterrupt:
       print("\n\nInterrompido pelo usuário")
       print(f"📊 Processados {idx}/{total} itens (Implicit)")

@@ -17,9 +17,9 @@ NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "arara123"
 NEO4J_DATABASE = "neo4j"
 
-SCHEMA_FILE = "datasets/recassistbench/eval/movie-schema.json"
-MOVIE_INFO_FILE = "datasets/recassistbench/dataset/movie/movie_info_filtered.jsonl"  # Usar o filtrado!
-MOVIES_DAT_FILE = "datasets/recassistbench/dataset/movie/movies.dat"
+SCHEMA_FILE = "datasets/RecAssistBench/eval/movie-schema.json"
+MOVIE_INFO_FILE = "datasets/RecAssistBench/dataset/movie/movie_info.jsonl"  # Usar o filtrado!
+MOVIES_DAT_FILE = "datasets/RecAssistBench/dataset/movie/movies.dat"
 
 CLEAR_DATABASE = True  # True para limpar banco antes de construir
 
@@ -94,6 +94,7 @@ class MovieKGBuilder:
         """Carrega IDs dos filmes e gêneros do movies.dat"""
         title_to_id = {}
         title_to_genres = {}
+        id_to_title = {}  # Mapeamento reverso: ID -> título do movies.dat
         
         with open(movies_dat_path, 'r', encoding='latin-1') as f:
             for line in f:
@@ -105,9 +106,10 @@ class MovieKGBuilder:
                     
                     title_to_id[title] = movie_id
                     title_to_genres[title] = genres
+                    id_to_title[movie_id] = title
         
-        print(f"✓ {len(title_to_id)} filmes carregados")
-        return title_to_id, title_to_genres
+        print(f"✓ {len(title_to_id)} filmes carregados do movies.dat")
+        return title_to_id, title_to_genres, id_to_title
     
     def normalize_title(self, title):
         """Normaliza título para matching"""
@@ -130,6 +132,10 @@ class MovieKGBuilder:
                 return movie_id
         
         return None
+    
+    def find_dat_title(self, movie_id, id_to_title):
+        """Encontra título do movies.dat pelo ID"""
+        return id_to_title.get(movie_id)
     
     def split_entities(self, value):
         """Divide valores múltiplos (separados por ; ou ,)"""
@@ -174,7 +180,7 @@ class MovieKGBuilder:
         
         return None
 
-    def create_movie_and_relations(self, movie_data, title_to_id, title_to_genres):
+    def create_movie_and_relations(self, movie_data, title_to_id, title_to_genres, id_to_title):
         """Cria nó do filme e todas as suas relações"""
         
         title = movie_data.get('Title')
@@ -185,16 +191,23 @@ class MovieKGBuilder:
         movie_id = self.find_movie_id(title, title_to_id)
         movie_genres = title_to_genres.get(title, [])
         
+        # Se encontrou ID no movies.dat, usar o título do movies.dat
+        final_title = title
+        if movie_id:
+            dat_title = self.find_dat_title(movie_id, id_to_title)
+            if dat_title:
+                final_title = dat_title
+        
         with self.driver.session(database=self.database) as session:
             # 1. Criar nó do filme
-            movie_props = {'Title': title}
+            movie_props = {'Title': final_title}
             if movie_id:
                 movie_props['movieId'] = movie_id
             
             session.run("""
                 MERGE (m:Movie {Title: $title})
                 SET m += $props
-            """, title=title, props=movie_props)
+            """, title=final_title, props=movie_props)
             
             # 2. Criar relações baseado no schema
             for field_name, value in movie_data.items():
@@ -223,7 +236,7 @@ class MovieKGBuilder:
                             WITH e
                             MATCH (m:Movie {{Title: $title}})
                             MERGE (m)-[:{standard_relation}]->(e)
-                        """, entity=entity, title=title)
+                        """, entity=entity, title=final_title)
                     except Exception as e:
                         pass
             
@@ -237,13 +250,13 @@ class MovieKGBuilder:
                                 WITH g
                                 MATCH (m:Movie {Title: $title})
                                 MERGE (m)-[:Genre]->(g)
-                            """, genre=genre.strip(), title=title)
+                            """, genre=genre.strip(), title=final_title)
                         except Exception as e:
                             pass
     
     def build_graph(self, movie_info_path, movies_dat_path):
         """Constrói o grafo completo"""
-        title_to_id, title_to_genres = self.load_movie_ids_and_genres(movies_dat_path)
+        title_to_id, title_to_genres, id_to_title = self.load_movie_ids_and_genres(movies_dat_path)
         
         with open(movie_info_path, 'r', encoding='utf-8') as f:
             total = sum(1 for _ in f)
@@ -254,7 +267,7 @@ class MovieKGBuilder:
             for line in tqdm(f, total=total, desc="Construindo KG"):
                 try:
                     movie_data = json.loads(line)
-                    self.create_movie_and_relations(movie_data, title_to_id, title_to_genres)
+                    self.create_movie_and_relations(movie_data, title_to_id, title_to_genres, id_to_title)
                 except:
                     pass
         
