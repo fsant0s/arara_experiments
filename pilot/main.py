@@ -9,10 +9,19 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from agents import Orchestrator, Module
-from clients import groq_llama3370b, ollama_llama32, gpt_41
+from clients import (
+  groq_llama3370b, 
+  ollama_llama32, 
+  gpt_41, 
+  openrouter_llama370b, 
+  openrouter_claude35, 
+  openrouter_gpt4o,
+  openrouter_llama370bfree, 
+  gpt_4o,
+)
 
-from users import ImplicitExplicitUser
-from modules import create_implicit_orchestrator, create_explicit_orchestrator
+from users import AraraUser
+from modules import create_implicit_orchestrator, create_explicit_orchestrator, create_misinformed_orchestrator
 from datasets.recassistbench import Dataloader
 
 from neo4j_client import connect_to_neo4j
@@ -25,6 +34,11 @@ VALID_MODELS = {
     "groq_llama3370b": groq_llama3370b,
     "ollama_llama32": ollama_llama32,
     "gpt_41": gpt_41,
+    "openrouter_llama370b": openrouter_llama370b,
+    "openrouter_claude35": openrouter_claude35,
+    "openrouter_gpt4o": openrouter_gpt4o,
+    "openrouter_llama370bfree": openrouter_llama370bfree,
+    "gpt_4o": gpt_4o,
 }
 
 def validate_response(response):
@@ -47,20 +61,35 @@ def validate_response(response):
   
   return True, f"{len(parts)} filmes encontrados"
 
-def save_response(dataset_name, llm_config_name, query_type, use_memory, results):
+def save_response(
+      dataset_name, 
+      llm_config_name, 
+      query_type, 
+      predict_type_name, 
+      use_memory, 
+      data,
+      arara_response,
+    ):
   """Salva todas as respostas em formato JSONL"""
   # Usa caminho absoluto relativo ao script
+
+  result = {
+        "type": query_type,
+        "predicted_type": predict_type_name,
+        "id": str(data["data_idx"]),
+        "response": arara_response if arara_response else "ERROR: Invalid response"
+      }
+
   output_dir = os.path.join(PROJECT_ROOT, "datasets", "recassistbench", "llm_results", f"arara_{llm_config_name}")
 
   os.makedirs(output_dir, exist_ok=True)
 
   filepath = f"{output_dir}/{dataset_name}-{query_type}Query_arara_{llm_config_name}_{use_memory}-prediction.jsonl"
 
-  with open(filepath, "w") as f:
-    for result in results:
-      f.write(json.dumps(result) + "\n")
-  
-  print(f"✅ Arquivo salvo com {len(results)} resultados")
+  with open(filepath, "a") as f:
+    f.write(json.dumps(result) + "\n")
+
+  print(f"✅ Arquivo salvo com {len(result)} resultados")
 
 def main(*args):
   # Conecta ao Neo4j no início
@@ -92,11 +121,8 @@ def main(*args):
 
   impl_dataloader = Dataloader(f"{dataset_name}/ImplicitQuery.json")
   expl_dataloader = Dataloader(f"{dataset_name}/ExplicitQuery.json")
-  dataset = impl_dataloader.load() + expl_dataloader.load()
-  random.shuffle(dataset)
-
-  results_implicit = []
-  results_explicit = []
+  mis_dataloader = Dataloader(f"{dataset_name}/MisinformedQuery.json")
+  dataset = expl_dataloader.load()[:3] + impl_dataloader.load()[:3]
   total = len(dataset)  # Total de itens a processar
   
   print(f"🚀 Iniciando processamento: {total} itens")
@@ -109,7 +135,8 @@ def main(*args):
       arara_response = None
 
       for attempt in range(max_retries):
-        user = ImplicitExplicitUser(
+        
+        user = AraraUser(
           name ="User",
           description="""
             Acts as the entry point of the conversational process, providing queries that express individual preferences, goals, or contextual needs.
@@ -119,6 +146,7 @@ def main(*args):
             The user’s input determines which orchestration path is activated, guiding the system toward either explicit or implicit reasoning and recommendation generation.
           """
         )
+
         explicit_orchestrator = create_explicit_orchestrator(
           data,
           llm_config=llm_config,
@@ -132,10 +160,18 @@ def main(*args):
           memory_size=MEMORY_SIZE,
         )
 
+        misinformed_orchestrator = create_misinformed_orchestrator(
+          data,
+          llm_config=llm_config,
+          use_memory=use_memory,
+          memory_size=MEMORY_SIZE,
+        )
+
         main_module = Module(
-          admin_name="main_module",
-          agents=[user, explicit_orchestrator, implicit_orchestrator],
+          name="main_module",
+          agents=[user, explicit_orchestrator, implicit_orchestrator, misinformed_orchestrator],
           speaker_selection_method="auto",
+          #max_round=2,
         )
 
         # ------------------ Orchestrator principal ------------------
@@ -143,10 +179,11 @@ def main(*args):
           name="main_orchestrator",
           module=main_module,
           llm_config=llm_config,
-          description="Routes to the Explicit or Implicit module based on the user query.",
+          description="Routes to the either Explicit, Implicit, or Misinformed module based on the user query.",
         )
 
-        user.talk_to(main_orchestrator, message=data['direct_description_query'], silent=False)
+        message = data.get('direct_description_query') or data.get('query')
+        user.talk_to(main_orchestrator, message=message, silent=False)
         arara_response = main_orchestrator.last_message(user)['content']
 
         # Validar resposta
@@ -162,41 +199,42 @@ def main(*args):
           else:
             print(f"❌ Resposta inválida após {max_retries} tentativas")
 
-      # Se houver multihop_info (não vazio), é Implicit; caso contrário, Explicit
-      is_implicit = bool(data.get("multihop_info"))
+
       predict_type = list(main_orchestrator._oai_messages.values())[1]
+      print("predict_type", predict_type)
       predict_type_name = predict_type[1]['name']
-      result = {
-        "type": "Implicit" if is_implicit else "Explicit",
-        "predicted_type": predict_type_name,
-        "id": str(data["data_idx"]),
-        "response": arara_response if arara_response else "ERROR: Invalid response"
-      }
 
-      if is_implicit:
-          results_implicit.append(result)
-      else:
-          results_explicit.append(result)
+      is_misinformed = bool(data.get("misinformed"))
+      entry_type = "Explicit"
 
+      if is_misinformed:
+        entry_type = "Misinformed"
+      elif data.get("multihop_info"):
+        entry_type = "Implicit"
+  
       print(f"✅ [{idx}/{total}] Concluído")
-      save_response(dataset_name, llm_config_name, "Implicit",  "historyTrue" if use_memory else None, results_implicit)
-      save_response(dataset_name, llm_config_name, "Explicit",  "historyTrue" if use_memory else None, results_explicit)
-
-      #if idx == COUNTER:
-      #  break
+      save_response(dataset_name, 
+                    llm_config_name, 
+                    entry_type,  
+                    predict_type_name,
+                    "historyTrue" if use_memory else None, 
+                    data,
+                    arara_response
+                    )
+      
+      if idx == COUNTER:
+        break
 
   except KeyboardInterrupt:
       print("\n\nInterrompido pelo usuário")
-      print(f"📊 Processados {len(results_implicit)}/{total} itens (Implicit)")
-      print(f"📊 Processados {len(results_explicit)}/{total} itens (Explicit)")
-  except Exception as e:
-      print(f"\n❌ Erro: {e}")
-      
-  # Salvamento final
-  print("\n" + "=" * 60)
-  print(f"💾 Salvamento final de {len(results_implicit) + len(results_explicit)} resultados...")
-  print(f"✅ Pipeline concluído! {len(results_implicit) + len(results_explicit)}/{total} itens")
-  print("=" * 60)
+      print(f"📊 Processados {idx}/{total} itens (Implicit)")
+
+
+  else:   
+    # Salvamento final
+    print("\n" + "=" * 60)
+    print(f"✅ Pipeline concluído! {idx}/{total} itens")
+    print("=" * 60)
 
 if __name__ == "__main__":
 # Example: python pilot/pipeline.py movie Implicit True

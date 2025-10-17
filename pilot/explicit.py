@@ -11,8 +11,8 @@ from agents.helpers.graph_utils import visualize_speaker_transitions_dict
 
 
 from modules import create_explicit_orchestrator
-from users import ImplicitExplicitUser
-from clients import groq_llama3370b, gpt_41
+from users import AraraUser
+from clients import groq_llama3370b, gpt_41, gpt_4o
 
 from evaluation import report_metrics
 
@@ -23,7 +23,7 @@ from neo4j_client import connect_to_neo4j
 if not connect_to_neo4j():
     sys.exit(1)
 
-llm_config = gpt_41
+llm_config = gpt_4o
 model_name = "gpt-4o" #"llama-3.1-70b-instruct"
 dataloader = Dataloader("movie/ExplicitQuery.json")
 dataset = dataloader.load(data_idx=3826) 
@@ -39,7 +39,7 @@ print("--------------------------------\n")
 USE_MEMORY = True
 MEMORY_SIZE = 10 # adjust if needed
 
-user = ImplicitExplicitUser() 
+user = AraraUser() 
 explicit_orchestrator = create_explicit_orchestrator(
     data,
     llm_config=llm_config,
@@ -48,7 +48,7 @@ explicit_orchestrator = create_explicit_orchestrator(
 )
 
 main_module = Module(
-    admin_name="main_module",
+    name="main_module",
     agents=[user, explicit_orchestrator],
     speaker_selection_method="round_robin",
 )

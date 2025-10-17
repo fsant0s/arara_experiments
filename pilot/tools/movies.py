@@ -239,7 +239,7 @@ def get_movies_by_year(year: int, limit: int = 20) -> List[str]:
     """
     results = _execute_query(query, {"year": str(year), "limit": limit})
     titles = [r["title"] for r in results]
-    return _replace_dates_with_sep(titles)
+    return titles
 
 def get_movie_details(movie_id: str) -> Optional[Dict[str, Any]]:
     """
@@ -310,7 +310,7 @@ def search_movies_by_title(title_query: str, limit: int = 20) -> List[str]:
     """
     results = _execute_query(query, {"title_query": title_query, "limit": limit})
     titles = [r["title"] for r in results]
-    return _replace_dates_with_sep(titles)
+    return titles
 
 def get_available_genres() -> List[str]:
     """
@@ -356,6 +356,117 @@ def explore_database_schema() -> Dict[str, Any]:
         "available_languages": get_available_languages()
     }
 
+def get_movie_id_by_exact_title(title: str) -> Optional[str]:
+    """
+    Resolve a Movie node's internal identifier (movieId) from an **exact** title match.
+
+    Args:
+        title: The exact title stored in the `Movie.Title` property (case-sensitive equality).
+
+    Returns:
+        The `movieId` string if a movie with exactly this Title exists; otherwise None.
+
+    Notes:
+        - This performs `MATCH (m:Movie {Title: $title})` and returns the first match.
+        - Use this to bridge from a human-facing title to the internal ID required by `get_movie_details`.
+    """
+    query = "MATCH (m:Movie {Title: $title}) RETURN m.movieId as movieId LIMIT 1"
+    res = _execute_query(query, {"title": title})
+    return res[0]["movieId"] if res else None
+
+
+def get_movie_details_by_title(title: str) -> Optional[Dict[str, Any]]:
+    """
+    Fetch full movie details by **exact** title, internally resolving `movieId` first.
+
+    Args:
+        title: The exact movie title (case-sensitive equality on `Movie.Title`).
+
+    Returns:
+        A dictionary with:
+            - "movie": properties of the Movie node,
+            - "directors": list of director names,
+            - "actors": list of actor names,
+            - "genres": list of genre names,
+            - "languages": list of language names,
+            - "producers": list of producer names,
+        or None if the title is not found.
+
+    Notes:
+        - This is a convenience wrapper around `get_movie_id_by_exact_title` + `get_movie_details`.
+        - Prefer this when you have a canonical Title and want authoritative credits (e.g., true director).
+    """
+    movie_id = get_movie_id_by_exact_title(title)
+    if not movie_id:
+        return None
+    return get_movie_details(movie_id)
+
+# tools_wrappers.py (ou dentro do mesmo arquivo do módulo, acima da arquitetura)
+
+from tools import movies
+
+def retrieve_titles_by_condition(relation: str, value: str, limit: int = 200) -> str:
+    """
+    Deterministically retrieve movie titles for a (relation, value) CONDITION and
+    return them as a single ' [SEP] ' joined line. If no results, return ''.
+
+    Args:
+        relation: One of {'Directed_by','Starring','Genre','Language','Produced_by','Year','Music_by'}.
+        value:    Canonical person/value name (string). If Year, can be str or int.
+        limit:    Upper bound for retrieval (safety cap).
+
+    Returns:
+        A single string with titles separated by ' [SEP] ', or '' if empty.
+
+    Notes:
+        - Uses your existing tools under the hood (get_movies_by_director, get_movies_by_actor, etc.).
+        - Applies deterministic dedup (case/underscore normalization) and sorts A–Z.
+    """
+    rel = (relation or "").strip()
+    val = (value or "").strip()
+    titles = []
+
+    try:
+        if rel == "Directed_by":
+            titles = movies.get_movies_by_director(val, limit=limit)
+        elif rel == "Starring":
+            titles = movies.get_movies_by_actor(val)
+            if limit and len(titles) > limit:
+                titles = titles[:limit]
+        elif rel == "Genre":
+            titles = movies.get_movies_by_genre(val, limit=limit)
+        elif rel == "Language":
+            titles = movies.get_movies_by_language(val, limit=limit)
+        elif rel == "Produced_by":
+            titles = movies.get_movies_by_production_company(val, limit=limit)
+        elif rel == "Year":
+            try:
+                year_int = int(val)
+            except Exception:
+                return ""
+            titles = movies.get_movies_by_year(year_int, limit=limit)
+        elif rel == "Music_by":
+            titles = movies.get_movies_by_relation("Music_by", val, limit=limit)
+        else:
+            # Fallback genérico para qualquer relação suportada no grafo
+            titles = movies.get_movies_by_relation(rel, val, limit=limit)
+    except Exception:
+        titles = []
+
+    # Dedup determinístico + normalização simples
+    seen = set()
+    normalized = []
+    for t in titles or []:
+        key = t.strip().lower().replace("_", " ").strip("'\"")
+        if key not in seen:
+            seen.add(key)
+            normalized.append(t.strip())
+
+    normalized.sort()  # A–Z determinístico
+    return " [SEP] ".join(normalized)
+
+
+
 tools = [
     get_existing_relations,
     get_existing_nodes,
@@ -372,4 +483,7 @@ tools = [
     get_movies_by_year,
     get_movie_details,
     search_movies_by_title,
+    get_movie_id_by_exact_title,
+    get_movie_details_by_title,
+    retrieve_titles_by_condition,
 ]

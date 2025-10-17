@@ -62,6 +62,17 @@ sabia_31 = {
     ]
 }
 
+gpt_4o= {
+    "config_list": [
+        {
+            "client": "openai",
+            "temperature": 0.0,
+            "model": "gpt-4o",
+            "api_key": os.getenv("OPENAI_API_KEY"),
+        }
+    ]
+}
+
 gpt_41 = {
     "config_list": [
         {
@@ -69,6 +80,55 @@ gpt_41 = {
             "temperature": 0.0,
             "model": "gpt-4.1",
             "api_key": os.getenv("OPENAI_API_KEY"),
+        }
+    ]
+}
+
+openrouter_llama370b = {
+    "config_list": [
+        {
+            "client": "openrouter",
+            "temperature": 0.0,
+            "model": "meta-llama/llama-3.3-70b-instruct:free",
+            "base_url": "https://openrouter.ai/api/v1",
+            "api_key": os.getenv("OPEN_ROUTER_API_KEY")
+        }
+    ]
+}
+
+openrouter_gpt4o = {
+    "config_list": [
+        {
+            "client": "openrouter",
+            "temperature": 0.0,
+            "model": "openai/gpt-4o",
+            "base_url": "https://openrouter.ai/api/v1",
+            "api_key": os.getenv("OPEN_ROUTER_API_KEY")
+        }
+    ]
+}
+
+openrouter_claude35 = {
+    "config_list": [
+        {
+            "client": "openrouter",
+            "temperature": 0.0,
+            "model": "anthropic/claude-3.5-sonnet",
+            "base_url": "https://openrouter.ai/api/v1",
+            "api_key": os.getenv("OPEN_ROUTER_API_KEY")
+        }
+    ]
+}
+
+
+openrouter_llama370bfree = {
+    "config_list": [
+        {
+            "client": "openrouter",
+            "temperature": 0.0,
+            "model": "llama-3.3-70b-instruct:free",
+            "base_url": "https://openrouter.ai/api/v1",
+            "api_key": os.getenv("OPEN_ROUTER_API_KEY")
         }
     ]
 }

@@ -1,1 +1,1 @@
-from .implicit_explicit_user import ImplicitExplicitUser
+from .arara_user import AraraUser

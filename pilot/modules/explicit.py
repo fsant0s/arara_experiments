@@ -14,7 +14,7 @@ def create_explicit_orchestrator(
     """
     Módulo explícito:
       - RetrieverAgent: recupera TODOS os itens relevantes (sem top-k).
-      - RecommenderAgent: seleciona apenas top_k = movieCount com base nas preferências ANTIGAS do usuário
+      - RecommenderExplicitgent: seleciona apenas top_k = movieCount com base nas preferências ANTIGAS do usuário
         fornecidas em `history_line` (sem adicionar itens; sem usar ferramentas).
       - Saída final: uma única linha com ' [SEP] ' entre os títulos.
     """
@@ -114,8 +114,8 @@ A user request with explicit information such as directors, actors, genres, lang
     )
 
     # ===================== Recommender Agent (seleciona top_k pelo histórico) =====================
-    RecommenderAgent = Agent(
-        name="RecommenderAgent",
+    RecommenderExplicitgent = Agent(
+        name="RecommenderExplicitgent",
         llm_config=llm_config,
         description=(
             f"Selects exactly top_k={top_k_value} items FROM the Retriever's list, "
@@ -161,11 +161,11 @@ STRICT Output:
     )
 
     # ===================== Wiring =====================
-    allowed_transitions = {RetrieverAgent: [RecommenderAgent]}
+    allowed_transitions = {RetrieverAgent: [RecommenderExplicitgent]}
 
     module = Module(
-        admin_name="explicit_module",
-        agents=[RetrieverAgent, RecommenderAgent],
+        name="explicit_module",
+        agents=[RetrieverAgent, RecommenderExplicitgent],
         speaker_selection_method="round_robin",
         allowed_or_disallowed_speaker_transitions=allowed_transitions,
         speaker_transitions_type="allowed",

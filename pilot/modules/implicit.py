@@ -12,223 +12,297 @@ def create_implicit_orchestrator(
     memory_size: int = 10,
 ) -> Orchestrator:
     """
-    Módulo implícito:
-      - ProfileAgent: extrai sinais implícitos (gêneros/moods/era/idioma/duração/evitar) da consulta + histórico (history_line),
-                      e canonicaliza onde possível (gêneros/idiomas) usando tools de catálogo.
-      - ImplicitRetrieverAgent: gera um pool amplo com base no perfil + hábitos (diretores/atores frequentes etc.). NÃO corta por K.
-      - ImplicitRecommenderAgent: escolhe exatamente top_k=movieCount, equilibrando preferência (history), novidade e diversidade.
-      - Saída final: uma única linha com ' [SEP] ' entre os títulos.
-
-    Requer em `data`: 'source_user', 'movieSubsetId', 'sharedRelationships'.
-    Opcional: 'movieCount' (K alvo) — se ausente, usa K=3.
+    Implicit orchestrator with 6 specialized agents.
+    
+    Expects `data` to contain:
+    - 'source_user': User ID
+    - 'direct_description_query': User query mentioning reference movies
+    - 'movieCount': Target K for recommendations
+    - 'multihop_info': Array of reference movies with relations (for validation)
+    - 'sharedRelationships': Expected shared relations (for validation)
+    - 'movieSubset': Ground truth expected recommendations (for validation)
     """
-    # ======== parâmetros e memória ========
+    
+    # ======== Parameters & Memory Setup ========
     movieCount = data.get("movieCount", None)
     top_k_value = movieCount if isinstance(movieCount, int) and movieCount > 0 else 3
-
+    
     history_line = ""
     if use_memory:
         user_history = get_filtered_user_history(
             user_id=data["source_user"],
-            groundtruth_movie_ids=data["movieSubsetId"],
-            neo4j_conditions=data["sharedRelationships"],
+            groundtruth_movie_ids=data.get("movieSubsetId", []),
+            neo4j_conditions=data.get("sharedRelationships", []),
         )
         limited_history = user_history[-memory_size:] if len(user_history) > memory_size else user_history
         if limited_history:
             history_line = " ".join(limited_history)
-
-
-    # ===================== ProfileAgent (sinais implícitos + canonicalização) =====================
-    ProfileAgent = Agent(
-        name="ProfileAgent",
+    
+    # ============ 1️⃣ TITLE NORMALIZER ============
+    TitleNormalizer = Agent(
+        name="TitleNormalizer",
         llm_config=llm_config,
-        description=(
-            "Extracts implicit preference signals from the user's situational query and prior history. "
-            "Canonicalizes genres/languages if possible using catalog tools. Outputs a compact PROFILE block."
-        ),
-        system_message=f"""
-You are the PROFILE AGENT.
-
-Goal:
-From the user's implicit/situational description and the past history (below), derive a concise preference profile.
-
-history_line (past user behavior; use to infer stable tastes):
-{history_line or "[No prior history available]"}
-
-Input:
-- A situational/implicit description (no explicit entities guaranteed).
-
-What to extract (when present or inferable):
-- Genres (canonicalize to known catalog genres when possible)
-- Moods/Tone (e.g., lighthearted, gritty, suspenseful)
-- Era/Years (e.g., 90s, 2000s, or a year range)
-- Language(s)
-- Length preference (short / standard / long)
-- Directors/Actors likely preferred (from history hints)
-- Avoid (e.g., gore, slow-burn, very long)
-- Novelty preference (if user hints “something new”)
-
-Use tools ONLY for canonicalization mappings (no candidate retrieval):
-- movies.get_available_genres
-- movies.get_available_languages
-
-OUTPUT (TEXT ONLY, STRICT):
-PROFILE:
-- Genres: <comma-separated or empty>
-- Moods: <comma-separated or empty>
-- Era: <free text or empty>
-- Languages: <comma-separated or empty>
-- Length: <short|standard|long|empty>
-- Directors: <comma-separated or empty>
-- Actors: <comma-separated or empty>
-- Avoid: <comma-separated or empty>
-- Novelty: <prefer_new|prefer_familiar|none>
-""",
-        tools=[
-            movies.get_available_genres,
-            movies.get_available_languages,
-        ],
-        reflect_on_tool_use=True,
-    )
-
-    # ===================== ImplicitRetrieverAgent (gera POOL amplo; não corta por K) =====================
-    ImplicitRetrieverAgent = Agent(
-        name="ImplicitRetrieverAgent",
-        llm_config=llm_config,
-        description=(
-            "Builds a broad candidate pool using the PROFILE info and user habits; "
-            "returns a single '[SEP]' line with many titles. Does NOT enforce top-k."
-        ),
+        description="Normalize movie titles from query (handle underscores, quotes, article position).",
         system_message="""
-You are the IMPLICIT RETRIEVER AGENT.
+You are the TITLE NORMALIZER.
 
-Input:
-- PROFILE block from ProfileAgent (see fields: Genres, Moods, Era, Languages, Length, Directors, Actors, Avoid, Novelty).
-- Optional user history implicitly available via context.
+Input: User's direct_description_query mentioning reference movies (e.g., "The Immigrant (1917)")
 
-Goal:
-- Generate a BROAD candidate pool from catalog tools based on PROFILE signals (genres, languages, era/years, directors, actors).
-- Include items matching multiple signals first, but DO NOT cut by top-k here.
+Task:
+1. Extract ALL movie titles mentioned in the query (usually 2-3 reference movies)
+2. Normalize each title:
+   - Replace underscores "_" with spaces
+   - Remove extra quotes (keep only inner quotes if any)
+   - Handle article positioning: "The_Immigrant" → "The Immigrant" OR "Immigrant, The"?
+   - Preserve year in format "(YYYY)"
+3. Output exact titles in format: "Title (YYYY)"
 
-Tools to call for candidate generation:
-- movies.get_movies_by_genre ← Allowed genres ONLY (see full list below).  
-- movies.get_movies_by_language
-- movies.get_movies_by_year
-- movies.get_movies_by_director
-- movies.get_movies_by_actor
-- movies.get_movies_by_production_company (optional)
-- movies.get_movies_by_relation ← Allowed relations ONLY:  
-    `['Based_on', 'Cinematography', 'Color_process', 'Directed_by', 'Distributed_by', 'Edited_by', 'Genre', 'Language', 'Music_by', 'Narrated_by', 'Produced_by', 'Production_Country', 'Screenplay_by', 'Starring', 'Written_by']`
+Normalization examples:
+- "The_Immigrant (1917)" → "The Immigrant (1917)"
+- "A_King in New York (1957)" → "A King in New York (1957)"
+- "Heartburn (1986)" → "Heartburn (1986)"
 
-⚠️ **Important rule:**  
-Always use the **canonical form** of the relation exactly as listed above.  
-- If a user mentions a near-synonym (e.g., *Cinematographer*), map it to **Cinematography**.  
-- If unsure, **do not invent** a new relation — use only the allowed ones.  
-
-Heuristics:
-- If "Era" resembles a decade (e.g., 90s) map to a year range (1990–1999) and call get_movies_by_year per year or via relation fallback.
-- If "Length" is "short", prefer earlier years or known short runtimes when metadata strings hint at that (best-effort).
-- If "Novelty" is "prefer_new", you MAY down-rank items explicitly present in history when composing the pool (but do not drop them entirely).
-- Avoid obvious conflicts in "Avoid" (e.g., skip “gore” genres if present).
-
-Process:
-1) Aggregate results across applicable signals.
-2) Normalize for dedup (lower/trim/strip quotes, replace '_' with space); keep ORIGINAL surface form.
-3) Sort lexicographically (deterministic).
-4) DO NOT truncate by K. Return the full pool line.
+CRITICAL:
+- ALWAYS include the year "(YYYY)" for each title
+- If unsure about article position, try BOTH variants:
+  "The Title (YYYY)" and "Title, The (YYYY)"
+- Output one title per line, then final summary
 
 OUTPUT (STRICT):
-- Exactly ONE LINE with titles: Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
-- Use ' [SEP] ' (single spaces). No leading/trailing [SEP], no commentary.
-
----
-
-### Allowed movies relations (use EXACTLY these):
-`['Based_on', 'Cinematography', 'Color_process', 'Directed_by', 'Distributed_by', 'Edited_by', 'Genre', 'Language', 'Music_by', 'Narrated_by', 'Produced_by', 'Production_Country', 'Screenplay_by', 'Starring', 'Written_by']`
-
-### Allowed Genres:
-`['10', '1970s', '20', '26', '29', '35', '42', '61', 'AOR', 'Action', 'Action-adventure', 'Action|Adventure', 'Action|Adventure|Animation', "Action|Adventure|Animation|Children's|Fantasy", 'Action|Adventure|Comedy', 'Action|Adventure|Comedy|Romance', 'Action|Adventure|Drama', 'Action|Adventure|Fantasy', 'Action|Adventure|Horror|Thriller', 'Action|Adventure|Sci-Fi', 'Action|Adventure|Sci-Fi|Thriller', 'Action|Adventure|Sci-Fi|Thriller|War', 'Action|Adventure|Thriller', "Action|Children's", 'Action|Comedy', 'Action|Comedy|Crime|Drama', 'Action|Crime', 'Action|Crime|Drama', 'Action|Crime|Drama|Thriller', 'Action|Drama', 'Action|Drama|Romance', 'Action|Drama|Thriller', 'Action|Drama|Thriller|War', 'Action|Drama|War', 'Action|Horror', 'Action|Horror|Sci-Fi', 'Action|Horror|Sci-Fi|Thriller', 'Action|Horror|Thriller', 'Action|Mystery|Romance|Thriller', 'Action|Sci-Fi', 'Action|Sci-Fi|Thriller', 'Action|Sci-Fi|War', 'Action|Thriller', 'Action|War', 'Action|Western', 'Adventure', "Adventure|Animation|Children's", "Adventure|Animation|Children's|Sci-Fi", "Adventure|Children's", "Adventure|Children's|Comedy|Fantasy", "Adventure|Children's|Fantasy", 'Adventure|Comedy', 'Adventure|Comedy|Musical', 'Adventure|Comedy|Sci-Fi', 'Adventure|Drama', 'Adventure|Drama|Thriller', 'Adventure|Fantasy', 'Adventure|Fantasy|Romance', 'Adventure|Fantasy|Sci-Fi', 'Adventure|Musical', 'Adventure|Musical|Romance', 'Adventure|War', 'Alternative metal', 'Alternative pop/rock', 'Alternative rock', 'Animated sitcom', 'Animation', "Animation|Children's", "Animation|Children's|Comedy", "Animation|Children's|Comedy|Musical", "Animation|Children's|Musical", 'Animation|Comedy', 'Animation|Musical', 'Animation|Sci-Fi', 'Anime', 'Avant-garde', 'Beach party', 'Blues', 'Britpop', 'Children', "Children's", "Children's music", "Children's|Comedy", "Children's|Comedy|Drama", "Children's|Comedy|Fantasy", "Children's|Comedy|Sci-Fi", "Children's|Comedy|Western", "Children's|Drama", 'Christian metal', 'Christian rock', 'Christmas', 'Classical', 'Comedy', 'Comedy-drama', 'Comedy|Crime', 'Comedy|Crime|Drama', 'Comedy|Documentary', 'Comedy|Drama', 'Comedy|Drama|Romance', 'Comedy|Drama|Thriller']`
+Normalized Titles:
+- Reference 1: Title A (YYYY)
+- Reference 2: Title B (YYYY)
+- (Reference 3: Title C (YYYY) if present)
 """,
-        tools=[
-            movies.get_movies_by_genre,
-            movies.get_movies_by_language,
-            movies.get_movies_by_year,
-            movies.get_movies_by_director,
-            movies.get_movies_by_actor,
-            movies.get_movies_by_production_company,
-            movies.get_movies_by_relation,
-        ],
-        reflect_on_tool_use=True,
+        tools=[],
     )
-
-    # ===================== ImplicitRecommenderAgent (seleciona exatamente top_k) =====================
-    ImplicitRecommenderAgent = Agent(
-        name="ImplicitRecommenderAgent",
+    
+    # ============ 2️⃣ COMMON ATTRIBUTE EXTRACTOR ============
+    CommonAttributeExtractor = Agent(
+        name="CommonAttributeExtractor",
         llm_config=llm_config,
-        description=(
-            f"Selects exactly top_k={top_k_value} items from the implicit pool optimizing preference × novelty × diversity, "
-            "guided by history_line. Outputs a single '[SEP]' line."
-        ),
+        description="Extract shared actors/directors from the two reference movies.",
         system_message=f"""
-You are the IMPLICIT RECOMMENDER AGENT.
+You are the COMMON ATTRIBUTE EXTRACTOR.
 
-Goal:
-Select exactly top_k={top_k_value} movies from the candidate pool produced by the ImplicitRetrieverAgent.
+Input: 
+- Two normalized reference movie titles (from TitleNormalizer)
+- Example: "The Immigrant (1917)" and "A King in New York (1957)"
 
-history_line (past behavior; use to weight preferences and novelty):
+history_line (user preferences context):
 {history_line or "[No prior history available]"}
 
-Inputs:
-- One single line containing MANY titles (the candidate pool).
-- The PROFILE textual block (preferences inferred) may be available upstream for context (do not reprint).
+Task:
+1. For EACH reference movie title:
+   - Call: movies.get_movie_details_by_title("Title (YYYY)")
+   - Extract ALL people from each relation:
+     * actors (from "Starring" relation)
+     * directors (from "Directed_by" relation)
+     * composers (from "Music_by")
+     * writers (from "Written_by")
+     * producers (from "Produced_by")
 
-Scoring signals (combine, transparent trade-offs):
-- Preference alignment (from history_line): + directors/actors/genres/languages the user tends to consume.
-- Novelty: + if the user likes “something new”, penalize items already in history_line or very similar clusters.
-- Diversity: small bonus for covering varied directors/actors/years among the final K.
-- Conflict avoidance: demote items conflicting with "Avoid" terms if known.
-Tie-breaking: alphabetical by title, then year desc (if available).
+2. Find INTERSECTION across both movies:
+   - ACTORS common to BOTH? → YES: list them
+   - DIRECTORS common to BOTH? → YES: list them
+   - Other relations common? → YES: list them
 
-Selection:
-- Deduplicate by normalized title (lower/trim/strip quotes, '_'→' ') and keep ORIGINAL surface form for output.
-- Rank candidates and select exactly {top_k_value}. If the pool contains fewer than {top_k_value}, output all available.
-- DO NOT add movies beyond the candidate pool; DO NOT call tools here.
+3. Validate intersection is non-empty:
+   - If empty → "No common attributes found" (should not happen in well-formed queries)
+   - If found → proceed
+
+CRITICAL:
+- ALWAYS include the year "(YYYY)" in movie titles when calling get_movie_details_by_title
+- Return ALL common people for each relation (not just first)
+- If "Starring" is common relation, list ALL shared actors
+
+OUTPUT (JSON, one line):
+{{
+ "reference_movies": ["Title A (YYYY)", "Title B (YYYY)"],
+ "common_attributes": {{
+   "actors": ["Actor1", "Actor2"],
+   "directors": ["Director1"],
+   "composers": [],
+   "writers": [],
+   "producers": []
+ }},
+ "primary_relation": "Starring",
+ "primary_people": ["Actor1", "Actor2"],
+ "is_valid": true
+}}
+""",
+        tools=[movies.get_movie_details_by_title],
+    )
+    
+    # ============ 3️⃣ RELATION TYPE DETECTOR ============
+    RelationTypeDetector = Agent(
+        name="RelationTypeDetector",
+        llm_config=llm_config,
+        description="Detect which relation type (Starring, Directed_by, etc.) the query is asking for.",
+        system_message="""
+You are the RELATION TYPE DETECTOR.
+
+Input:
+- Original user query (direct_description_query)
+- Common attributes found (from CommonAttributeExtractor)
+
+Task:
+Determine the PRIMARY relation the user is asking for:
+
+1. Analyze query language:
+   - "same actor" / "same actor who appeared" → Starring (PRIMARY)
+   - "same director" / "directed by" → Directed_by (PRIMARY)
+   - "same composer" / "scored by" → Music_by (PRIMARY)
+   - "same writer" / "written by" → Written_by (PRIMARY)
+   - "same producer" → Produced_by (PRIMARY)
+
+2. Cross-validate with common attributes found:
+   - If common_attributes has matching people → confirm relation
+   - If common_attributes is empty for detected relation → flag as error
+
+3. Determine if secondary relations should be used:
+   - Query mentions only 1 relation type? → Use only primary
+   - Query mentions "also featured in" + multiple relations? → May need secondary
+
+CRITICAL:
+- DEFAULT RELATION: "Starring" (80% of queries)
+- If query ambiguous, use "Starring"
+- Output relation name EXACTLY as in DB: "Directed_by", "Starring", "Music_by", etc.
+
+OUTPUT (JSON, one line):
+{{
+ "primary_relation": "Starring",
+ "primary_people": ["Actor1", "Actor2"],
+ "secondary_relations": [],
+ "secondary_people": {{}},
+ "query_clarity": "high|medium|low",
+ "detected_language_hints": ["same actor", "starred in"]
+}}
+""",
+        tools=[],
+    )
+    
+    # ============ 4️⃣ MULTI-HOP RETRIEVER ============
+    MultiHopRetriever = Agent(
+        name="MultiHopRetriever",
+        llm_config=llm_config,
+        description="Find OTHER movies with the common actors/people.",
+        system_message=f"""
+You are the MULTI-HOP RETRIEVER.
+
+Input:
+- Primary relation type: "Starring" or "Directed_by" etc.
+- Common people: ["Actor1", "Actor2"] or ["Director1"]
+
+Task:
+1. For EACH common person:
+   - Call: movies.retrieve_titles_by_condition(relation, person, limit=400)
+   - Relation must be EXACTLY: "Starring", "Directed_by", "Music_by", "Produced_by", etc.
+   - person must be EXACT name from common attributes
+
+2. Combine results:
+   - All people are from SAME relation? → UNION all results (get all movies)
+   - Multiple relations? → May INTERSECT (stricter)
+
+3. Filter out reference movies:
+   - Reference movies should NOT appear in final recommendations
+   - Remove any title that was in the original query
+
+4. Normalize and sort:
+   - Dedup by normalized title (lowercase, trim, etc.)
+   - Sort alphabetically (deterministic)
+   - Keep ORIGINAL surface form for output
+
+CRITICAL:
+- Call retrieve_titles_by_condition with EXACT relation name
+- ALL common people should be searched (union mode for same relation)
+- Output deterministic (sorted)
+
+OUTPUT (STRICT):
+Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
+Or if no results: NO_CANDIDATES
+""",
+        tools=[movies.retrieve_titles_by_condition],
+    )
+    
+    # ============ 5️⃣ RECOMMENDER AGENT ============
+    RecommenderAgent = Agent(
+        name="RecommenderAgent",
+        llm_config=llm_config,
+        description=f"Select exactly top_k={top_k_value} recommendations from the candidate pool.",
+        system_message=f"""
+You are the HISTORY-AWARE RECOMMENDER.
+
+history_line (user preferences context):
+{history_line or "[No prior history available]"}
+
+Input:
+- Candidate pool line: "Title A (YYYY) [SEP] Title B (YYYY) [SEP] ..."
+- Target K: {top_k_value}
+
+Task:
+1. Parse candidate titles and deduplicate (normalized: lowercase, trim, replace '_' with ' ')
+2. Rank by:
+   - Preference alignment (from history_line): + if matches user's typical choices
+   - Novelty: + if not in history, - if seen before
+   - Diversity: small bonus for variety in years/directors/actors
+   - Conflict avoidance: - if conflicting with history
+
+3. Select exactly {top_k_value} items
+   - If pool has fewer than {top_k_value} items, return all
+   - Sort alphabetically then year desc (deterministic tie-breaking)
 
 STRICT Output:
 - Exactly ONE LINE:
   Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
-- Use ' [SEP] ' (single spaces). No leading/trailing [SEP], no extra lines, no commentary.
+- Use ' [SEP] ' (single spaces)
+- No leading/trailing [SEP]
+- No extra lines or commentary
 """,
-        tools=[],  # sem tools aqui; apenas seleção
-        reflect_on_tool_use=True,
+        tools=[],
     )
-
-    # ===================== Wiring =====================
+    
+    
+    # ============ WIRING: Module + Orchestrator ============
     allowed_transitions = {
-        ProfileAgent: [ImplicitRetrieverAgent],
-        ImplicitRetrieverAgent: [ImplicitRecommenderAgent],
+        TitleNormalizer: [CommonAttributeExtractor],
+        CommonAttributeExtractor: [RelationTypeDetector],
+        RelationTypeDetector: [MultiHopRetriever],
+        MultiHopRetriever: [RecommenderAgent],
     }
-
+    
     module = Module(
-        admin_name="implicit_module",
-        agents=[ProfileAgent, ImplicitRetrieverAgent, ImplicitRecommenderAgent],
+        name="implicit_module",
+        agents=[
+            TitleNormalizer,
+            CommonAttributeExtractor,
+            RelationTypeDetector,
+            MultiHopRetriever,
+            RecommenderAgent,
+        ],
         speaker_selection_method="round_robin",
         allowed_or_disallowed_speaker_transitions=allowed_transitions,
         speaker_transitions_type="allowed",
     )
-
+    
     orchestrator = Orchestrator(
         name="implicit_orchestrator",
         module=module,
         llm_config=llm_config,
         description="""
-            Handles implicit recommendation queries in which the user expresses intent indirectly through examples, without explicitly naming the desired attributes or entities.
-            It focuses on understanding the relational pattern implied by the user’s examples and generating recommendations that follow the same underlying connection or context.
-            Examples of implicit queries:
-                - Please recommend some movies starring the same actor as in The - - Return of the Musketeers (1989) and The Omega Code (1999).
-                - Please recommend some movies featuring the same actor as seen in - Heartburn (1986) and Man Trouble (1992).
-                - Please recommend some movies featuring the same actor who starred -in Bram Stoker's Dracula (1992) and Great Balls of Fire! (1989).
-        """
-    )
+Implicit Query Orchestrator.
 
+Handles implicit/inferential recommendations where users reference movies and ask for 
+similar recommendations based on shared attributes (actors, directors, etc.).
+
+Multi-hop aware: Extracts shared people from reference movies → Finds OTHER movies with same people.
+
+Examples:
+- "Please recommend movies starring the same actor as in A King in New York (1957) 
+   and The Immigrant (1917)." → Find common actor → Find OTHER movies
+- "Please recommend movies directed by the same director as Pulp Fiction (1994) 
+   and Reservoir Dogs (1992)." → Find common director → Find OTHER movies
+""",
+    )
+    
     return orchestrator
