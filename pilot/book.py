@@ -15,8 +15,7 @@ from clients import (
   gpt_41, 
   openrouter_llama370b, 
   openrouter_claude35, 
-  openrouter_gpt4o,
-  openrouter_llama370bfree, 
+  openrouter_gpt4o, 
   gpt_4o,
   openrouter_deepseek_chat,
 )
@@ -38,7 +37,6 @@ VALID_MODELS = {
     "openrouter_llama370b": openrouter_llama370b,
     "openrouter_claude35": openrouter_claude35,
     "openrouter_gpt4o": openrouter_gpt4o,
-    "openrouter_llama370bfree": openrouter_llama370bfree,
     "gpt_4o": gpt_4o,
     "openrouter_deepseek_chat": openrouter_deepseek_chat,
 }

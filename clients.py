@@ -89,7 +89,7 @@ openrouter_llama370b = {
         {
             "client": "openrouter",
             "temperature": 0.0,
-            "model": "meta-llama/llama-3.3-70b-instruct:free",
+            "model": "google/gemini-pro-1.5",
             "base_url": "https://openrouter.ai/api/v1",
             "api_key": os.getenv("OPEN_ROUTER_API_KEY")
         }
@@ -114,19 +114,6 @@ openrouter_claude35 = {
             "client": "openrouter",
             "temperature": 0.0,
             "model": "anthropic/claude-3.5-sonnet",
-            "base_url": "https://openrouter.ai/api/v1",
-            "api_key": os.getenv("OPEN_ROUTER_API_KEY")
-        }
-    ]
-}
-
-
-openrouter_llama370bfree = {
-    "config_list": [
-        {
-            "client": "openrouter",
-            "temperature": 0.0,
-            "model": "llama-3.3-70b-instruct:free",
             "base_url": "https://openrouter.ai/api/v1",
             "api_key": os.getenv("OPEN_ROUTER_API_KEY")
         }
