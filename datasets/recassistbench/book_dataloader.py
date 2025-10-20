@@ -12,7 +12,7 @@ from .eval.eval_book import (
 )
 
 
-class DataloaderBook:
+class Dataloader:
 
     def __init__(self, dataset: str):
         # Base directory relative to this file so imports work from any CWD

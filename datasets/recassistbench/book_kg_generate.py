@@ -18,8 +18,8 @@ NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "arara123"
 NEO4J_DATABASE = "books"  # Banco específico para livros
 
-SCHEMA_FILE = "eval/book-schema.json"
-BOOK_INFO_FILE = "dataset/book/book_info.jsonl"
+SCHEMA_FILE = "datasets/recassistbench/eval/book-schema.json"
+BOOK_INFO_FILE = "datasets/recassistbench/dataset/book/book_info.jsonl"
 
 CLEAR_DATABASE = False  # Não limpar banco para manter filmes existentes
 

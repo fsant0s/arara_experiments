@@ -2,19 +2,23 @@ import os
 import sys
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir, os.pardir))
+PILOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+if PILOT_DIR not in sys.path:
+    sys.path.insert(0, PILOT_DIR)
 
 from agents import Orchestrator, Module
 from agents.helpers.graph_utils import visualize_speaker_transitions_dict
 
-from modules import create_misinformed_orchestrator
-from users import AraraUser  # reuse a generic user wrapper
-from clients import groq_llama3370b, gpt_41
+from modules.movies.misinformed import create_misinformed_orchestrator
+from arara_user import AraraUser  # reuse a generic user wrapper
+from clients import gpt_41
 
 from evaluation import report_metrics
-from datasets.recassistbench import Dataloader
+from datasets.recassistbench.movie_dataloader import Dataloader
 from neo4j_client import connect_to_neo4j
 
 # ------------------ Neo4j connection ------------------

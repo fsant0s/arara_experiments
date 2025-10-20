@@ -4,9 +4,13 @@ import json
 import random
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir, os.pardir))
+PILOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+if PILOT_DIR not in sys.path:
+    sys.path.insert(0, PILOT_DIR)
 
 from agents import Orchestrator, Module
 from clients import (
@@ -21,8 +25,12 @@ from clients import (
 )
 
 from arara_user import AraraUser
-from modules.movies import create_implicit_orchestrator, create_explicit_orchestrator, create_misinformed_orchestrator
-from datasets.recassistbench import Dataloader
+from modules.movies import (
+  create_implicit_orchestrator, 
+  create_explicit_orchestrator, 
+  create_misinformed_orchestrator
+)
+from datasets.recassistbench.movie_dataloader import Dataloader
 
 from neo4j_client import connect_to_neo4j
 
@@ -217,14 +225,14 @@ def main(*args):
         entry_type = "Implicit"
   
       print(f"✅ [{idx}/{total}] Concluído")
-      save_response(dataset_name, 
-                    llm_config_name, 
-                    entry_type,  
-                    predict_type_name,
-                    "historyTrue" if use_memory else None, 
-                    data,
-                    arara_response
-                    )
+      # save_response(dataset_name, 
+      #               llm_config_name, 
+      #               entry_type,  
+      #               predict_type_name,
+      #               "historyTrue" if use_memory else None, 
+      #               data,
+      #               arara_response
+      #               )
       
   except KeyboardInterrupt:
       print("\n\nInterrompido pelo usuário")

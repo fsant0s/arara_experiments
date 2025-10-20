@@ -1,6 +1,6 @@
 from agents import Agent, Module, Orchestrator
-from tools import movies
-from user_history_movie import get_filtered_user_history
+from tools import books
+from user_history_book import get_filtered_user_history
 
 
 def create_misinformed_orchestrator(data, llm_config=None, use_memory=True, memory_size=10) -> Orchestrator:
@@ -10,26 +10,26 @@ def create_misinformed_orchestrator(data, llm_config=None, use_memory=True, memo
     Args:
         data: Dictionary with query context including:
             - query: User's query string
-            - movieCount: Expected number of recommendations (top_k)
-            - movieSubsetId: Ground truth movie IDs
-            - sharedRelationships: Correct relations connecting ground truth movies
+            - bookCount: Expected number of recommendations (top_k)
+            - bookSubset: Ground truth book IDs
+            - sharedRelationships: Correct relations connecting ground truth books
             - multihop_info: Complex relation info (for validation)
         llm_config: LLM configuration for agents
         use_memory: Whether to use user history as context
-        memory_size: Number of historical movies to include
+        memory_size: Number of historical books to include
     
     Returns:
         Orchestrator instance for processing misinformed queries
     """
-    movie_count = data.get("movieCount", 2)
-    top_k = movie_count if movie_count > 0 else 2
+    book_count = data.get("bookCount", 2)
+    top_k = book_count if book_count > 0 else 2
 
     # ============== user history context ==============
     history_line = ""
     if use_memory:
         user_history = get_filtered_user_history(
             user_id=data.get("source_user", ""),
-            groundtruth_movie_ids=data.get("movieSubsetId", []),
+            groundtruth_book_ids=data.get("bookSubset", []),
             neo4j_conditions=data.get("sharedRelationships", []),
         )
         if user_history:
@@ -37,63 +37,60 @@ def create_misinformed_orchestrator(data, llm_config=None, use_memory=True, memo
             history_line = " ".join(limited_history)
 
     # 1️⃣ ENHANCED ENTITY RESOLVER
-    # Detects MULTIPLE misinformations and extracts all (movie, relation, person) tuples
+    # Detects MULTIPLE misinformations and extracts all (book, relation, person) tuples
     EntityResolver = Agent(
         name="EntityResolver",
         llm_config=llm_config,
-        description="Extract all mentioned movies, people, and relations (multiple per query).",
+        description="Extract all mentioned books, people, and relations (multiple per query).",
         system_message="""
 You are the ENHANCED ENTITY RESOLVER.
 
 Goal:
-Extract ALL mentioned movie titles (WITH RELEASE YEAR), people, and intended relations from the query.
+Extract ALL mentioned book titles, people, and intended relations from the query.
 Handle MULTIPLE misinformations in a single query.
 
 CRITICAL INSTRUCTIONS:
-- ALWAYS include the release year when calling get_movie_details_by_title
-- Format: "Title (YYYY)" - Example: "Bamboozled (2000)", "Girl 6 (1996)"
-- If you don't know the year, make a reasonable guess based on context clues
-- NEVER call get_movie_details_by_title with just the title without year
+- Do NOT include years when calling get_book_details_by_title
+- Format: "Title" - Example: "The Great Gatsby", "1984"
+- NEVER call get_book_details_by_title with year included
 
 Process:
-1️⃣ For EACH movie mentioned in the query:
-   - Identify the movie title
-   - Determine its release year (from query context, or make educated guess)
-   - Call movies.get_movie_details_by_title("Title (YYYY)") with the year included
-   - Example: If user says "Bamboozled", call with "Bamboozled (2000)"
-   - This ensures the database returns the CORRECT movie
+1️⃣ For EACH book mentioned in the query:
+   - Identify the book title
+   - Call books.get_book_details_by_title("Title") without year
+   - Example: If user says "The Great Gatsby", call with "The Great Gatsby"
+   - This ensures the database returns the CORRECT book
 
-2️⃣ For EACH (movie, relation, person) combination mentioned:
-   - Extract the movie title with year as "Title (YYYY)"
-   - Identify the relation type (Directed_by, Starring, Music_by, Produced_by, Written_by)
+2️⃣ For EACH (book, relation, person) combination mentioned:
+   - Extract the book title as "Title"
+   - Identify the relation type (WRITTEN_BY, BELONGS_TO)
    - Extract the mentioned person name exactly as stated
-   - Note if multiple people/relations mentioned for same movie
+   - Note if multiple people/relations mentioned for same book
 
 3️⃣ Handle edge cases:
-   - If title is very generic, try context to find year
+   - If title is very generic, try context to find specific book
    - If person name is incomplete/nickname, preserve as stated
-   - Do NOT assume year - extract from query or context
+   - Do NOT add years to book titles
 
 STRICT OUTPUT (JSON, one line):
 {
- "movies": [
+ "books": [
   {
-   "title": "<Title (YYYY)>",
-   "found": true/false,
-   "year": YYYY
+   "title": "<Title>",
+   "found": true/false
   }
  ],
  "misinformations": [
   {
-   "movie": "<Title (YYYY)>",
-   "relation": "<Directed_by|Starring|Music_by|Produced_by|Written_by>",
+   "book": "<Title>",
+   "relation": "<WRITTEN_BY|BELONGS_TO>",
    "mentioned_person": "<PersonName>"
   }
  ],
  "notes": "Any edge cases or ambiguities"
 }
 """,
-        tools=[movies.get_movie_details_by_title],
+        tools=[books.get_book_details_by_title],
     )
 
     # 2️⃣ ENHANCED FACT CHECKER
@@ -101,7 +98,7 @@ STRICT OUTPUT (JSON, one line):
     FactChecker = Agent(
         name="FactChecker",
         llm_config=llm_config,
-        description="Validate each (movie, relation, person) tuple and detect wrong relations.",
+        description="Validate each (book, relation, person) tuple and detect wrong relations.",
         system_message=f"""
 You are the ENHANCED FACT CHECKER.
 
@@ -111,30 +108,27 @@ history_line (user preferences context):
 Input: JSON from EntityResolver with array of misinformations.
 
 CRITICAL INSTRUCTIONS:
-- The movie title ALWAYS includes year: "Title (YYYY)"
-- ALWAYS call get_movie_details_by_title with the EXACT title including year
-- Example: "Bamboozled (2000)" - pass it exactly as received
-- DO NOT strip the year from the movie title
+- The book title does NOT include year: "Title"
+- ALWAYS call get_book_details_by_title with the EXACT title without year
+- Example: "The Great Gatsby" - pass it exactly as received
+- DO NOT add year to the book title
 
 For EACH misinformation tuple:
- 1. Get the movie title WITH YEAR from input (format: "Title (YYYY)")
- 2. Call movies.get_movie_details_by_title("Title (YYYY)") - include the year!
+ 1. Get the book title from input (format: "Title")
+ 2. Call books.get_book_details_by_title("Title") - without year!
  3. From the result, extract ALL true people for claimed relation:
-    - Directed_by → result.directors (ALL of them)
-    - Starring → result.actors (ALL of them)
-    - Music_by → result.composers (ALL of them)
-    - Produced_by → result.producers (ALL of them)
-    - Written_by → result.writers (ALL of them)
+    - WRITTEN_BY → result.authors (ALL of them)
+    - BELONGS_TO → result.categories (ALL of them)
  4. Check if mentioned_person matches ANY true person (case-insensitive)
  5. If NO match:
-    a. Search for mentioned_person in ALL other relations (directors, actors, etc)
+    a. Search for mentioned_person in ALL other relations (authors, categories, etc)
     b. If found → person is real but WRONG RELATION
     c. If not found → person is FAKE/INEXISTENT
  6. Output ALL people in "true_people" array - for comprehensive retrieval
 
 CRITICAL RULES:
 - "true_people" MUST contain ALL people for the relation (not just the first)
-- Include everyone from the relation list (all directors, all actors, etc)
+- Include everyone from the relation list (all authors, all categories, etc)
 - This allows Retriever to search for all contributors, improving recall
 - Retriever will intelligently combine results to find best matches
 
@@ -142,7 +136,7 @@ Output JSON (one line):
 {{
  "analysis": [
   {{
-   "movie": "<Title (YYYY)>",
+   "book": "<Title>",
    "claimed_relation": "<Relation>",
    "mentioned_person": "<PersonName>",
    "is_misinformation": true/false,
@@ -154,7 +148,7 @@ Output JSON (one line):
  ]
 }}
 """,
-        tools=[movies.get_movie_details_by_title],
+        tools=[books.get_book_details_by_title],
     )
 
     # 3️⃣ SMART FACT CORRECTION AGENT
@@ -170,13 +164,8 @@ Input: JSON from FactChecker with analysis of misinformations, including "true_p
 
 CRITICAL: Valid Relation Names (EXACT SPELLING REQUIRED)
 Your JSON output MUST use EXACTLY these relation names:
-- "Directed_by" (NOT "director")
-- "Starring" (NOT "actor")
-- "Genre"
-- "Language"
-- "Produced_by" (NOT "producer")
-- "Music_by" (NOT "composer")
-- "Year"
+- "WRITTEN_BY" (NOT "author" or "written by")
+- "BELONGS_TO" (NOT "category" or "genre")
 
 Goal:
 - For each misinformation, decide the CORRECTION strategy
@@ -210,8 +199,8 @@ STRICT OUTPUT (JSON, one line):
  "confidence": "high|medium|low"
 }
 
-EXAMPLE WITH MULTIPLE DIRECTORS:
-{"primary_condition":{"relation":"Directed_by","value":"Spike Lee"},"secondary_conditions":[{"relation":"Directed_by","value":"Kwame Jackson"},{"relation":"Directed_by","value":"Damon Dash"}],"correction_summary":"Movie has multiple directors/producers; searching for all","confidence":"high"}
+EXAMPLE WITH MULTIPLE AUTHORS:
+{"primary_condition":{"relation":"WRITTEN_BY","value":"F. Scott Fitzgerald"},"secondary_conditions":[{"relation":"WRITTEN_BY","value":"Zelda Fitzgerald"}],"correction_summary":"Book has multiple authors; searching for all","confidence":"high"}
 """,
     )
 
@@ -220,7 +209,7 @@ EXAMPLE WITH MULTIPLE DIRECTORS:
     Retriever = Agent(
         name="Retriever",
         llm_config=llm_config,
-        description="Retrieve movies satisfying corrected conditions, handling multiple relations.",
+        description="Retrieve books satisfying corrected conditions, handling multiple relations.",
         system_message="""
 You are the MULTI-HOP AWARE RETRIEVER.
 
@@ -228,26 +217,21 @@ Input: JSON from FactCorrectionAgent with primary and secondary conditions.
 
 CRITICAL: Relation Names
 You MUST use EXACTLY these relation names when calling retrieve_titles_by_condition:
-- "Directed_by" (NOT "director" or "directed by")
-- "Starring" (NOT "actor" or "acts in")
-- "Genre"
-- "Language"
-- "Produced_by" (NOT "producer")
-- "Music_by" (NOT "composer")
-- "Year"
+- "WRITTEN_BY" (NOT "author" or "written by")
+- "BELONGS_TO" (NOT "category" or "genre")
 
 Action:
 1️⃣ For primary_condition:
    - Extract: (relation_name, value_name) from input JSON
-   - Call: movies.retrieve_titles_by_condition(relation_name, value_name, limit=400)
+   - Call: books.retrieve_titles_by_condition(relation_name, value_name, limit=400)
    - VERIFY relation_name is from CRITICAL list above
    - These are the main candidates
 
 2️⃣ For secondary_conditions (if any):
-   - Call movies.retrieve_titles_by_condition for EACH secondary condition
-   - For SAME relation (e.g., multiple directors): UNION results (combine all)
+   - Call books.retrieve_titles_by_condition for EACH secondary condition
+   - For SAME relation (e.g., multiple authors): UNION results (combine all)
    - For DIFFERENT relations: INTERSECT with primary (keep only overlaps)
-   - Example: If both directors and actors appear → find movies with BOTH relations
+   - Example: If both authors and categories appear → find books with BOTH relations
 
 3️⃣ Smart Merging:
    - If secondary_conditions all have SAME relation → UNION (more inclusive)
@@ -257,19 +241,19 @@ Action:
 4️⃣ Output result as [SEP]-joined line
 
 Examples:
-- Primary: ("Directed_by", "Spike Lee") → [A, B, C, D, ...]
-- Secondary: ("Directed_by", "Other Director") → [C, D, E, F, ...] 
+- Primary: ("WRITTEN_BY", "F. Scott Fitzgerald") → [A, B, C, D, ...]
+- Secondary: ("WRITTEN_BY", "Other Author") → [C, D, E, F, ...] 
 - Same relation → UNION: [A, B, C, D, E, F, ...]
 
-- Primary: ("Directed_by", "Spike Lee") → [A, B, C, D, ...]
-- Secondary: ("Starring", "Actor X") → [B, C, G, H, ...]
+- Primary: ("WRITTEN_BY", "F. Scott Fitzgerald") → [A, B, C, D, ...]
+- Secondary: ("BELONGS_TO", "Fiction") → [B, C, G, H, ...]
 - Different relations → INTERSECT: [B, C, ...]
 
 Output a single line:
-Title A (YYYY) [SEP] Title B (YYYY) [SEP] ...
+Title A [SEP] Title B [SEP] ...
 If no results, output exactly: NO_CANDIDATES.
 """,
-        tools=[movies.retrieve_titles_by_condition],
+        tools=[books.retrieve_titles_by_condition],
     )
 
     # 5️⃣ HISTORY-AWARE RECOMMENDER
@@ -281,7 +265,7 @@ If no results, output exactly: NO_CANDIDATES.
         system_message=f"""
 You are the HISTORY-AWARE RECOMMENDER.
 
-history_line (movies user previously watched):
+history_line (books user previously read):
 {history_line or "[No prior history available]"}
 
 Input: line of candidate titles separated by ' [SEP] '.
@@ -300,7 +284,7 @@ Steps:
 6. Do not add commentary
 
 Example output:
-New Movie (2000) [SEP] Another New (1999) [SEP] Previously Watched (1998)
+New Book [SEP] Another New Book [SEP] Previously Read Book
 """,
     )
 
@@ -331,11 +315,11 @@ New Movie (2000) [SEP] Another New (1999) [SEP] Previously Watched (1998)
         llm_config=llm_config,
         description="""
             MisInformed Query Orchestrator.
-            Handles misinformed recommendation queries in which the user provides incorrect or hallucinated information about movies, such as misattributed directors, actors, or production details.
-            It focuses on identifying and correcting these factual inconsistencies before generating recommendations, ensuring that the suggested movies are accurate and contextually aligned with the user’s stated interests.
+            Handles misinformed recommendation queries in which the user provides incorrect or hallucinated information about books, such as misattributed authors, categories, or publication details.
+            It focuses on identifying and correcting these factual inconsistencies before generating recommendations, ensuring that the suggested books are accurate and contextually aligned with the user's stated interests.
             Examples of misinformed queries:
-            I recently watched Spy Kids 2: The Island of Lost Dreams and Spy Kids 3-D: Game Over, both featuring Chris Savino's work. I'm curious to discover more films directed by Chris Savino from 2003 to 2005, as I appreciate his unique storytelling style.
-            I recently watched Girl 6 and was fascinated by its direction. I know that Yoshihisa Kishimoto directed it, and I'm eager to find other films that he has directed. Additionally, I noticed that he starred in both Girl 6 and When We Were Kings, so if any of his directed films also feature him, that would be great!
-            I just watched Electric Dreams and was fascinated by the direction of Alison Ball-Gabriel. I'm eager to find other movies directed by her to see her unique style again.
+            I recently read The Great Gatsby and To Kill a Mockingbird, both written by Ernest Hemingway. I'm curious to discover more books written by Ernest Hemingway, as I appreciate his unique writing style.
+            I recently read 1984 and was fascinated by its author. I know that George Orwell wrote it, and I'm eager to find other books that he has written. Additionally, I noticed that he wrote both 1984 and Animal Farm, so if any of his books are in the same category, that would be great!
+            I just read Brave New World and was fascinated by the writing of Aldous Huxley. I'm eager to find other books written by him to see his unique style again.
 """,
     )

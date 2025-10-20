@@ -6,10 +6,10 @@ import json
 
 def get_data_path(filename: str) -> str:
     """Retorna o caminho correto para os arquivos de dados de livros."""
-    if os.path.exists("datasets/RecAssistBench/dataset/book/"):
-        base_path = "datasets/RecAssistBench/dataset/book/"
+    if os.path.exists("datasets/recassistbench/dataset/book/"):
+        base_path = "datasets/recassistbench/dataset/book/"
     else:
-        base_path = "../datasets/RecAssistBench/dataset/book/"
+        base_path = "../datasets/recassistbench/dataset/book/"
     return os.path.join(base_path, filename)
 
 
@@ -61,7 +61,7 @@ def get_user_book_titles(user_id: str) -> List[str]:
     return [item["book_title"] for item in history]
 
 
-def get_filtered_user_history(user_id: str, groundtruth_book_titles: List[str] = None, neo4j_conditions: List[List[str]] = None, percentage: float = 1.0) -> List[str]:
+def get_filtered_user_history(user_id: str, groundtruth_book_ids: List[str] = None, neo4j_conditions: List[List[str]] = None, percentage: float = 1.0) -> List[str]:
     """Retorna o histórico filtrado do usuário com porcentagem aleatória."""
     # Importa o cliente Neo4j para livros
     books_module = None
@@ -90,8 +90,8 @@ def get_filtered_user_history(user_id: str, groundtruth_book_titles: List[str] =
     user_book_titles = [item["book_title"] for item in history]
     
     # Remove livros do groundtruth
-    if groundtruth_book_titles:
-        user_book_titles = [title for title in user_book_titles if title not in groundtruth_book_titles]
+    if groundtruth_book_ids:
+        user_book_titles = [title for title in user_book_titles if title not in groundtruth_book_ids]
     
     # Remove livros das condições do Neo4j (apenas se conseguiu conectar)
     if neo4j_conditions and books_module is not None:
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     # Teste com filtros
     filtered_titles = get_filtered_user_history(
         user_id=user_id,
-        groundtruth_book_titles=["Dr. Seuss: American Icon"],
+        groundtruth_book_ids=["Dr. Seuss: American Icon"],
         neo4j_conditions=[["WRITTEN_BY", "Stephen King"]],
         percentage=0.5
     )

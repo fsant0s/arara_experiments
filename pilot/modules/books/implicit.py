@@ -1,8 +1,8 @@
 from agents import Agent, Module, Orchestrator
-from tools import movies
+from tools import books
 
 from capabilities.memory import ListMemory, MemoryContent
-from user_history_movie import get_filtered_user_history
+from user_history_book import get_filtered_user_history
 
 
 def create_implicit_orchestrator(
@@ -16,22 +16,22 @@ def create_implicit_orchestrator(
     
     Expects `data` to contain:
     - 'source_user': User ID
-    - 'direct_description_query': User query mentioning reference movies
-    - 'movieCount': Target K for recommendations
-    - 'multihop_info': Array of reference movies with relations (for validation)
+    - 'direct_description_query': User query mentioning reference books
+    - 'bookCount': Target K for recommendations
+    - 'multihop_info': Array of reference books with relations (for validation)
     - 'sharedRelationships': Expected shared relations (for validation)
-    - 'movieSubset': Ground truth expected recommendations (for validation)
+    - 'bookSubset': Ground truth expected recommendations (for validation)
     """
     
     # ======== Parameters & Memory Setup ========
-    movieCount = data.get("movieCount", None)
-    top_k_value = movieCount if isinstance(movieCount, int) and movieCount > 0 else 3
+    bookCount = data.get("bookCount", None)
+    top_k_value = bookCount if isinstance(bookCount, int) and bookCount > 0 else 3
     
     history_line = ""
     if use_memory:
         user_history = get_filtered_user_history(
             user_id=data["source_user"],
-            groundtruth_movie_ids=data.get("movieSubsetId", []),
+            groundtruth_book_ids=data.get("bookSubset", []),
             neo4j_conditions=data.get("sharedRelationships", []),
         )
         limited_history = user_history[-memory_size:] if len(user_history) > memory_size else user_history
@@ -42,37 +42,37 @@ def create_implicit_orchestrator(
     TitleNormalizer = Agent(
         name="TitleNormalizer",
         llm_config=llm_config,
-        description="Normalize movie titles from query (handle underscores, quotes, article position).",
+        description="Normalize book titles from query (handle underscores, quotes, article position).",
         system_message="""
 You are the TITLE NORMALIZER.
 
-Input: User's direct_description_query mentioning reference movies (e.g., "The Immigrant (1917)")
+Input: User's direct_description_query mentioning reference books (e.g., "The Great Gatsby")
 
 Task:
-1. Extract ALL movie titles mentioned in the query (usually 2-3 reference movies)
+1. Extract ALL book titles mentioned in the query (usually 2-3 reference books)
 2. Normalize each title:
    - Replace underscores "_" with spaces
    - Remove extra quotes (keep only inner quotes if any)
-   - Handle article positioning: "The_Immigrant" → "The Immigrant" OR "Immigrant, The"?
-   - Preserve year in format "(YYYY)"
-3. Output exact titles in format: "Title (YYYY)"
+   - Handle article positioning: "The_Great_Gatsby" → "The Great Gatsby" OR "Great Gatsby, The"?
+   - Preserve original title format
+3. Output exact titles in format: "Title"
 
 Normalization examples:
-- "The_Immigrant (1917)" → "The Immigrant (1917)"
-- "A_King in New York (1957)" → "A King in New York (1957)"
-- "Heartburn (1986)" → "Heartburn (1986)"
+- "The_Great_Gatsby" → "The Great Gatsby"
+- "A_Clockwork_Orange" → "A Clockwork Orange"
+- "1984" → "1984"
 
 CRITICAL:
-- ALWAYS include the year "(YYYY)" for each title
+- Do NOT add years to book titles (unlike movies)
 - If unsure about article position, try BOTH variants:
-  "The Title (YYYY)" and "Title, The (YYYY)"
+  "The Title" and "Title, The"
 - Output one title per line, then final summary
 
 OUTPUT (STRICT):
 Normalized Titles:
-- Reference 1: Title A (YYYY)
-- Reference 2: Title B (YYYY)
-- (Reference 3: Title C (YYYY) if present)
+- Reference 1: Title A
+- Reference 2: Title B
+- (Reference 3: Title C if present)
 """,
         tools=[],
     )
@@ -81,64 +81,57 @@ Normalized Titles:
     CommonAttributeExtractor = Agent(
         name="CommonAttributeExtractor",
         llm_config=llm_config,
-        description="Extract shared actors/directors from the two reference movies.",
+        description="Extract shared authors/categories from the two reference books.",
         system_message=f"""
 You are the COMMON ATTRIBUTE EXTRACTOR.
 
 Input: 
-- Two normalized reference movie titles (from TitleNormalizer)
-- Example: "The Immigrant (1917)" and "A King in New York (1957)"
+- Two normalized reference book titles (from TitleNormalizer)
+- Example: "The Great Gatsby" and "To Kill a Mockingbird"
 
 history_line (user preferences context):
 {history_line or "[No prior history available]"}
 
 Task:
-1. For EACH reference movie title:
-   - Call: movies.get_movie_details_by_title("Title (YYYY)")
-   - Extract ALL people from each relation:
-     * actors (from "Starring" relation)
-     * directors (from "Directed_by" relation)
-     * composers (from "Music_by")
-     * writers (from "Written_by")
-     * producers (from "Produced_by")
+1. For EACH reference book title:
+   - Call: books.get_book_details_by_title("Title")
+   - Extract ALL attributes from each relation:
+     * authors (from "WRITTEN_BY" relation)
+     * categories (from "BELONGS_TO" relation)
 
-2. Find INTERSECTION across both movies:
-   - ACTORS common to BOTH? → YES: list them
-   - DIRECTORS common to BOTH? → YES: list them
-   - Other relations common? → YES: list them
+2. Find INTERSECTION across both books:
+   - AUTHORS common to BOTH? → YES: list them
+   - CATEGORIES common to BOTH? → YES: list them
 
 3. Validate intersection is non-empty:
    - If empty → "No common attributes found" (should not happen in well-formed queries)
    - If found → proceed
 
 CRITICAL:
-- ALWAYS include the year "(YYYY)" in movie titles when calling get_movie_details_by_title
+- Do NOT include years in book titles when calling get_book_details_by_title
 - Return ALL common people for each relation (not just first)
-- If "Starring" is common relation, list ALL shared actors
+- If "WRITTEN_BY" is common relation, list ALL shared authors
 
 OUTPUT (JSON, one line):
 {{
- "reference_movies": ["Title A (YYYY)", "Title B (YYYY)"],
+ "reference_books": ["Title A", "Title B"],
  "common_attributes": {{
-   "actors": ["Actor1", "Actor2"],
-   "directors": ["Director1"],
-   "composers": [],
-   "writers": [],
-   "producers": []
+   "authors": ["Author1", "Author2"],
+   "categories": ["Category1"]
  }},
- "primary_relation": "Starring",
- "primary_people": ["Actor1", "Actor2"],
+ "primary_relation": "WRITTEN_BY",
+ "primary_people": ["Author1", "Author2"],
  "is_valid": true
 }}
 """,
-        tools=[movies.get_movie_details_by_title],
+        tools=[books.get_book_details_by_title],
     )
     
     # ============ 3️⃣ RELATION TYPE DETECTOR ============
     RelationTypeDetector = Agent(
         name="RelationTypeDetector",
         llm_config=llm_config,
-        description="Detect which relation type (Starring, Directed_by, etc.) the query is asking for.",
+        description="Detect which relation type (WRITTEN_BY, BELONGS_TO, etc.) the query is asking for.",
         system_message="""
 You are the RELATION TYPE DETECTOR.
 
@@ -150,11 +143,8 @@ Task:
 Determine the PRIMARY relation the user is asking for:
 
 1. Analyze query language:
-   - "same actor" / "same actor who appeared" → Starring (PRIMARY)
-   - "same director" / "directed by" → Directed_by (PRIMARY)
-   - "same composer" / "scored by" → Music_by (PRIMARY)
-   - "same writer" / "written by" → Written_by (PRIMARY)
-   - "same producer" → Produced_by (PRIMARY)
+   - "same author" / "written by" → WRITTEN_BY (PRIMARY)
+   - "same category" / "genre" / "type" → BELONGS_TO (PRIMARY)
 
 2. Cross-validate with common attributes found:
    - If common_attributes has matching people → confirm relation
@@ -162,21 +152,21 @@ Determine the PRIMARY relation the user is asking for:
 
 3. Determine if secondary relations should be used:
    - Query mentions only 1 relation type? → Use only primary
-   - Query mentions "also featured in" + multiple relations? → May need secondary
+   - Query mentions "also in" + multiple relations? → May need secondary
 
 CRITICAL:
-- DEFAULT RELATION: "Starring" (80% of queries)
-- If query ambiguous, use "Starring"
-- Output relation name EXACTLY as in DB: "Directed_by", "Starring", "Music_by", etc.
+- DEFAULT RELATION: "WRITTEN_BY" (most common for books)
+- If query ambiguous, use "WRITTEN_BY"
+- Output relation name EXACTLY as in DB: "WRITTEN_BY", "BELONGS_TO"
 
 OUTPUT (JSON, one line):
 {{
- "primary_relation": "Starring",
- "primary_people": ["Actor1", "Actor2"],
+ "primary_relation": "WRITTEN_BY",
+ "primary_people": ["Author1", "Author2"],
  "secondary_relations": [],
  "secondary_people": {{}},
  "query_clarity": "high|medium|low",
- "detected_language_hints": ["same actor", "starred in"]
+ "detected_language_hints": ["same author", "written by"]
 }}
 """,
         tools=[],
@@ -186,26 +176,26 @@ OUTPUT (JSON, one line):
     MultiHopRetriever = Agent(
         name="MultiHopRetriever",
         llm_config=llm_config,
-        description="Find OTHER movies with the common actors/people.",
+        description="Find OTHER books with the common authors/categories.",
         system_message=f"""
 You are the MULTI-HOP RETRIEVER.
 
 Input:
-- Primary relation type: "Starring" or "Directed_by" etc.
-- Common people: ["Actor1", "Actor2"] or ["Director1"]
+- Primary relation type: "WRITTEN_BY" or "BELONGS_TO" etc.
+- Common people: ["Author1", "Author2"] or ["Category1"]
 
 Task:
 1. For EACH common person:
-   - Call: movies.retrieve_titles_by_condition(relation, person, limit=400)
-   - Relation must be EXACTLY: "Starring", "Directed_by", "Music_by", "Produced_by", etc.
+   - Call: books.retrieve_titles_by_condition(relation, person, limit=400)
+   - Relation must be EXACTLY: "WRITTEN_BY", "BELONGS_TO"
    - person must be EXACT name from common attributes
 
 2. Combine results:
-   - All people are from SAME relation? → UNION all results (get all movies)
+   - All people are from SAME relation? → UNION all results (get all books)
    - Multiple relations? → May INTERSECT (stricter)
 
-3. Filter out reference movies:
-   - Reference movies should NOT appear in final recommendations
+3. Filter out reference books:
+   - Reference books should NOT appear in final recommendations
    - Remove any title that was in the original query
 
 4. Normalize and sort:
@@ -219,10 +209,10 @@ CRITICAL:
 - Output deterministic (sorted)
 
 OUTPUT (STRICT):
-Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
+Title A [SEP] Title B [SEP] Title C
 Or if no results: NO_CANDIDATES
 """,
-        tools=[movies.retrieve_titles_by_condition],
+        tools=[books.retrieve_titles_by_condition],
     )
     
     # ============ 5️⃣ RECOMMENDER AGENT ============
@@ -237,7 +227,7 @@ history_line (user preferences context):
 {history_line or "[No prior history available]"}
 
 Input:
-- Candidate pool line: "Title A (YYYY) [SEP] Title B (YYYY) [SEP] ..."
+- Candidate pool line: "Title A [SEP] Title B [SEP] ..."
 - Target K: {top_k_value}
 
 Task:
@@ -245,16 +235,16 @@ Task:
 2. Rank by:
    - Preference alignment (from history_line): + if matches user's typical choices
    - Novelty: + if not in history, - if seen before
-   - Diversity: small bonus for variety in years/directors/actors
+   - Diversity: small bonus for variety in authors/categories
    - Conflict avoidance: - if conflicting with history
 
 3. Select exactly {top_k_value} items
    - If pool has fewer than {top_k_value} items, return all
-   - Sort alphabetically then year desc (deterministic tie-breaking)
+   - Sort alphabetically (deterministic tie-breaking)
 
 STRICT Output:
 - Exactly ONE LINE:
-  Title A (YYYY) [SEP] Title B (YYYY) [SEP] Title C (YYYY)
+  Title A [SEP] Title B [SEP] Title C
 - Use ' [SEP] ' (single spaces)
 - No leading/trailing [SEP]
 - No extra lines or commentary
@@ -292,16 +282,16 @@ STRICT Output:
         description="""
 Implicit Query Orchestrator.
 
-Handles implicit/inferential recommendations where users reference movies and ask for 
-similar recommendations based on shared attributes (actors, directors, etc.).
+Handles implicit/inferential recommendations where users reference books and ask for 
+similar recommendations based on shared attributes (authors, categories, etc.).
 
-Multi-hop aware: Extracts shared people from reference movies → Finds OTHER movies with same people.
+Multi-hop aware: Extracts shared people from reference books → Finds OTHER books with same people.
 
 Examples:
-- "Please recommend movies starring the same actor as in A King in New York (1957) 
-   and The Immigrant (1917)." → Find common actor → Find OTHER movies
-- "Please recommend movies directed by the same director as Pulp Fiction (1994) 
-   and Reservoir Dogs (1992)." → Find common director → Find OTHER movies
+- "Please recommend books written by the same author as The Great Gatsby 
+   and To Kill a Mockingbird." → Find common author → Find OTHER books
+- "Please recommend books in the same category as 1984 
+   and Brave New World." → Find common category → Find OTHER books
 """,
     )
     

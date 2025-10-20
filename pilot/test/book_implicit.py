@@ -11,38 +11,40 @@ if PILOT_DIR not in sys.path:
     sys.path.insert(0, PILOT_DIR)
 
 from agents import Orchestrator, Module
+from agents.helpers.graph_utils import visualize_speaker_transitions_dict
 
-from modules.movies.explicit import create_explicit_orchestrator
+
+from modules.books.implicit import create_implicit_orchestrator
 from arara_user import AraraUser
-from clients import gpt_4o
+from clients import gpt_41
 
 from evaluation import report_metrics
 
 
-from datasets.recassistbench.movie_dataloader import Dataloader
+from datasets.recassistbench.book_dataloader import Dataloader
 from neo4j_client import connect_to_neo4j
 
 if not connect_to_neo4j():
     sys.exit(1)
 
-llm_config = gpt_4o
-model_name = "gpt-4o" #"llama-3.1-70b-instruct"
-dataloader = Dataloader("movie/ExplicitQuery.json")
-dataset = dataloader.load(data_idx=3826) 
-data = dataset[0]
+llm_config = gpt_41
+model_name = "gpt-4o"
+dataloader = Dataloader("book/ImplicitQuery.json")
+dataset = dataloader.load()
+data = dataset[20]
 
 print("--------------------------------")
 print("-------- DATA INICIAL ----------")
 print("Data:", data)
 print("--------------------------------\n")
 
+user = AraraUser()
 
 # Toggle to enable/disable memory usage inside explicit module
 USE_MEMORY = True
-MEMORY_SIZE = 10 # adjust if needed
+MEMORY_SIZE = 10  # adjust if needed
 
-user = AraraUser() 
-explicit_orchestrator = create_explicit_orchestrator(
+implicit_orchestrator = create_implicit_orchestrator(
     data,
     llm_config=llm_config,
     use_memory=USE_MEMORY,
@@ -51,7 +53,7 @@ explicit_orchestrator = create_explicit_orchestrator(
 
 main_module = Module(
     name="main_module",
-    agents=[user, explicit_orchestrator],
+    agents=[user, implicit_orchestrator],
     speaker_selection_method="round_robin",
 )
 

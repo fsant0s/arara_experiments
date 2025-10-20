@@ -12,14 +12,15 @@ if PILOT_DIR not in sys.path:
 
 from agents import Orchestrator, Module
 
-from modules.movies.explicit import create_explicit_orchestrator
+
+from modules.books.explicit import create_explicit_orchestrator
 from arara_user import AraraUser
 from clients import gpt_4o
 
 from evaluation import report_metrics
 
 
-from datasets.recassistbench.movie_dataloader import Dataloader
+from datasets.recassistbench.book_dataloader import Dataloader
 from neo4j_client import connect_to_neo4j
 
 if not connect_to_neo4j():
@@ -27,7 +28,7 @@ if not connect_to_neo4j():
 
 llm_config = gpt_4o
 model_name = "gpt-4o" #"llama-3.1-70b-instruct"
-dataloader = Dataloader("movie/ExplicitQuery.json")
+dataloader = Dataloader("book/ExplicitQuery.json")
 dataset = dataloader.load(data_idx=3826) 
 data = dataset[0]
 

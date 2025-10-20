@@ -238,6 +238,6 @@ def main(*args):
     print("=" * 60)
 
 if __name__ == "__main__":
-# Example: python pilot/pipeline.py movie Implicit True
+# Example: python pilot/pipeline.py book Implicit True
   main(*sys.argv[1:])
 
