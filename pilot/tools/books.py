@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 # Usar banco de livros
-BOOKS_DATABASE = "books"
+BOOKS_DATABASE = "neo4j"
 
 def _execute_query(query: str, params: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """
@@ -122,48 +122,91 @@ def list_nodes_by_type(node_type: str, limit: int = 50) -> List[str]:
 
 def get_books_by_relation(relation: str, target_name: str, limit: int = 20) -> List[str]:
     """
-    Get books connected to a target node via a specific relationship.
+    Find books connected to a specific entity via a relationship.
+    
+    This tool searches for books that have a specific relationship to a target entity
+    (author, category, etc.). Use this for precise relationship-based queries.
     
     Args:
-        relation: Relationship type (e.g., 'WRITTEN_BY', 'BELONGS_TO')
-        target_name: Name of the target node
-        limit: Maximum number of results to return
+        relation: Relationship type - MUST be exactly 'WRITTEN_BY' or 'BELONGS_TO'
+        target_name: Exact name of the target entity (author name, category name, etc.)
+        limit: Maximum number of results to return (default: 20).
         
     Returns:
-        List of book titles
+        List of book titles that match the relationship
+        
+    Examples:
+        - get_books_by_relation("WRITTEN_BY", "Stephen King") 
+          → Returns books written by Stephen King
+        - get_books_by_relation("BELONGS_TO", "Science Fiction")
+          → Returns books in Science Fiction category
+          
+    Note: Use exact relation names as they appear in the database.
     """
-    query = f"""
-    MATCH (b:Book)-[:{relation}]->(t {{name: $target_name}})
-    RETURN b.Title as title
-    ORDER BY b.Title
-    LIMIT $limit
-    """
-    results = _execute_query(query, {"target_name": target_name, "limit": limit})
-    return [r["title"] for r in results]
+    # Handle limit=0 as "no limit" by removing LIMIT clause entirely
+    if limit > 0:
+        query = f"""
+        MATCH (b:Book)-[:{relation}]->(t {{name: $target_name}})
+        RETURN b.Title as title
+        ORDER BY b.Title
+        LIMIT {limit}
+        """
+        results = _execute_query(query, {"target_name": target_name})
+    else:
+        query = f"""
+        MATCH (b:Book)-[:{relation}]->(t {{name: $target_name}})
+        RETURN b.Title as title
+        ORDER BY b.Title
+        LIMIT 20
+        """
+        results = _execute_query(query, {"target_name": target_name})
+    return [r["title"] for r in results if r.get("title")]
 
 def get_books_by_author(author_name: str, limit: int = 20) -> List[str]:
     """
-    Get books written by a specific author.
+    Find books written by a specific author.
+    
+    This is a convenience function that calls get_books_by_relation with "WRITTEN_BY".
+    Use this for author-based queries to get all books by a specific author.
     
     Args:
-        author_name: Author's name
-        limit: Maximum number of results
+        author_name: Exact name of the author (e.g., "Stephen King", "J.K. Rowling")
+        limit: Maximum number of results to return (default: 20). Use 0 for no limit.
         
     Returns:
-        List of book titles
+        List of book titles written by the author
+        
+    Examples:
+        - get_books_by_author("Stephen King") 
+          → Returns ["The Shining", "It", "Carrie", ...]
+        - get_books_by_author("J.K. Rowling")
+          → Returns ["Harry Potter and the Philosopher's Stone", ...]
+          
+    Note: Use the exact author name as it appears in the database.
     """
     return get_books_by_relation("WRITTEN_BY", author_name, limit)
 
 def get_books_by_category(category: str, limit: int = 20) -> List[str]:
     """
-    Get books in a specific category.
+    Find books in a specific category or genre.
+    
+    This is a convenience function that calls get_books_by_relation with "BELONGS_TO".
+    Use this for category-based queries to get all books in a specific genre or category.
     
     Args:
-        category: Category name
-        limit: Maximum number of results
+        category: Exact name of the category (e.g., "Fiction", "Science Fiction", "Mystery")
+        limit: Maximum number of results to return (default: 20)
         
     Returns:
-        List of book titles
+        List of book titles in the specified category
+        
+    Examples:
+        - get_books_by_category("Science Fiction") 
+          → Returns ["Dune", "Foundation", "The Martian", ...]
+        - get_books_by_category("Mystery")
+          → Returns ["The Girl with the Dragon Tattoo", ...]
+          
+    Note: Use the exact category name as it appears in the database.
     """
     return get_books_by_relation("BELONGS_TO", category, limit)
 
@@ -351,37 +394,59 @@ def search_books_by_title(title_query: str, limit: int = 20) -> List[Dict[str, A
 
 def get_book_details_by_title(title: str) -> Optional[Dict[str, Any]]:
     """
-    Get comprehensive details about a specific book.
+    Get comprehensive details about a specific book by its title.
+    
+    This tool performs fuzzy matching on book titles and returns detailed information
+    including authors, categories, and all book properties. Use this when you need
+    complete information about a specific book.
     
     Args:
-        title: Book title
+        title: Book title to search for (can be partial or fuzzy match)
         
     Returns:
         A dictionary with:
-            - "book": properties of the Book node,
-            - "authors": list of author names,
-            - "categories": list of category names,
-        or None if the title is not found.
+            - "book": properties of the Book node (Title, ISBN, etc.)
+            - "authors": list of author names (from WRITTEN_BY relation)
+            - "categories": list of category names (from BELONGS_TO relation)
+        or None if the title is not found
+        
+    Examples:
+        - get_book_details_by_title("The Great Gatsby")
+          → Returns {"book": {...}, "authors": ["F. Scott Fitzgerald"], "categories": ["American Literature"]}
+        - get_book_details_by_title("1984")
+          → Returns {"book": {...}, "authors": ["George Orwell"], "categories": ["Dystopian Fiction"]}
+          
+    Note: This function uses fuzzy matching, so partial titles work well.
     """
     results = search_books_by_title(title, limit=1)
     return results[0] if results else None
 
 def retrieve_titles_by_condition(relation: str, value: str, limit: int = 200) -> str:
     """
-    Deterministically retrieve book titles for a (relation, value) CONDITION and
-    return them as a single ' [SEP] ' joined line. If no results, return ''.
-
+    Retrieve book titles for a specific condition and return them as a single joined string.
+    
+    This tool is designed for implicit queries where you need to find books that share
+    a specific attribute (author, category) with reference books. It returns results
+    in a standardized format suitable for further processing.
+    
     Args:
-        relation: One of {'WRITTEN_BY','BELONGS_TO'}.
-        value:    Canonical author/category name (string).
-        limit:    Upper bound for retrieval (safety cap).
-
+        relation: Relationship type - MUST be exactly 'WRITTEN_BY' or 'BELONGS_TO'
+        value: Exact name of the entity (author name, category name, etc.)
+        limit: Upper bound for retrieval (safety cap, default: 200)
+        
     Returns:
-        A single string with titles separated by ' [SEP] ', or '' if empty.
-
-    Notes:
-        - Uses your existing tools under the hood (get_books_by_author, get_books_by_category).
-        - Applies deterministic dedup (case/underscore normalization) and sorts A–Z.
+        A single string with titles separated by ' [SEP] ', or empty string if no results
+        
+    Examples:
+        - retrieve_titles_by_condition("WRITTEN_BY", "Stephen King")
+          → Returns "The Shining [SEP] It [SEP] Carrie [SEP] ..."
+        - retrieve_titles_by_condition("BELONGS_TO", "Science Fiction")
+          → Returns "Dune [SEP] Foundation [SEP] The Martian [SEP] ..."
+          
+    Note: 
+        - Uses deterministic deduplication and sorting
+        - Results are normalized and sorted alphabetically
+        - Empty result returns empty string, not None
     """
     rel = (relation or "").strip()
     val = (value or "").strip()

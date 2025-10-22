@@ -21,8 +21,8 @@ from clients import (
 )
 
 from arara_user import AraraUser
-from modules.movies import create_implicit_orchestrator, create_explicit_orchestrator, create_misinformed_orchestrator
-from datasets.recassistbench import Dataloader
+from modules.books import create_implicit_orchestrator, create_explicit_orchestrator, create_misinformed_orchestrator
+from datasets.recassistbench.book_dataloader import Dataloader
 
 from neo4j_client import connect_to_neo4j
 
@@ -119,12 +119,15 @@ def main(*args):
   # Convert to actual boolean
   use_memory = memory_arg.lower() == "true"
 
-  impl_dataloader = Dataloader(f"{dataset_name}/ImplicitQuery.json")
-  expl_dataloader = Dataloader(f"{dataset_name}/ExplicitQuery.json")
+  # impl_dataloader = Dataloader(f"{dataset_name}/ImplicitQuery.json")
+  # expl_dataloader = Dataloader(f"{dataset_name}/ExplicitQuery.json")
   mis_dataloader = Dataloader(f"{dataset_name}/MisinformedQuery.json")
 
-  dataset_size = 200
-  dataset = random.sample(mis_dataloader.load(), dataset_size) + random.sample(expl_dataloader.load(), dataset_size) + random.sample(impl_dataloader.load(), dataset_size)
+  dataset_size = 220
+  dataset = random.sample(mis_dataloader.load(), dataset_size)
+  # dataset = random.sample(impl_dataloader.load(), dataset_size)
+  # dataset = random.sample(expl_dataloader.load(), dataset_size)
+  # dataset = random.sample(expl_dataloader.load(), dataset_size) + random.sample(impl_dataloader.load(), dataset_size)
   total = len(dataset)  # Total de itens a processar
   
   print(f"🚀 Iniciando processamento: {total} itens")

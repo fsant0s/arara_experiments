@@ -13,13 +13,13 @@ import os
 # ============================================================================
 # CONFIGURAÇÕES
 # ============================================================================
-NEO4J_URI = "neo4j://127.0.0.1:7687"
+NEO4J_URI = "neo4j://127.0.0.1:7689"
 NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "arara123"
-NEO4J_DATABASE = "books"  # Banco específico para livros
+NEO4J_DATABASE = "neo4j"  # Banco padrão
 
 SCHEMA_FILE = "datasets/recassistbench/eval/book-schema.json"
-BOOK_INFO_FILE = "datasets/recassistbench/dataset/book/book_info.jsonl"
+BOOK_INFO_FILE = "datasets/recassistbench/dataset/book/books_data.csv"
 
 CLEAR_DATABASE = False  # Não limpar banco para manter filmes existentes
 
@@ -42,15 +42,9 @@ class BookKGBuilder:
         print(f"✓ Schema carregado: {len(self.schema['relations'])} relações")
     
     def create_database(self):
-        """Cria o banco de dados se não existir"""
-        try:
-            with self.driver.session(database="system") as session:
-                session.run(f"CREATE DATABASE {self.database} IF NOT EXISTS")
-            print(f"✓ Banco '{self.database}' criado/verificado")
-            return True
-        except Exception as e:
-            print(f"❌ Erro ao criar banco: {e}")
-            return False
+        """Usa o banco padrão"""
+        print(f"✓ Usando banco padrão '{self.database}'")
+        return True
     
     def test_connection(self):
         """Testa conexão com Neo4j"""
@@ -89,21 +83,37 @@ class BookKGBuilder:
         print("✓ Índices criados")
     
     def split_entities(self, value):
-        """Divide valores múltiplos (separados por ; ou ,)"""
+        """Divide valores múltiplos usando ast.literal_eval"""
         if not value:
             return []
         
-        # Dividir por ; primeiro, depois por vírgula
-        entities = []
-        for part in value.split(';'):
-            # Se houver vírgulas, dividir também
-            if ',' in part:
-                entities.extend([e.strip() for e in part.split(',') if e.strip()])
-            else:
-                if part.strip():
-                    entities.append(part.strip())
+        import ast
         
-        return [e for e in entities if e]
+        try:
+            # Tentar parsear como lista Python
+            entities = ast.literal_eval(value)
+            if isinstance(entities, list):
+                return [str(entity).strip() for entity in entities if str(entity).strip()]
+        except (ValueError, SyntaxError):
+            pass
+        
+        # Fallback: limpeza manual
+        value = value.strip()
+        if value.startswith('[') and value.endswith(']'):
+            value = value[1:-1]
+        
+        # Dividir por vírgula
+        entities = []
+        for part in value.split(','):
+            part = part.strip()
+            # Remover aspas
+            if (part.startswith("'") and part.endswith("'")) or \
+               (part.startswith('"') and part.endswith('"')):
+                part = part[1:-1]
+            if part:
+                entities.append(part)
+        
+        return entities
     
     def create_book_and_relations(self, book_data):
         """Cria nó do livro e todas as suas relações"""
@@ -151,18 +161,25 @@ class BookKGBuilder:
     
     def build_graph(self, book_info_path):
         """Constrói o grafo completo"""
+        import csv
         
         with open(book_info_path, 'r', encoding='utf-8') as f:
-            total = sum(1 for _ in f)
+            total = sum(1 for _ in f) - 1  # -1 para header
         
         print(f"Processando {total} livros...")
         
         with open(book_info_path, 'r', encoding='utf-8') as f:
-            for line in tqdm(f, total=total, desc="Construindo KG"):
+            reader = csv.DictReader(f)
+            for row in tqdm(reader, total=total, desc="Construindo KG"):
                 try:
-                    book_data = json.loads(line)
+                    # Converter CSV row para formato esperado
+                    book_data = {
+                        'Title': row.get('Title', ''),
+                        'Author': row.get('authors', ''),  # CSV usa 'authors'
+                        'Category': row.get('categories', '')  # CSV usa 'categories'
+                    }
                     self.create_book_and_relations(book_data)
-                except:
+                except Exception as e:
                     pass
         
         print(f"✓ Concluído")
