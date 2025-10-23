@@ -24,7 +24,7 @@ def create_explicit_orchestrator(
 
     # ======== memória e history_line ========
     history_line = ""
-    if use_memory:
+    if False:
         user_history = get_filtered_user_history(
             user_id=data["source_user"],
             groundtruth_book_ids=data["bookSubset"],

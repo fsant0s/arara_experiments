@@ -131,8 +131,8 @@ def main(*args):
   expl_dataloader = Dataloader(f"{dataset_name}/ExplicitQuery.json")
   mis_dataloader = Dataloader(f"{dataset_name}/MisinformedQuery.json")
 
-  dataset_size = 200
-  dataset = random.sample(mis_dataloader.load(), dataset_size) + random.sample(expl_dataloader.load(), dataset_size) + random.sample(impl_dataloader.load(), dataset_size)
+  dataset_size = 1
+  dataset = random.sample(expl_dataloader.load(), dataset_size) #+ random.sample(expl_dataloader.load(), dataset_size) + random.sample(impl_dataloader.load(), dataset_size)
   total = len(dataset)  # Total de itens a processar
   
   print(f"🚀 Iniciando processamento: {total} itens")

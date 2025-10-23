@@ -13,13 +13,13 @@ import os
 # ============================================================================
 # CONFIGURAÇÕES
 # ============================================================================
-NEO4J_URI = "neo4j://127.0.0.1:7689"
+NEO4J_URI = "neo4j://127.0.0.1:7687"
 NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "arara123"
-NEO4J_DATABASE = "neo4j"  # Banco padrão
+NEO4J_DATABASE = "neo4j"
 
 SCHEMA_FILE = "datasets/recassistbench/eval/book-schema.json"
-BOOK_INFO_FILE = "datasets/recassistbench/dataset/book/books_data.csv"
+BOOK_INFO_FILE = "datasets/recassistbench/dataset/book/book_data.csv"
 
 CLEAR_DATABASE = False  # Não limpar banco para manter filmes existentes
 
@@ -243,7 +243,7 @@ def main():
     
     # Verificar arquivos
     for path in [SCHEMA_FILE, BOOK_INFO_FILE]:
-        if not os.path.exists(path):
+        if not os.path.exists(path):    
             print(f"Arquivo não encontrado: {path}")
             return
     

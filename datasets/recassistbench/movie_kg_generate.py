@@ -17,9 +17,9 @@ NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "arara123"
 NEO4J_DATABASE = "neo4j"
 
-SCHEMA_FILE = "datasets/RecAssistBench/eval/movie-schema.json"
-MOVIE_INFO_FILE = "datasets/RecAssistBench/dataset/movie/movie_info.jsonl"  # Usar o filtrado!
-MOVIES_DAT_FILE = "datasets/RecAssistBench/dataset/movie/movies.dat"
+SCHEMA_FILE = "datasets/recassistbench/eval/movie-schema.json"
+MOVIE_INFO_FILE = "datasets/recassistbench/dataset/movie/movie_info.jsonl"  # Usar o filtrado!
+MOVIES_DAT_FILE = "datasets/recassistbench/dataset/movie/movies.dat"
 
 CLEAR_DATABASE = True  # True para limpar banco antes de construir
 

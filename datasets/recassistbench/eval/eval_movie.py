@@ -356,7 +356,10 @@ def eval_batch(args):
     groundtruths = readGroundTruths(args.groundtruths)
     # if args.query_type == 'condition':
     #     assert len(predictions) == len(groundtruths)
-    
+    allowed_ids = set(args.ids)
+    groundtruths = [data for data in groundtruths if (not allowed_ids) or (data['data_idx'] in allowed_ids)]
+    predictions = [data for data in predictions if (not allowed_ids) or (int(data['id']) in allowed_ids)]
+   
     # Check if there is intermediate result file
     output_path = os.path.join(args.output_dir, args.predictions.split("/")[-1].replace(".jsonl", ".json"))
     if os.path.exists(output_path):
@@ -366,7 +369,7 @@ def eval_batch(args):
     else:
         evaluation_results = []
         start_idx = 0
-    
+
     for i in tqdm(range(start_idx, len(predictions)), desc="Evaluating predictions"):
         if args.query_type == 'condition':
             prediction_response = predictions[i]['response']
@@ -403,14 +406,14 @@ def eval_batch(args):
             with open(output_path, "w") as file:
                 json.dump(evaluation_results, file, indent=4)
     # Write to file once at the end
-    assert len(evaluation_results) == len(predictions)
+    #assert len(evaluation_results) == len(predictions)
     with open(output_path, "w") as file:
         json.dump(evaluation_results, file, indent=4)
 
     metrics = [m for m in list(evaluation_results[0].keys()) if m not in ['id', 'unsatisfied_movies']]
     avgs = {metric: calculate_avg(metric, evaluation_results) for metric in metrics}
     for metric, avg in avgs.items():
-        logging.info(f" {metric.replace('_', ' ').title()}: {avg}")
+        logging.info(f"{metric.replace('_', ' ').title()}: {avg}")
     
     
     return evaluation_results
@@ -427,7 +430,8 @@ if __name__ == "__main__":
     parser.add_argument("--predictions", type=str, default="../llm_results/gpt-4o-mini/movie-MisinformedQuery_gpt-4o-mini-prediction.jsonl", help="Path to predictions file")
     parser.add_argument("--output_dir", type=str, default="../eval_results", help="Path to output folder")
     parser.add_argument("--k", type=int, help="Number of recommendations to evaluate", default=0)
-    
+    parser.add_argument("--ids", type=json.loads, help="ID of the prediction to evaluate", default=[])
+
     logging.basicConfig(level=logging.INFO)
 
     args = parser.parse_args() 

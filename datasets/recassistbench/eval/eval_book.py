@@ -11,6 +11,9 @@ import os
 import requests
 from difflib import SequenceMatcher
 
+def fmt(v):
+    return f"{float(v):.2f}".lstrip("0")  # remove o zero antes do ponto
+
 def is_similar(name1, name2, threshold=0.65):
     """
     Check if two strings are similar
@@ -183,18 +186,16 @@ def eval(prediction_response,groundtrue_data, query_type='condition'):
 
     predicted_book_titles = get_predicted_book_titles(prediction_response)
     matched_book_titles = preprocess_matching(predicted_book_titles, groundtrue_data['bookSubset'])
-    # print(predicted_movie_titles)
-    # print(groundtrue_data['movieSubset'])
-    # print(matched_movie_titles) 
+
+    predicted_book_titles = [m.rstrip() for m in predicted_book_titles]
     
     # Print book proportion in kg
 
     # logging.info(f"Ratio of Books in KG: {len([m for m in predicted_book_ids if m is not None])/len(predicted_book_titles)}")
-    
     recall_score = recall(matched_book_titles, groundtrue_data['bookSubset'])
     precision_score = precision(matched_book_titles, groundtrue_data['bookSubset'])
     ndcg_score = ndcg(matched_book_titles, groundtrue_data['bookSubset'])
-
+    #print("predicted_book_titles", predicted_book_titles)
     if query_type == 'condition':
         predicted_book_ids = [name2id(book) for book in predicted_book_titles] 
         recall_score = max(recall_score, recall(predicted_book_ids, groundtrue_data['bookSubset']))
@@ -204,7 +205,6 @@ def eval(prediction_response,groundtrue_data, query_type='condition'):
     results["recall"] = recall_score
     results["precision"] = precision_score
     results["ndcg"] = ndcg_score
-    
     # Calculate existence ratio
     
     # titles_need_check = [predicted_book_titles[i] for i, book in enumerate(predicted_book_ids) if not book] if query_type == 'condition' else predicted_book_titles
@@ -215,7 +215,6 @@ def eval(prediction_response,groundtrue_data, query_type='condition'):
     #     existence_ratio_score = sum(existence_for_titles_need_check) / len(predicted_book_titles)
     # results["existence_ratio"] = existence_ratio_score
     # logging.info(f"Existence ratio: {existence_ratio_score}")
-
 
     if query_type == 'condition':
         satisfied_count = 0
@@ -232,8 +231,9 @@ def eval(prediction_response,groundtrue_data, query_type='condition'):
                     else:
                         unsatisfied_books.append(book_name)
                         # logging.info(f"{book_name} checked by KG: False")
-        satisfied_count += len([book for book in groundtrue_data['bookSubset'] if book in predicted_book_ids])
-        satisfied_ratio = satisfied_count / len([m for m in predicted_book_ids if m is not None]) if exist_in_KG_ratio != 0 else -1
+
+        satisfied_count += len([book for book in groundtrue_data['bookSubset'] if book in predicted_book_titles])
+        satisfied_ratio = satisfied_count / len([m for m in predicted_book_titles if m is not None]) if exist_in_KG_ratio != 0 else -1
         results["satisfied_ratio"] = satisfied_ratio
         results["unsatisfied_books"] = unsatisfied_books
         results["existence_in_KG_ratio"] = exist_in_KG_ratio
@@ -262,9 +262,8 @@ def readGroundTruths(groundtruths_file):
     return groundtruths
 
 def calculate_avg(metric, evaluation_results):
-    result = [result[metric] for result in evaluation_results if result[metric] != -1]
-    # print(result)
-    return sum(result) / len(result)
+    result = [result[metric] for result in evaluation_results if result[metric] != -1] 
+    return sum(result) / len(result) if len(result) > 0 else 0
 
 def eval_batch(args):
     # Read predictions
@@ -273,16 +272,23 @@ def eval_batch(args):
     groundtruths = readGroundTruths(args.groundtruths)
     # if args.query_type == 'condition':
     #     assert len(predictions) == len(groundtruths)
+
+    allowed_ids = set(args.ids)
+    groundtruths = [data for data in groundtruths if (not allowed_ids) or (data['data_idx'] in allowed_ids)]
+    predictions = [data for data in predictions if (not allowed_ids) or (int(data['id']) in allowed_ids)]
     
     # Check if there is a intermediate result file
     output_path = os.path.join(args.output_dir, args.predictions.split("/")[-1].replace(".jsonl", ".json"))
-    if os.path.exists(output_path):
-        with open(output_path, "r") as file:
-            evaluation_results = json.load(file)
-        start_idx = len(evaluation_results)
-    else:
-        evaluation_results = []
-        start_idx = 0
+    #if os.path.exists(output_path):
+    #    with open(output_path, "r") as file:
+    #        evaluation_results = json.load(file)
+    #    start_idx = len(evaluation_results)
+    #else:
+    #    evaluation_results = []
+    #    start_idx = 0
+    
+    evaluation_results = []
+    start_idx = 0
 
     for i in tqdm(range(len(predictions)), desc="Evaluating predictions"):
         if i < start_idx:
@@ -315,29 +321,48 @@ def eval_batch(args):
         if i % 20 == 0:
             with open(output_path, "w") as file:
                 json.dump(evaluation_results, file, indent=4)
+
     # Write to file one last time
     with open(output_path, "w") as file:
         json.dump(evaluation_results, file, indent=4)
-    metrics = [m for m in list(evaluation_results[0].keys()) if m not in ['id', 'unsatisfied_books','Condition Num']]
+    metrics = [m for m in list(evaluation_results[0].keys()) if m not in ['id', 'unsatisfied_books']]
     avgs = {metric: calculate_avg(metric, evaluation_results) for metric in metrics}
+    FTR = "ftr"
+    RECALL = "recall"
+    PRECISION = "precision"
+    NDCG = "ndcg"
+    SR = "satisfied_ratio"
+
+    # imprime a linha da tabela (as chaves do LaTeX são duplicadas no f-string)
+    print(
+        f" & {fmt(avgs['ftr'])}"
+        f" & {fmt(avgs['recall'])}"
+        f" & {fmt(avgs['precision'])}"
+        f" & {fmt(avgs['ndcg'])}"
+        f" & {fmt(avgs['satisfied_ratio'])}"
+    )
+
     for metric, avg in avgs.items():
-        print(f" {metric.replace('_', ' ').title()}: {avg}")
-    
-    
-    
+        if metric != "condition_num" and metric != "existence_in_KG_ratio":
+            print(f" {metric.replace('_', ' ').title()}: {avg}")
+            
+            
+
     return evaluation_results
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate the performance of a recommendation system")
     parser.add_argument("--uri", type=str, default="bolt://localhost:7687", help="URI for Neo4j database")
     parser.add_argument("--username", type=str, default="neo4j", help="Username for Neo4j database")
-    parser.add_argument("--password", type=str, default="", help="Password for Neo4j database")
+    parser.add_argument("--password", type=str, default="arara123", help="Password for Neo4j database")
     parser.add_argument("--database", type=str, default="", help="Target database name")
     parser.add_argument("--schema", type=str, default="book-schema.json", help="Path to schema file")
     parser.add_argument("--query_type", type=str, default="collaborative", choices=["condition", "collaborative"], help="query type")
     parser.add_argument("--groundtruths", type=str, default="../dataset/book/ItemBasedQuery.json", help="Path to ground truths file")   
     parser.add_argument("--predictions", type=str, default="../llm_results/gpt-4o-mini/book-ItemBasedQuery_gpt-4o-mini-prediction.jsonl", help="Path to predictions file")
     parser.add_argument("--output_dir", type=str, default="../eval_results", help="Path to output folder")
+    parser.add_argument("--ids", type=json.loads, help="ID of the prediction to evaluate", default=[])
+
     logging.basicConfig(level=logging.INFO)
     args = parser.parse_args() 
 
