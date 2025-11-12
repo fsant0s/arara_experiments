@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script para construir o Knowledge Graph de filmes no Neo4j
+Script to build the movie Knowledge Graph in Neo4j
 """
 
 import json
@@ -10,7 +10,7 @@ from tqdm import tqdm
 import os
 
 # ============================================================================
-# CONFIGURAÇÕES
+# SETTINGS
 # ============================================================================
 NEO4J_URI = "neo4j://127.0.0.1:7687"
 NEO4J_USERNAME = "neo4j"
@@ -18,59 +18,59 @@ NEO4J_PASSWORD = "arara123"
 NEO4J_DATABASE = "neo4j"
 
 SCHEMA_FILE = "datasets/recassistbench/eval/movie-schema.json"
-MOVIE_INFO_FILE = "datasets/recassistbench/dataset/movie/movie_info.jsonl"  # Usar o filtrado!
+MOVIE_INFO_FILE = "datasets/recassistbench/dataset/movie/movie_info.jsonl"  # Use the filtered one!
 MOVIES_DAT_FILE = "datasets/recassistbench/dataset/movie/movies.dat"
 
-CLEAR_DATABASE = True  # True para limpar banco antes de construir
+CLEAR_DATABASE = True  # True to clear the database before building
 
 
 class MovieKGBuilder:
-    """Constrói o Knowledge Graph de filmes no Neo4j"""
+    """Builds the movie Knowledge Graph in Neo4j"""
     
     def __init__(self, uri, username, password, database, schema_path):
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
         self.database = database
         
-        # Carregar schema
+        # Load schema
         with open(schema_path, 'r') as f:
             self.schema = json.load(f)
         
-        # Processar mapeamentos de relações
+        # Process relation mappings
         self.relation_mappings = self.schema.get('relation_mappings', {})
         
-        # Criar mapeamento inverso: nome_original -> nome_padronizado
+        # Create reverse mapping: original_name -> standardized_name
         self.relation_map = {}
         for standard_name, variants in self.relation_mappings.items():
             for variant in variants:
                 self.relation_map[variant] = standard_name
         
-        # Mapeamento de relação -> tipo de nó alvo
+        # Mapping from relation -> target node type
         self.relation_targets = {}
         for rel in self.schema['relations']:
             self.relation_targets[rel['type']] = rel['target']
         
-        print(f"✓ Schema carregado: {len(self.relation_map)} mapeamentos")
+        print(f"✓ Schema loaded: {len(self.relation_map)} mappings")
     
     def test_connection(self):
-        """Testa conexão com Neo4j"""
+        """Tests the connection with Neo4j"""
         try:
             with self.driver.session(database=self.database) as session:
                 session.run("RETURN 1")
-            print("✓ Conexão OK")
+            print("✓ Connection OK")
             return True
         except Exception as e:
-            print(f"❌ Erro: {e}")
+            print(f"❌ Error: {e}")
             return False
     
     def clear_database(self):
-        """Limpa o banco de dados"""
-        print("Limpando banco...")
+        """Clears the database"""
+        print("Clearing database...")
         with self.driver.session(database=self.database) as session:
             session.run("MATCH (n) DETACH DELETE n")
-        print("✓ Banco limpo")
+        print("✓ Database cleared")
     
     def create_indexes(self):
-        """Cria índices para melhorar performance"""
+        """Creates indexes to improve performance"""
         indexes = [
             "CREATE INDEX movie_title IF NOT EXISTS FOR (m:Movie) ON (m.Title)",
             "CREATE INDEX movie_id IF NOT EXISTS FOR (m:Movie) ON (m.movieId)",
@@ -88,13 +88,13 @@ class MovieKGBuilder:
                 except:
                     pass
         
-        print("✓ Índices criados")
+        print("✓ Indexes created")
     
     def load_movie_ids_and_genres(self, movies_dat_path):
-        """Carrega IDs dos filmes e gêneros do movies.dat"""
+        """Loads movie IDs and genres from movies.dat"""
         title_to_id = {}
         title_to_genres = {}
-        id_to_title = {}  # Mapeamento reverso: ID -> título do movies.dat
+        id_to_title = {}  # Reverse mapping: ID -> title from movies.dat
         
         with open(movies_dat_path, 'r', encoding='latin-1') as f:
             for line in f:
@@ -108,24 +108,24 @@ class MovieKGBuilder:
                     title_to_genres[title] = genres
                     id_to_title[movie_id] = title
         
-        print(f"✓ {len(title_to_id)} filmes carregados do movies.dat")
+        print(f"✓ {len(title_to_id)} movies loaded from movies.dat")
         return title_to_id, title_to_genres, id_to_title
     
     def normalize_title(self, title):
-        """Normaliza título para matching"""
-        # Remove caracteres especiais, parênteses com anos, etc
+        """Normalizes title for matching"""
+        # Remove special characters, parentheses with years, etc.
         normalized = re.sub(r'\s*\(\d{4}\)\s*', '', title)  # Remove (1994)
-        normalized = re.sub(r'[^\w\s]', '', normalized)     # Remove pontuação
+        normalized = re.sub(r'[^\w\s]', '', normalized)     # Remove punctuation
         normalized = normalized.strip().lower()
         return normalized
     
     def find_movie_id(self, title, title_to_id):
-        """Encontra ID do filme"""
-        # Tentar match exato primeiro
+        """Finds the movie ID"""
+        # Try exact match first
         if title in title_to_id:
             return title_to_id[title]
         
-        # Tentar match normalizado
+        # Try normalized match
         normalized = self.normalize_title(title)
         for dat_title, movie_id in title_to_id.items():
             if self.normalize_title(dat_title) == normalized:
@@ -134,18 +134,18 @@ class MovieKGBuilder:
         return None
     
     def find_dat_title(self, movie_id, id_to_title):
-        """Encontra título do movies.dat pelo ID"""
+        """Finds the movies.dat title by ID"""
         return id_to_title.get(movie_id)
     
     def split_entities(self, value):
-        """Divide valores múltiplos (separados por ; ou ,)"""
+        """Splits multiple values (separated by ; or ,)"""
         if not value:
             return []
         
-        # Dividir por ; primeiro, depois por vírgula
+        # Split by ; first, then by comma
         entities = []
         for part in value.split(';'):
-            # Se houver vírgulas, dividir também
+            # If there are commas, split them as well
             if ',' in part:
                 entities.extend([e.strip() for e in part.split(',') if e.strip()])
             else:
@@ -155,24 +155,24 @@ class MovieKGBuilder:
         return [e for e in entities if e]
     
     def normalize_field_name(self, field_name):
-        """Normaliza nome do campo para matching com o schema"""
-        # Converte para lowercase e substitui espaços por underscores
+        """Normalizes the field name to match the schema"""
+        # Convert to lowercase and replace spaces/hyphens with underscores
         normalized = field_name.lower().replace(' ', '_').replace('-', '_')
         return normalized
     
     def find_standard_relation(self, field_name):
-        """Encontra a relação padrão para um campo, com normalização"""
-        # Tentar match exato primeiro
+        """Finds the standard relation for a field, with normalization"""
+        # Try exact match first
         if field_name in self.relation_map:
             return self.relation_map[field_name]
         
-        # Tentar match normalizado
+        # Try normalized match
         normalized = self.normalize_field_name(field_name)
         for variant, standard in self.relation_map.items():
             if self.normalize_field_name(variant) == normalized:
                 return standard
         
-        # Tentar match case-insensitive
+        # Try case-insensitive match
         field_lower = field_name.lower()
         for variant, standard in self.relation_map.items():
             if variant.lower() == field_lower:
@@ -181,17 +181,17 @@ class MovieKGBuilder:
         return None
 
     def create_movie_and_relations(self, movie_data, title_to_id, title_to_genres, id_to_title):
-        """Cria nó do filme e todas as suas relações"""
+        """Creates the movie node and all its relations"""
         
         title = movie_data.get('Title')
         if not title:
             return
         
-        # Encontrar ID e gêneros
+        # Find ID and genres
         movie_id = self.find_movie_id(title, title_to_id)
         movie_genres = title_to_genres.get(title, [])
         
-        # Se encontrou ID no movies.dat, usar o título do movies.dat
+        # If the ID was found in movies.dat, use the movies.dat title
         final_title = title
         if movie_id:
             dat_title = self.find_dat_title(movie_id, id_to_title)
@@ -199,7 +199,7 @@ class MovieKGBuilder:
                 final_title = dat_title
         
         with self.driver.session(database=self.database) as session:
-            # 1. Criar nó do filme
+            # 1. Create the movie node
             movie_props = {'Title': final_title}
             if movie_id:
                 movie_props['movieId'] = movie_id
@@ -209,23 +209,23 @@ class MovieKGBuilder:
                 SET m += $props
             """, title=final_title, props=movie_props)
             
-            # 2. Criar relações baseado no schema
+            # 2. Create relations based on the schema
             for field_name, value in movie_data.items():
                 if field_name == 'Title' or not value:
                     continue
                 
-                # Verificar se é uma relação mapeada (com normalização)
+                # Check if it's a mapped relation (with normalization)
                 standard_relation = self.find_standard_relation(field_name)
                 if not standard_relation:
                     continue
                 
-                # Obter tipo do nó alvo
+                # Get target node type
                 target_type = self.relation_targets.get(standard_relation, 'Thing')
                 
-                # Dividir múltiplas entidades
+                # Split multiple entities
                 entities = self.split_entities(value)
                 
-                # Criar nó e relação para cada entidade
+                # Create node and relation for each entity
                 for entity in entities:
                     if not entity:
                         continue
@@ -240,7 +240,7 @@ class MovieKGBuilder:
                     except Exception as e:
                         pass
             
-            # 3. Adicionar gêneros do movies.dat se não existirem no movie_info.jsonl
+            # 3. Add genres from movies.dat if they don't exist in movie_info.jsonl
             if movie_genres and not movie_data.get('Genre') and not movie_data.get('Genres'):
                 for genre in movie_genres:
                     if genre.strip():
@@ -255,41 +255,41 @@ class MovieKGBuilder:
                             pass
     
     def build_graph(self, movie_info_path, movies_dat_path):
-        """Constrói o grafo completo"""
+        """Builds the complete graph"""
         title_to_id, title_to_genres, id_to_title = self.load_movie_ids_and_genres(movies_dat_path)
         
         with open(movie_info_path, 'r', encoding='utf-8') as f:
             total = sum(1 for _ in f)
         
-        print(f"Processando {total} filmes...")
+        print(f"Processing {total} movies...")
         
         with open(movie_info_path, 'r', encoding='utf-8') as f:
-            for line in tqdm(f, total=total, desc="Construindo KG"):
+            for line in tqdm(f, total=total, desc="Building KG"):
                 try:
                     movie_data = json.loads(line)
                     self.create_movie_and_relations(movie_data, title_to_id, title_to_genres, id_to_title)
                 except:
                     pass
         
-        print(f"✓ Concluído")
+        print(f"✓ Completed")
     
     def get_stats(self):
-        """Retorna estatísticas do grafo"""
+        """Returns graph statistics"""
         with self.driver.session(database=self.database) as session:
-            # Total nós
+            # Total nodes
             total_nodes = session.run("MATCH (n) RETURN count(n) as c").single()['c']
             
-            # Nós por tipo
+            # Nodes by type
             nodes_by_type = session.run("""
                 MATCH (n) 
                 RETURN labels(n)[0] AS type, count(*) AS count 
                 ORDER BY count DESC
             """).data()
             
-            # Total relações
+            # Total relationships
             total_rels = session.run("MATCH ()-[r]->() RETURN count(r) as c").single()['c']
             
-            # Relações por tipo
+            # Relationships by type
             rels_by_type = session.run("""
                 MATCH ()-[r]->() 
                 RETURN type(r) AS type, count(*) AS count 
@@ -304,20 +304,20 @@ class MovieKGBuilder:
             }
     
     def print_stats(self):
-        """Imprime estatísticas do grafo"""
+        """Prints graph statistics"""
         stats = self.get_stats()
         
         print("\n" + "="*70)
-        print("ESTATÍSTICAS DO KNOWLEDGE GRAPH")
+        print("KNOWLEDGE GRAPH STATISTICS")
         print("="*70)
         
-        print(f"\nTotal de Nós: {stats['total_nodes']:,}")
-        print("\nNós por Tipo:")
+        print(f"\nTotal Nodes: {stats['total_nodes']:,}")
+        print("\nNodes by Type:")
         for item in stats['nodes_by_type']:
             print(f"  • {item['type']:20s}: {item['count']:,}")
         
-        print(f"\nTotal de Relações: {stats['total_relations']:,}")
-        print("\nRelações por Tipo:")
+        print(f"\nTotal Relationships: {stats['total_relations']:,}")
+        print("\nRelationships by Type:")
         for item in stats['relations_by_type'][:15]:  # Top 15
             print(f"  • {item['type']:20s}: {item['count']:,}")
         
@@ -328,19 +328,19 @@ class MovieKGBuilder:
 
 
 def main():
-    """Construir Knowledge Graph de filmes no Neo4j"""
+    """Build the movie Knowledge Graph in Neo4j"""
     
-    # Verificar arquivos
+    # Check files
     for path in [SCHEMA_FILE, MOVIE_INFO_FILE, MOVIES_DAT_FILE]:
         if not os.path.exists(path):
-            print(f"Arquivo não encontrado: {path}")
+            print(f"File not found: {path}")
             return
     
     print("="*70)
-    print("CONSTRUINDO KNOWLEDGE GRAPH")
+    print("BUILDING KNOWLEDGE GRAPH")
     print("="*70)
     
-    # Construir KG
+    # Build KG
     builder = MovieKGBuilder(
         uri=NEO4J_URI,
         username=NEO4J_USERNAME,
@@ -360,14 +360,13 @@ def main():
         builder.build_graph(MOVIE_INFO_FILE, MOVIES_DAT_FILE)
         builder.print_stats()
         
-        print("Knowledge Graph construído com sucesso!")
+        print("Knowledge Graph built successfully!")
         
     except Exception as e:
-        print(f"\n❌ Erro: {e}")
+        print(f"\n❌ Error: {e}")
     finally:
         builder.close()
 
 
 if __name__ == '__main__':
     main()
-

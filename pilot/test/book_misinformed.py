@@ -35,7 +35,7 @@ dataset = dataloader.load()  # or dataloader.load(data_idx=<int>) to load a sing
 data = dataset[11]
 
 print("--------------------------------")
-print("-------- DATA INICIAL ----------")
+print("-------- STARTING ----------")
 print("Data:", data)
 print("--------------------------------\n")
 

@@ -1,7 +1,6 @@
 from agents import Agent, Module, Orchestrator
 from tools import books
 
-from capabilities.memory import ListMemory, MemoryContent
 from user_history_book import get_filtered_user_history
 
 
@@ -12,11 +11,11 @@ def create_explicit_orchestrator(
     memory_size: int = 10,
 ) -> Orchestrator:
     """
-    Módulo explícito:
-      - RetrieverAgent: recupera TODOS os itens relevantes (sem top-k).
-      - RecommenderExplicitgent: seleciona apenas top_k = bookCount com base nas preferências ANTIGAS do usuário
-        fornecidas em `history_line` (sem adicionar itens; sem usar ferramentas).
-      - Saída final: uma única linha com ' [SEP] ' entre os títulos.
+   Explicit module:
+      - RetrieverAgent: retrieves ALL relevant items (no top-k).
+      - RecommenderExplicitgent: selects only top_k = bookCount based on the user's OLD preferences
+        provided in `history_line` (no adding items; no using tools).
+      - Final output: a single line with ' [SEP] ' between titles.
     """
 
     bookCount = data.get("bookCount", None)

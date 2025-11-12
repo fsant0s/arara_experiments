@@ -42,24 +42,24 @@ VALID_MODELS = {
 }
 
 def validate_response(response):
-  """Valida se a resposta está no formato esperado"""
+  """Validates whether the response is in the expected format"""
   if not response:
-    return False, "Resposta vazia"
+    return False, "Empty response"
   
-  # Verifica se tem [SEP]
+  # Check if it contains [SEP]
   if '[SEP]' not in response:
-      return False, "Sem separador [SEP]"
+      return False, "Missing [SEP] separator"
   
-  # Verifica se tem pelo menos um título
+  # Check if at least one title is present
   parts = [p.strip() for p in response.split('[SEP]') if p.strip()]
   if len(parts) == 0:
-    return False, "Nenhum título encontrado"
+    return False, "No titles found"
   
-  # Verifica se tem anos inválidos (só números)
+  # Check for invalid years (only numbers)
   if all(p.replace('[', '').replace(']', '').strip().isdigit() for p in parts):
-    return False, "Apenas números/anos (sem títulos)"
+    return False, "Only numbers/years (no titles)"
   
-  return True, f"{len(parts)} filmes encontrados"
+  return True, f"{len(parts)} movies found"
 
 def save_response(
       dataset_name, 
@@ -70,8 +70,8 @@ def save_response(
       data,
       arara_response,
     ):
-  """Salva todas as respostas em formato JSONL"""
-  # Usa caminho absoluto relativo ao script
+  """Saves all responses in JSONL format"""
+  # Uses absolute path relative to the script
 
   result = {
         "type": query_type,
@@ -89,10 +89,10 @@ def save_response(
   with open(filepath, "a") as f:
     f.write(json.dumps(result) + "\n")
 
-  print(f"✅ Arquivo salvo com {len(result)} resultados")
+  print(f"✅ File saved with {len(result)} results")
 
 def main(*args):
-  # Conecta ao Neo4j no início
+  # Connect to Neo4j at startup
   if not connect_to_neo4j():
     sys.exit(1)
   
@@ -128,14 +128,14 @@ def main(*args):
   # dataset = random.sample(impl_dataloader.load(), dataset_size)
   # dataset = random.sample(expl_dataloader.load(), dataset_size)
   # dataset = random.sample(expl_dataloader.load(), dataset_size) + random.sample(impl_dataloader.load(), dataset_size)
-  total = len(dataset)  # Total de itens a processar
+  total = len(dataset)  # Total items to process
   
-  print(f"🚀 Iniciando processamento: {total} itens")
+  print(f"🚀 Starting processing: {total} items")
   print("=" * 60)
 
   try:
     for idx, data in enumerate(dataset, start=1):
-      print(f"\n📊 [{idx}/{total}] Processando data_idx={data['data_idx']}")
+      print(f"\n📊 [{idx}/{total}] Processing data_idx={data['data_idx']}")
       max_retries = 3
       arara_response = None
 
@@ -182,30 +182,30 @@ def main(*args):
           max_round=2,
         )
 
-        # ------------------ Orchestrator principal ------------------
+        # ------------------ Main orchestrator ------------------
         main_orchestrator = Orchestrator(
           name="main_orchestrator",
           module=main_module,
           llm_config=llm_config,
-          description="Routes to the either Explicit, Implicit, or Misinformed module based on the user query.",
+          description="Routes to either the Explicit, Implicit, or Misinformed module based on the user query.",
         )
 
         message = data.get('direct_description_query') or data.get('query')
         user.talk_to(main_orchestrator, message=message, silent=False)
         arara_response = main_orchestrator.last_message(user)['content']
 
-        # Validar resposta
+        # Validate response
         is_valid, validation_msg = True, "It is valid." #validate_response(arara_response)
         if is_valid:
-          print(f"✅ Válido: {validation_msg}")
+          print(f"✅ Valid: {validation_msg}")
           break
         else:
-          print(f"⚠️  Tentativa {attempt+1}/{max_retries} - {validation_msg}")
+          print(f"⚠️  Attempt {attempt+1}/{max_retries} - {validation_msg}")
           if attempt < max_retries - 1:
-            print(f"   Resposta: {arara_response[:100]}...")
-            print(f"   Tentando novamente...")
+            print(f"   Response: {arara_response[:100]}...")
+            print(f"   Trying again...")
           else:
-            print(f"❌ Resposta inválida após {max_retries} tentativas")
+            print(f"❌ Invalid response after {max_retries} attempts")
 
 
       predict_type = list(main_orchestrator._oai_messages.values())[1]
@@ -219,7 +219,7 @@ def main(*args):
       elif data.get("multihop_info"):
         entry_type = "Implicit"
   
-      print(f"✅ [{idx}/{total}] Concluído")
+      print(f"✅ [{idx}/{total}] Completed")
       save_response(dataset_name, 
                     llm_config_name, 
                     entry_type,  
@@ -230,17 +230,16 @@ def main(*args):
                     )
       
   except KeyboardInterrupt:
-      print("\n\nInterrompido pelo usuário")
-      print(f"📊 Processados {idx}/{total} itens (Implicit)")
+      print("\n\nInterrupted by user")
+      print(f"📊 Processed {idx}/{total} items (Implicit)")
 
 
   else:   
-    # Salvamento final
+    # Final saving
     print("\n" + "=" * 60)
-    print(f"✅ Pipeline concluído! {idx}/{total} itens")
+    print(f"✅ Pipeline completed! {idx}/{total} items")
     print("=" * 60)
 
 if __name__ == "__main__":
 # Example: python pilot/pipeline.py book Implicit True
   main(*sys.argv[1:])
-

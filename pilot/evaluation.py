@@ -1,4 +1,3 @@
-
 from typing import Any, Dict, Optional
 
 
@@ -19,38 +18,38 @@ def report_metrics(
     k: int = 0,
 ) -> Dict[str, Any]:
     """
-    Avalia a resposta do Arara e, opcionalmente, mostra os resultados de um modelo existente.
+    Evaluates the Arara response and optionally shows the results of an existing model.
 
     Args:
-        dataloader: instância de Dataloader já configurada para o dataset em uso.
-        data: item do dataset contendo pelo menos 'data_idx' e 'movieSubset'.
-        arara_response: resposta produzida pelo agente (itens separados por [SEP]).
-        model_name: se fornecido, imprime também a predição e métricas pré-calculadas desse modelo.
-        k: top-k para avaliar (0 = todas as recomendações da resposta).
+        dataloader: instance of Dataloader already configured for the dataset in use.
+        data: dataset item containing at least 'data_idx' and 'movieSubset'.
+        arara_response: response produced by the agent (items separated by [SEP]).
+        model_name: if provided, also prints the prediction and pre-calculated metrics of that model.
+        k: top-k to evaluate (0 = all recommendations from the response).
 
     Returns:
-        Um dicionário com as métricas do Arara (tempo real) e, se disponível, do modelo.
+        A dictionary with Arara's real-time metrics and, if available, the model’s metrics.
     """
 
     results: Dict[str, Any] = {}
 
-    # ===== Avaliação do Arara (tempo real) =====
+    # ===== Arara evaluation (real-time) =====
     arara_eval = dataloader.evaluate_response(arara_response, data_idx=data["data_idx"], k=k)
     results["arara_eval"] = arara_eval
 
-    # ===== Depois: resultados do ARARA =====
+    # ===== Then: ARARA results =====
     print("=" * 80)
     print("=== ARARA ===")
     print(f"FTR:        {arara_eval['ftr']}")
     print(f"Predicted:  {arara_response}")
-    print(f"Matches:    {", ".join(arara_eval['matched_titles'])}")
+    print(f"Matches:    {', '.join(arara_eval['matched_titles'])}")
     print("-- Metrics --")
     print(f"Recall:    {_fmt_num(arara_eval['recall'])}")
     print(f"Precision: {_fmt_num(arara_eval['precision'])}")
     print(f"NDCG:      {_fmt_num(arara_eval['ndcg'])}")
     # print(f"Satisfied Ratio: {_fmt_num(arara_eval['satisfied_ratio'])}")
 
-     # ===== Modelo existente primeiro (se disponível) =====
+    # ===== Existing model first (if available) =====
     if model_name:
         prediction = dataloader.get_result(data_idx=data["data_idx"], model_name=model_name)
         eval_result = dataloader.get_eval_result(data_idx=data["data_idx"], model_name=model_name)
@@ -65,17 +64,17 @@ def report_metrics(
 
         print("-- Metrics --")
         if eval_result:
-            print(f"Recall:    {_fmt_num(eval_result.get('recall'))}")  #how many of the relevant movies were successfully recommended — it reflects coverage of the recommendations
-            print(f"Precision: {_fmt_num(eval_result.get('precision'))}") #how many of the recommended movies are actually relevant — it reflects accuracy of the recommendations.
-            print(f"NDCG:      {_fmt_num(eval_result.get('ndcg'))}") #how well the order of the recommended movies matches the ideal (ground truth) order.
-            #print(f"Satisfied Ratio: {_fmt_num(eval_result.get('satisfied_ratio'))}")
+            print(f"Recall:    {_fmt_num(eval_result.get('recall'))}")  # how many relevant movies were successfully recommended — reflects coverage
+            print(f"Precision: {_fmt_num(eval_result.get('precision'))}")  # how many recommended movies are actually relevant — reflects accuracy
+            print(f"NDCG:      {_fmt_num(eval_result.get('ndcg'))}")  # how well the recommendation order matches the ideal (ground truth) order
+            # print(f"Satisfied Ratio: {_fmt_num(eval_result.get('satisfied_ratio'))}")
         else:
-            print("Sem métricas pré-calculadas.")
+            print("No pre-calculated metrics available.")
    
-    # ===== Contexto (ground truth) =====
+    # ===== Context (ground truth) =====
     print("=" * 80)
     print("=== Ground truth ===")
-    print(f"Itens:   {arara_eval['ground_truth']}")
+    print(f"Items:   {arara_eval['ground_truth']}")
 
     return results
 

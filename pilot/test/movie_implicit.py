@@ -34,7 +34,7 @@ dataset = dataloader.load()
 data = dataset[20]
 
 print("--------------------------------")
-print("-------- DATA INICIAL ----------")
+print("-------- STARTING ----------")
 print("Data:", data)
 print("--------------------------------\n")
 

@@ -4,7 +4,7 @@ import random
 
 
 def get_data_path(filename: str) -> str:
-    """Retorna o caminho correto para os arquivos de dados."""
+    """Returns the correct path for the data files."""
     if os.path.exists("datasets/recassistbench/dataset/movie/"):
         base_path = "datasets/recassistbench/dataset/movie/"
     else:
@@ -13,7 +13,7 @@ def get_data_path(filename: str) -> str:
 
 
 def get_user_history(user_id: int) -> List[Dict[str, Any]]:
-    """Busca o histórico de avaliações de um usuário específico."""
+    """Fetches the rating history of a specific user."""
     ratings_path = get_data_path("ratings.dat")
     history = []
     
@@ -29,14 +29,14 @@ def get_user_history(user_id: int) -> List[Dict[str, Any]]:
                             "timestamp": int(parts[3]) if len(parts) > 3 else None
                         })
     except FileNotFoundError:
-        print(f"❌ Arquivo não encontrado: {ratings_path}")
+        print(f"❌ File not found: {ratings_path}")
         return []
     
     return history
 
 
 def get_movie_info(movie_id: int) -> Dict[str, Any]:
-    """Busca informações de um filme específico."""
+    """Fetches information for a specific movie."""
     movies_path = get_data_path("movies.dat")
     
     try:
@@ -50,15 +50,15 @@ def get_movie_info(movie_id: int) -> Dict[str, Any]:
                         "genres": parts[2].split('|') if len(parts) > 2 else []
                     }
     except FileNotFoundError:
-        print(f"❌ Arquivo não encontrado: {movies_path}")
+        print(f"❌ File not found: {movies_path}")
     except Exception as e:
-        print(f"❌ Erro ao ler arquivo: {e}")
+        print(f"❌ Error reading file: {e}")
     
     return {}
 
 
 def get_user_movie_titles(user_id: int) -> List[str]:
-    """Retorna apenas os títulos dos filmes que o usuário avaliou."""
+    """Returns only the titles of the movies the user has rated."""
     history = get_user_history(user_id)
     titles = []
     
@@ -72,8 +72,8 @@ def get_user_movie_titles(user_id: int) -> List[str]:
 
 
 def get_filtered_user_history(user_id: int, groundtruth_movie_ids: List[int] = None, neo4j_conditions: List[List[str]] = None, percentage: float = 1.0) -> List[str]:
-    """Retorna o histórico filtrado do usuário com porcentagem aleatória."""
-    # Importa o cliente Neo4j
+    """Returns the user's history filtered with a random percentage."""
+    # Imports the Neo4j client
     try:
         from .neo4j_client import connect_to_neo4j, get_items_from_query, close_connection
     except ImportError:
@@ -82,18 +82,18 @@ def get_filtered_user_history(user_id: int, groundtruth_movie_ids: List[int] = N
         except ImportError:
             neo4j_conditions = None
     
-    # Busca histórico completo do usuário
+    # Fetches the user's complete history
     history = get_user_history(user_id)
     user_movie_titles = []
     
-    # Converte para títulos
+    # Convert to titles
     for item in history:
         movie_info = get_movie_info(item["movie_id"])
         title = movie_info.get("title", "Unknown")
         if title != "Unknown":
             user_movie_titles.append(title)
     
-    # Remove filmes do groundtruth
+    # Remove ground truth movies
     if groundtruth_movie_ids:
         groundtruth_titles = []
         for movie_id in groundtruth_movie_ids:
@@ -104,16 +104,16 @@ def get_filtered_user_history(user_id: int, groundtruth_movie_ids: List[int] = N
         
         user_movie_titles = [title for title in user_movie_titles if title not in groundtruth_titles]
     
-    # Remove filmes das condições do Neo4j
+    # Remove movies that match Neo4j conditions
     if neo4j_conditions:
         try:
             if connect_to_neo4j():
                 neo4j_titles = get_items_from_query(neo4j_conditions)
                 user_movie_titles = [title for title in user_movie_titles if title not in neo4j_titles]
         except Exception as e:
-            print(f"❌ Erro ao conectar com Neo4j: {e}")
+            print(f"❌ Error connecting to Neo4j: {e}")
     
-    # Aplica porcentagem aleatória
+    # Apply random percentage
     if percentage < 1.0:
         sample_size = int(len(user_movie_titles) * percentage)
         user_movie_titles = random.sample(user_movie_titles, min(sample_size, len(user_movie_titles)))
@@ -122,7 +122,7 @@ def get_filtered_user_history(user_id: int, groundtruth_movie_ids: List[int] = N
 
 
 def get_user_history_with_movies(user_id: int) -> List[Dict[str, Any]]:
-    """Busca o histórico de um usuário com informações dos filmes."""
+    """Fetches a user's history with movie information."""
     history = get_user_history(user_id)
     enriched_history = []
     
@@ -138,11 +138,11 @@ def get_user_history_with_movies(user_id: int) -> List[Dict[str, Any]]:
     return enriched_history
     
 if __name__ == "__main__":
-    # Teste simples
+    # Simple test
     user_id = 1
-    print(f"🔍 Testando usuário {user_id}")
+    print(f"🔍 Testing user {user_id}")
     
-    # Teste com porcentagem
+    # Test with percentage
     filtered_titles = get_filtered_user_history(
         user_id=user_id,
         groundtruth_movie_ids=[1193, 661],
@@ -150,7 +150,6 @@ if __name__ == "__main__":
         percentage=0.3
     )
     
-    print(f"   {len(filtered_titles)} filmes (30% do histórico):")
+    print(f"   {len(filtered_titles)} movies (30% of history):")
     for i, title in enumerate(filtered_titles[:5], 1):
         print(f"   {i}. {title}")
-

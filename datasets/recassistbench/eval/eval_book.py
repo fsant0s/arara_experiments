@@ -3,7 +3,7 @@ from neo4j import GraphDatabase
 import json
 import re
 import argparse
-from bs4 import BeautifulSoup
+
 from tqdm import tqdm
 import logging
 import numpy as np

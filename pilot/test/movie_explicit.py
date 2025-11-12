@@ -32,7 +32,7 @@ dataset = dataloader.load(data_idx=3826)
 data = dataset[0]
 
 print("--------------------------------")
-print("-------- DATA INICIAL ----------")
+print("-------- STARTING ----------")
 print("Data:", data)
 print("--------------------------------\n")
 

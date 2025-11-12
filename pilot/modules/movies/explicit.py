@@ -12,11 +12,11 @@ def create_explicit_orchestrator(
     memory_size: int = 10,
 ) -> Orchestrator:
     """
-    Módulo explícito:
-      - RetrieverAgent: recupera TODOS os itens relevantes (sem top-k).
-      - RecommenderExplicitgent: seleciona apenas top_k = movieCount com base nas preferências ANTIGAS do usuário
-        fornecidas em `history_line` (sem adicionar itens; sem usar ferramentas).
-      - Saída final: uma única linha com ' [SEP] ' entre os títulos.
+    Explicit module:
+    * **RetrieverAgent:** retrieves **ALL** relevant items (no top-k).
+    * **RecommenderExplicitgent:** selects only **top_k = movieCount** based on the user's **PAST** preferences provided in `history_line` (without adding items; without using tools).
+    * **Final output:** a single line with `' [SEP] '` between titles.
+
     """
 
     movieCount = data.get("movieCount", None)

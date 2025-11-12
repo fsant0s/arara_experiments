@@ -5,7 +5,7 @@ import json
 
 
 def get_data_path(filename: str) -> str:
-    """Retorna o caminho correto para os arquivos de dados de livros."""
+    """Returns the correct path for the book data files."""
     if os.path.exists("datasets/recassistbench/dataset/book/"):
         base_path = "datasets/recassistbench/dataset/book/"
     else:
@@ -14,7 +14,7 @@ def get_data_path(filename: str) -> str:
 
 
 def get_user_history(user_id: str) -> List[Dict[str, Any]]:
-    """Busca o histórico de avaliações de um usuário específico para livros."""
+    """Fetches the rating history of a specific user for books."""
     ratings_path = get_data_path("ratings.dat")
     history = []
     
@@ -28,17 +28,17 @@ def get_user_history(user_id: str) -> List[Dict[str, Any]]:
                         "rating": float(parts[2])
                     })
     except FileNotFoundError:
-        print(f"❌ Arquivo não encontrado: {ratings_path}")
+        print(f"❌ File not found: {ratings_path}")
         return []
     except Exception as e:
-        print(f"❌ Erro ao ler arquivo: {e}")
+        print(f"❌ Error reading file: {e}")
         return []
     
     return history
 
 
 def get_book_info_from_jsonl(book_title: str) -> Dict[str, Any]:
-    """Busca informações de um livro específico no book_info.jsonl."""
+    """Fetches information for a specific book from book_info.jsonl."""
     books_path = get_data_path("book_info.jsonl")
     
     try:
@@ -48,22 +48,22 @@ def get_book_info_from_jsonl(book_title: str) -> Dict[str, Any]:
                 if book_data.get("Title") == book_title:
                     return book_data
     except FileNotFoundError:
-        print(f"❌ Arquivo não encontrado: {books_path}")
+        print(f"❌ File not found: {books_path}")
     except Exception as e:
-        print(f"❌ Erro ao ler arquivo: {e}")
+        print(f"❌ Error reading file: {e}")
     
     return {}
 
 
 def get_user_book_titles(user_id: str) -> List[str]:
-    """Retorna apenas os títulos dos livros que o usuário avaliou."""
+    """Returns only the titles of the books the user has rated."""
     history = get_user_history(user_id)
     return [item["book_title"] for item in history]
 
 
 def get_filtered_user_history(user_id: str, groundtruth_book_ids: List[str] = None, neo4j_conditions: List[List[str]] = None, percentage: float = 1.0) -> List[str]:
-    """Retorna o histórico filtrado do usuário com porcentagem aleatória."""
-    # Importa o cliente Neo4j para livros
+    """Returns the user's history filtered with a random percentage."""
+    # Imports the Neo4j client for books
     books_module = None
     try:
         import sys
@@ -71,29 +71,29 @@ def get_filtered_user_history(user_id: str, groundtruth_book_ids: List[str] = No
         sys.path.append('.')
         sys.path.append('./pilot')
         
-        # Importar diretamente sem passar pelo __init__.py
+        # Import directly without going through __init__.py
         import importlib.util
         spec = importlib.util.spec_from_file_location('books', './pilot/tools/books.py')
         books_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(books_module)
         
-        # Testa se consegue conectar com Neo4j
+        # Tests whether it can connect to Neo4j
         test_result = books_module.get_existing_nodes()
-        if not test_result:  # Se retorna lista vazia, pode ser erro de conexão
+        if not test_result:  # If it returns an empty list, it may be a connection error
             books_module = None
     except Exception as e:
-        print(f"⚠️ Aviso: Não foi possível conectar com Neo4j: {e}")
+        print(f"⚠️ Warning: Could not connect to Neo4j: {e}")
         books_module = None
     
-    # Busca histórico completo do usuário
+    # Fetches the user's complete history
     history = get_user_history(user_id)
     user_book_titles = [item["book_title"] for item in history]
     
-    # Remove livros do groundtruth
+    # Remove books from the ground truth
     if groundtruth_book_ids:
         user_book_titles = [title for title in user_book_titles if title not in groundtruth_book_ids]
     
-    # Remove livros das condições do Neo4j (apenas se conseguiu conectar)
+    # Remove books from the Neo4j conditions (only if connection succeeded)
     if neo4j_conditions and books_module is not None:
         try:
             neo4j_titles = []
@@ -108,9 +108,9 @@ def get_filtered_user_history(user_id: str, groundtruth_book_ids: List[str] = No
             
             user_book_titles = [title for title in user_book_titles if title not in neo4j_titles]
         except Exception as e:
-            print(f"⚠️ Aviso: Erro ao aplicar filtros Neo4j: {e}")
+            print(f"⚠️ Warning: Error applying Neo4j filters: {e}")
     
-    # Aplica porcentagem=1.0 aleatória
+    # Applies random percentage=1.0
     if percentage < 1.0:
         sample_size = int(len(user_book_titles) * percentage)
         user_book_titles = random.sample(user_book_titles, min(sample_size, len(user_book_titles)))
@@ -119,7 +119,7 @@ def get_filtered_user_history(user_id: str, groundtruth_book_ids: List[str] = No
 
 
 def get_user_history_with_books(user_id: str) -> List[Dict[str, Any]]:
-    """Busca o histórico de um usuário com informações dos livros."""
+    """Fetches the user's history with book information."""
     history = get_user_history(user_id)
     enriched_history = []
     
@@ -137,7 +137,7 @@ def get_user_history_with_books(user_id: str) -> List[Dict[str, Any]]:
 
 
 def get_user_ratings_summary(user_id: str) -> Dict[str, Any]:
-    """Retorna um resumo das avaliações do usuário."""
+    """Returns a summary of the user's ratings."""
     history = get_user_history(user_id)
     
     if not history:
@@ -157,19 +157,19 @@ def get_user_ratings_summary(user_id: str) -> Dict[str, Any]:
 
 
 if __name__ == "__main__":
-    # Teste simples
+    # Simple test
     user_id = "A30TK6U7DNS82R"
-    print(f"🔍 Testando usuário {user_id}")
+    print(f"🔍 Testing user {user_id}")
     
-    # Teste básico
+    # Basic test
     history = get_user_history(user_id)
-    print(f"   {len(history)} livros avaliados:")
+    print(f"   {len(history)} rated books:")
     for i, item in enumerate(history[:5], 1):
         print(f"   {i}. {item['book_title']} - {item['rating']}")
     
     print()
     
-    # Teste com filtros
+    # Test with filters
     filtered_titles = get_filtered_user_history(
         user_id=user_id,
         groundtruth_book_ids=["Dr. Seuss: American Icon"],
@@ -177,15 +177,15 @@ if __name__ == "__main__":
         percentage=0.5
     )
     
-    print(f"   {len(filtered_titles)} livros após filtros (50% do histórico):")
+    print(f"   {len(filtered_titles)} books after filters (50% of history):")
     for i, title in enumerate(filtered_titles[:5], 1):
         print(f"   {i}. {title}")
     
     print()
     
-    # Resumo das avaliações
+    # Ratings summary
     summary = get_user_ratings_summary(user_id)
-    print(f"📊 Resumo das avaliações:")
-    print(f"   Total de livros: {summary['total_books']}")
-    print(f"   Avaliação média: {summary['average_rating']:.2f}")
-    print(f"   Distribuição: {summary['ratings_distribution']}")
+    print(f"📊 Ratings summary:")
+    print(f"   Total books: {summary['total_books']}")
+    print(f"   Average rating: {summary['average_rating']:.2f}")
+    print(f"   Distribution: {summary['ratings_distribution']}")
