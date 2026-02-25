@@ -68,6 +68,30 @@ def ndcg_at_k(
 
     return dcg / ideal_dcg
 
+def pos_at_kr_ke_official(
+    rank_fn, 
+    user_profile, 
+    target_item, # O item 'y' que foi recomendado
+    explanation_items_ordered, 
+    K_r, 
+    K_e
+):
+    # 1. Criar perfil contrafactual removendo os Top-Ke itens explicativos
+    items_to_remove = explanation_items_ordered[:K_e]
+    cf_profile = [item for item in user_profile if item not in items_to_remove]
+    
+    # 2. Obter o novo ranking
+    cf_ranking = rank_fn(cf_profile)
+    
+    # 3. Encontrar a nova posição do item alvo 'y'
+    try:
+        new_rank = cf_ranking.index(target_item) + 1 # +1 pois rank costuma ser 1-based
+    except ValueError:
+        new_rank = float('inf') # Se sumiu do ranking, o rank é muito alto
+        
+    # 4. Retornar 1 se ainda estiver no Top-Kr, 0 caso contrário (Função Indicadora)
+    return 1.0 if new_rank <= K_r else 0.0
+
 
 # -------------------------------------------------------------------
 # 1) POS@K_r, K_e
