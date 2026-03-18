@@ -264,13 +264,17 @@ class ItemIndex:
 
         # Build a dictionary: index_value -> metadata
         self._by_index = {}
+        # Build a dictionary: asin -> metadata (for reverse lookup)
+        self._by_asin = {}
         for _, row in df.iterrows():
             key = int(row[self.index_col])
-            self._by_index[key] = {
-                "asin": row["asin"],
+            item = {
+                "asin": str(row["asin"]).strip(),
                 "title": row["title"],
                 "description": row["description"],
             }
+            self._by_index[key] = item
+            self._by_asin[item["asin"]] = item
 
     # ---------------------------------------------------------
     # Index-based getters (using the value in the `index` column)
@@ -305,6 +309,24 @@ class ItemIndex:
         if index_value not in self._by_index:
             raise KeyError(f"No item found for index {index_value}.")
         return self._by_index[index_value]
+
+    def get_item_by_asin(self, asin: str) -> Optional[Dict[str, Any]]:
+        """
+        Return the full item metadata for a given ASIN.
+
+        Parameters
+        ----------
+        asin : str
+            Amazon Standard Identification Number (e.g. "0486448460").
+
+        Returns
+        -------
+        dict or None
+            Item metadata with keys: asin, title, description.
+            Returns None if no item exists for the given ASIN.
+        """
+        asin_str = str(asin).strip()
+        return self._by_asin.get(asin_str)
 
     def get_asin(self, index_value: int) -> str:
         """Return the ASIN for the given `index` value."""
