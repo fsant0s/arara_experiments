@@ -2,7 +2,6 @@ import os
 import json
 
 from agents import Agent, Module, Orchestrator, User
-from utils import get_llm_config
 
 from typing import Optional, Union, List, Dict, Generator, Tuple, Any
 
@@ -13,8 +12,10 @@ from components.belief_state import (
     update_belief_state,
     compute_context_vector,
 )
-from components.action_selector import ActionType, HeuristicPolicy
+from components.policy import ActionType, LinUCBPolicy, CONTEXT_KEYS
 from components.response_generator import generate_response
+from components.reward import compute_turn_reward
+from components.logger import TurnLogger
 
 
 class Advisor(Agent):
@@ -29,6 +30,10 @@ class Advisor(Agent):
         self,
         name: Optional[str] = "advisor",
         system_message: Optional[Union[str, List]] = DEFAULT_SYSTEM_MESSAGE,
+        bandit_model_path: Optional[str] = None,
+        bandit_log_path: Optional[str] = None,
+        max_turns: int = 6,
+        session_id: str = "",
         **kwargs,
     ):
         super().__init__(
@@ -37,7 +42,12 @@ class Advisor(Agent):
             **kwargs,
         )
 
-        self.policy = HeuristicPolicy()
+        if bandit_model_path:
+            self.policy = LinUCBPolicy.load(bandit_model_path)
+        else:
+            self.policy = LinUCBPolicy()
+
+        self.max_turns = max_turns
         self.triangulation: Optional[TriangulationResult] = None
         self.state: Optional[UserBeliefState] = None
         self._last_advisor_message: str = ""
@@ -45,6 +55,10 @@ class Advisor(Agent):
         self._user_decided: bool = False
         self._chosen_item: str = ""
         self._session_log: List[Dict[str, Any]] = []
+        self._session_id: str = session_id
+        self._logger: Optional[TurnLogger] = (
+            TurnLogger(bandit_log_path) if bandit_log_path else None
+        )
 
         self.unregister_reply_func(Agent._generate_oai_reply)
         self.register_reply(Agent, Advisor.process)
@@ -112,7 +126,11 @@ class Advisor(Agent):
 
     # ─── Session lifecycle ────────────────────────────────────
 
-    def initialize_session(self, recsys_outputs: Dict[str, List[dict]]) -> None:
+    def initialize_session(
+        self,
+        recsys_outputs: Dict[str, List[dict]],
+        session_id: str = "",
+    ) -> None:
         """Run triangulation on the N LLM outputs and create initial belief state."""
         self.triangulation = triangulate(recsys_outputs)
         self.state = create_initial_state()
@@ -121,6 +139,9 @@ class Advisor(Agent):
         self._last_advisor_message = ""
         self._last_items_shown = []
         self._session_log = []
+        if session_id:
+            self._session_id = session_id
+        self.policy.reset()
 
     def first_turn(self) -> Tuple[str, ActionType, UserBeliefState, List[str]]:
         """Generate the first advisor message (before any user response)."""
@@ -143,11 +164,16 @@ class Advisor(Agent):
     ) -> Tuple[str, ActionType, UserBeliefState, List[str]]:
         """
         One conversational turn:
-          1. Update belief state
-          2. Detect decision
-          3. Select action (heuristic policy)
-          4. Generate advisor response
+          1. Snapshot sigma/omega before update
+          2. Update belief state
+          3. Detect decision
+          4. Select action via policy
+          5. Generate advisor response
+          6. Compute reward → update policy → log tuple
         """
+        sigma_before = self.state.preference_specificity
+        omega_before = self.state.overload_risk
+
         self.state = update_belief_state(
             state=self.state,
             user_response=user_response,
@@ -156,7 +182,7 @@ class Advisor(Agent):
             llm_client=self._call_llm,
         )
 
-        self._detect_decision(user_response)
+        self._detect_final_user_decision(user_response)
 
         context = compute_context_vector(self.state, self.triangulation)
         action = self.policy.select(context, user_decided=self._user_decided)
@@ -169,9 +195,56 @@ class Advisor(Agent):
             chosen_item=self._chosen_item,
         )
 
+        has_divergent = self._items_have_divergent(items_shown)
+        all_single = self._items_all_single_source(items_shown)
+
+        reward = compute_turn_reward(
+            user_decided=self._user_decided,
+            sigma_before=sigma_before,
+            sigma_after=self.state.preference_specificity,
+            omega_before=omega_before,
+            omega_after=self.state.overload_risk,
+            items_shown=items_shown,
+            has_divergent_items=has_divergent,
+            all_single_source=all_single,
+            turn=self.state.turn,
+            max_turns=self.max_turns,
+            action=action,
+        )
+
+        self.policy.update(action, context, reward)
+
+        if self._logger:
+            ctx_list = [context.get(k, 0.0) for k in CONTEXT_KEYS]
+            self._logger.log(
+                session_id=self._session_id,
+                turn=self.state.turn,
+                context=ctx_list,
+                action=action.value,
+                reward=reward,
+            )
+
         self._last_advisor_message = response
         self._last_items_shown = items_shown
         return response, action, self.state, items_shown
+
+    def _items_have_divergent(self, items_shown: List[str]) -> bool:
+        if not self.triangulation or not items_shown:
+            return False
+        divergent_titles = set()
+        for lst in self.triangulation.divergent_items.values():
+            for it in lst:
+                divergent_titles.add(it.get("title", "").strip().lower())
+        return any(t.strip().lower() in divergent_titles for t in items_shown)
+
+    def _items_all_single_source(self, items_shown: List[str]) -> bool:
+        if not self.triangulation or not items_shown:
+            return False
+        consensus_titles = {
+            it.get("title", "").strip().lower()
+            for it in self.triangulation.consensus_items
+        }
+        return not any(t.strip().lower() in consensus_titles for t in items_shown)
 
     _DECISION_PROMPT = """You are analyzing a user's message in a recommendation conversation.
 
@@ -199,7 +272,7 @@ Rules:
 - If the user is still asking questions, expressing preferences without choosing, or being vague → decided is false
 - Phrases like "I'll go with X", "I'll stick with X", "I choose X" count as a final decision"""
 
-    def _detect_decision(self, user_response: str) -> None:
+    def _detect_final_user_decision(self, user_response: str) -> None:
         """
         Use a deterministic LLM call (temp=0) to detect whether the user
         has made a final decision and extract the exact item title.
@@ -325,6 +398,10 @@ Rules:
 
 def create_advisor(
     llm_config: Optional[Dict] = None,
+    bandit_model_path: Optional[str] = None,
+    bandit_log_path: Optional[str] = None,
+    max_turns: int = 6,
+    session_id: str = "",
     **kwargs,
 ) -> Advisor:
     """
@@ -334,20 +411,28 @@ def create_advisor(
     ----------
     llm_config : dict, optional
         Custom LLM configuration. Defaults to GPT-4o via OpenRouter.
+    bandit_model_path : str, optional
+        Path to a pre-trained LinUCB model (.npz). Starts fresh if not provided.
+    bandit_log_path : str, optional
+        Path where (context, action, reward) tuples are logged as JSONL.
+    max_turns : int
+        Maximum turns per session (used in reward computation).
+    session_id : str
+        Identifier for this session (e.g. "user_0"). Used in bandit logs.
     **kwargs
-        Forwarded to the Advisor constructor (e.g. skills).
+        Forwarded to the Advisor constructor.
     """
     if llm_config is None:
-        llm_config = get_llm_config(
-            client="openrouter",
-            model="openai/gpt-4o",
-            api_key=os.getenv("OPEN_ROUTER_API_KEY"),
-            base_url="https://openrouter.ai/api/v1",
-        )
+        from config.llm_clients import get_advisor_config
+        llm_config = get_advisor_config("qwen2.5:7b")
 
     return Advisor(
         llm_config=llm_config,
         system_message=Advisor.DEFAULT_SYSTEM_MESSAGE,
         is_termination_msg=lambda msg: "TERMINATE" in (msg.get("content", "") or ""),
+        bandit_model_path=bandit_model_path,
+        bandit_log_path=bandit_log_path,
+        max_turns=max_turns,
+        session_id=session_id,
         **kwargs,
     )

@@ -4,7 +4,7 @@ import json
 import re
 from typing import Callable, Dict, List
 
-from .action_selector import ActionType
+from .policy import ActionType
 from .belief_state import UserBeliefState
 from .debiasing import reorder_by_consensus, limit_items, ensure_divergent_item
 from .triangulation import TriangulationResult

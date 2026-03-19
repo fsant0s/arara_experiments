@@ -1,0 +1,121 @@
+{
+  "user_id": "user_260",
+  "condition": "advisor",
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a1_clarify_preference",
+      "advisor_message": "I noticed that \"The Diana Chronicles\" is a consensus recommendation from all three systems. Are you interested in exploring more about historical biographies, or would you prefer something different, like contemporary fiction or self-help?",
+      "user_response": "",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_seen": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_shown": [
+        "The Diana Chronicles",
+        "Diana: Her True Story - In Her Own Words",
+        "Diana, William, and Harry"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "advisor_message": "Your choice of \"The Diana Chronicles\" is a great match for your preferences. It offers a comprehensive and balanced exploration of Princess Diana's life, aligning well with your desire for depth and fairness. As a follow-up, you might enjoy \"Diana: Her True Story - In Her Own Words\" by Andrew Morton, which provides further insights into her life. TERMINATE",
+      "user_response": "I think I'll give \"The Diana Chronicles\" a try. It sounds like it offers the kind of comprehensive and balanced view I'm looking for. If it's as insightful as it seems, it might just change my mind about the potential of indie projects, at least in book form!",
+      "belief_state": {
+        "preference_specificity": 0.14285714285714285,
+        "preference_dimensions": {
+          "scope": "comprehensive",
+          "tone": "balanced"
+        },
+        "items_seen": [
+          "diana, william, and harry",
+          "diana: her true story - in her own words",
+          "the diana chronicles"
+        ],
+        "items_positive": [
+          "the diana chronicles"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 1.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_shown": [
+        "Diana: Her True Story--in Her Own Words",
+        "Diana: Story of a Princess",
+        "Diana: Her True Story"
+      ]
+    }
+  ],
+  "chosen_item": "The Diana Chronicles",
+  "final_state": {
+    "preference_specificity": 0.14285714285714285,
+    "preference_dimensions": {
+      "scope": "comprehensive",
+      "tone": "balanced"
+    },
+    "items_seen": [
+      "diana, william, and harry",
+      "diana: her true story - in her own words",
+      "the diana chronicles"
+    ],
+    "items_positive": [
+      "the diana chronicles"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 1.0,
+    "overload_risk": 0.0,
+    "turn": 1
+  },
+  "recsys_outputs": {
+    "chatgpt4o": [
+      {
+        "title": "Diana: Her True Story - In Her Own Words",
+        "explanation": "This book offers a candid and personal insight into Diana's life, much like the unfiltered and honest portrayals found in 'Ava Gardner: The Secret Conversations', providing a fresh perspective on her complexities."
+      },
+      {
+        "title": "The Diana Chronicles",
+        "explanation": "Similar to the detailed and nuanced exploration of celebrity lives in 'The Garner Files', this book provides a comprehensive and balanced view of Diana's life, capturing the intricacies of her character."
+      },
+      {
+        "title": "Diana: Closely Guarded Secret",
+        "explanation": "This book offers an insider's perspective on Diana's life, akin to the behind-the-scenes revelations in 'Dear Cary', providing a unique and enlightening view of her personal and public struggles."
+      }
+    ],
+    "gemini_2_5_flash_lite": [
+      {
+        "title": "Diana: Her True Story",
+        "explanation": "This book offers a direct and candid account of Diana's life, mirroring your desire for a nuanced portrayal and a fresh perspective, much like an indie project's innovative take. The author's approach to navigating complex personal details aligns with your appreciation for skilled storytelling."
+      },
+      {
+        "title": "The Diana Chronicles",
+        "explanation": "Given your interest in a narrative that delves into the complexities of a public figure's life with insight, this book provides a comprehensive look at Diana's journey, similar to how a game programmer analyzes project potential."
+      },
+      {
+        "title": "Diana, William, and Harry",
+        "explanation": "Your request for a book that offers a balanced and thought-provoking portrayal, akin to evaluating an indie game's success, is met by this title which explores Diana's relationships and impact on her sons, providing an enlightening reading experience."
+      }
+    ],
+    "claude_3_5_sonnet": [
+      {
+        "title": "Diana: Her True Story--in Her Own Words",
+        "explanation": "Based on your analytical approach to biographies shown in your reviews of Ava Gardner and Cary Grant, you'd appreciate this authoritative account that presents Diana's story through direct source material, offering the kind of factual, unvarnished perspective you value."
+      },
+      {
+        "title": "The Diana Chronicles",
+        "explanation": "Given your appreciation for balanced narratives that avoid both excessive fluff and oversharing (as shown in your Garner review), Tina Brown's well-researched examination of Diana's life offers the kind of measured analysis you seek."
+      },
+      {
+        "title": "Diana: Story of a Princess",
+        "explanation": "Your detailed critiques of celebrity biographies show you value comprehensive coverage that doesn't gloss over important periods, and this book provides a complete chronological examination of Diana's life without the sensationalism you've criticized in other memoirs."
+      }
+    ]
+  }
+}

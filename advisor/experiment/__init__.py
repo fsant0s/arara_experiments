@@ -1,4 +1,4 @@
-from .evaluation import (
+from evaluation import (
     SessionLog,
     TurnLog,
     compute_alignment,
@@ -8,4 +8,4 @@ from .evaluation import (
     compute_reward,
     compare_conditions,
 )
-from .runner import run_experiment, ExperimentConfig
+from runner import run_experiment, ExperimentConfig
