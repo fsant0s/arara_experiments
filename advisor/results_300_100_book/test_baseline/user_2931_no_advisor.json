@@ -1,0 +1,72 @@
+{
+  "user_id": "user_2931",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Richard Adams?",
+  "ground_truth": [
+    "Watership Down",
+    "WATERSHIP DOWN - AVON #19810"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Richard Adams"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Watership Down",
+        "explanation": "A gripping adventure in the fiction genre by Richard Adams, this tale follows a group of rabbits as they escape their warren to seek a new home, exploring themes of survival, leadership, and the importance of community."
+      },
+      {
+        "title": "Shardik",
+        "explanation": "An epic tale that intertwines the story of a giant bear and the struggles of a young man in a mythical land."
+      },
+      {
+        "title": "The Girl in a Swing",
+        "explanation": "A haunting love story that explores themes of obsession and the supernatural."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Plague Dogs",
+        "explanation": "A harrowing tale of two dogs escaping from a laboratory and facing the dangers of the wild."
+      },
+      {
+        "title": "WATERSHIP DOWN - AVON #19810",
+        "explanation": "A gripping adventure in the Fiction genre by Richard Adams, this novel follows a group of rabbits as they escape their warren in search of a new home, exploring themes of survival, leadership, and the importance of community."
+      },
+      {
+        "title": "Maia",
+        "explanation": "A science fiction story exploring themes of identity, memory, and artificial intelligence."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " After reviewing the options presented, I'll go with:\n\nWatership Down\nThe Plague Dogs",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Watership Down",
+        "Shardik",
+        "The Girl in a Swing",
+        "The Plague Dogs",
+        "WATERSHIP DOWN - AVON #19810",
+        "Maia"
+      ]
+    }
+  ],
+  "chosen_item": "Watership Down",
+  "chosen_items": [
+    "Watership Down",
+    "The Plague Dogs"
+  ],
+  "final_state": null
+}

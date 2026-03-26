@@ -1,0 +1,69 @@
+{
+  "user_id": "user_938",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by William Diehl?",
+  "ground_truth": [
+    "Primal Fear",
+    "SHOW OF EVIL"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "William Diehl"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Prisoner of the Sun",
+        "explanation": "A gripping thriller that explores the depths of human greed and betrayal."
+      },
+      {
+        "title": "Primal Fear",
+        "explanation": "In William Diehl's gripping legal thriller, a young altar boy is accused of murdering a priest, leading to a complex courtroom battle that uncovers dark secrets and moral dilemmas. The novel explores themes of innocence, guilt, and the intricacies of the justice system."
+      },
+      {
+        "title": "SHOW OF EVIL",
+        "explanation": "In \"Show of Evil,\" William Diehl crafts a gripping thriller that delves into the dark underbelly of crime and justice, as a detective confronts a twisted serial killer. The novel explores themes of obsession and morality, keeping readers on the edge of their seats."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Last Man on Earth",
+        "explanation": "A post-apocalyptic thriller with a gripping narrative."
+      },
+      {
+        "title": "Shark",
+        "explanation": "Diehl's suspenseful novel about a man hunted by a great white shark."
+      },
+      {
+        "title": "Cholera",
+        "explanation": "A chilling story of a scientist racing against time to stop a deadly epidemic."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\n1. Primal Fear\n2. Show of Evil\n3. Shark",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Prisoner of the Sun",
+        "Primal Fear",
+        "SHOW OF EVIL",
+        "The Last Man on Earth",
+        "Shark",
+        "Cholera"
+      ]
+    }
+  ],
+  "chosen_item": "Primal Fear",
+  "chosen_items": [
+    "Primal Fear",
+    "SHOW OF EVIL",
+    "Shark"
+  ],
+  "final_state": null
+}

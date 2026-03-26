@@ -25,7 +25,7 @@ This scenario demonstrates five conversational turns. At each turn, the Advisor'
 |---|---|
 | `preference_specificity` | 0.15 (very vague — broad topic, no style/tone indication) |
 | `preference_dimensions` | `{"topic": "food + culture + identity"}` |
-| `items_seen` | ∅ |
+| `items_in_session_internal_pool` | ∅ |
 | `items_reacted_to` | ∅ |
 | `anchoring_risk` | 0.0 |
 | `overload_risk` | 0.0 |
@@ -199,7 +199,7 @@ The Advisor crafts different comparison queries for each LLM based on what each 
 |---|---|---|
 | `preference_specificity` | 0.40 | 0.50 (user expressed interest in a second dimension: regional/Italian) |
 | `preference_dimensions` | `{"topic":..., "style": "narrative", "tone": "personal"}` | `{"topic":..., "style": "narrative", "tone": "personal", "context": "Italian/regional"}` |
-| `items_seen` | ∅ | `{Crying in H Mart, The Language of Baklava, The Cooking Gene}` (described, not formally presented) |
+| `items_in_session_internal_pool` | ∅ | `{Crying in H Mart, The Language of Baklava, The Cooking Gene}` (titles that entered the internal triangulation/debiasing pool; may not appear verbatim in advisor text) |
 | `items_reacted_to` | ∅ | `{"Delizia!": "curious"}` |
 | `overload_risk` | 0.0 | 0.15 (user has now been exposed to 4+ titles; monitoring) |
 

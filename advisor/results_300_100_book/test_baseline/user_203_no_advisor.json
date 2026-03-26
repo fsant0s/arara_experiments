@@ -1,0 +1,70 @@
+{
+  "user_id": "user_203",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Ellis Peters?",
+  "ground_truth": [
+    "Hermit of Eyton Forest",
+    "Brother Cadfael's Penance (Brother Cadfael Mysteries)",
+    "Potters Field Audio"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Ellis Peters"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Hermit of Eyton Forest",
+        "explanation": "In this captivating mystery by Ellis Peters, Brother Cadfael investigates a series of events surrounding a hermit in Eyton Forest, delving into themes of faith, redemption, and the complexities of human nature. The story intertwines historical detail with a compelling narrative, showcasing Peters' skill in crafting intricate plots."
+      },
+      {
+        "title": "The Sanctuary Sparrow",
+        "explanation": "A captivating tale where Brother Cadfael must unravel a murder mystery involving a thief and a young woman."
+      },
+      {
+        "title": "Brother Cadfael's Penance (Brother Cadfael Mysteries)",
+        "explanation": "In this captivating installment of the Brother Cadfael Mysteries by Ellis Peters, the aging monk and herbalist navigates the complexities of faith and redemption while solving a murder that intertwines with his own past. The novel delves into themes of forgiveness and the moral dilemmas faced in a tumultuous medieval world."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Potters Field Audio",
+        "explanation": "In \"Potter's Field,\" Ellis Peters delivers a gripping mystery featuring Brother Cadfael, who investigates a series of murders linked to a burial site. The novel intricately weaves themes of justice and redemption within a historical setting."
+      },
+      {
+        "title": "A Morbid Taste for Bones",
+        "explanation": "Another Brother Cadfael mystery with intrigue and suspense surrounding a murder."
+      },
+      {
+        "title": "The Virgin in the Ice",
+        "explanation": "Brother Cadfael investigates a case of mistaken identity and religious fervor."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with\n\"Hermit of Eyton Forest\"\n\"The Sanctuary Sparrow\"\n\"Brother Cadfael's Penance (Brother Cadfael Mysteries)\"",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Hermit of Eyton Forest",
+        "The Sanctuary Sparrow",
+        "Brother Cadfael's Penance (Brother Cadfael Mysteries)",
+        "Potters Field Audio",
+        "A Morbid Taste for Bones",
+        "The Virgin in the Ice"
+      ]
+    }
+  ],
+  "chosen_item": "Hermit of Eyton Forest",
+  "chosen_items": [
+    "Hermit of Eyton Forest",
+    "The Sanctuary Sparrow",
+    "Brother Cadfael's Penance (Brother Cadfael Mysteries)"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,73 @@
+{
+  "user_id": "user_5122",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCould you recommend some books written by Kristine K. Kershul that focus on foreign language study?",
+  "ground_truth": [
+    "French in 10 minutes a day",
+    "Italian in 10 Minutes a Day"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Kristine K. Kershul"
+    ],
+    [
+      "BELONGS_TO",
+      "Foreign Language Study"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Italian in 10 Minutes a Day",
+        "explanation": "A practical guide for language learners, \"Italian in 10 Minutes a Day\" by Kristine K. Kershul offers a structured approach to mastering basic Italian vocabulary and phrases quickly. This engaging resource is ideal for beginners seeking to enhance their foreign language skills efficiently."
+      },
+      {
+        "title": "Language for Travelers: French",
+        "explanation": "This book offers key language tools for navigating France, emphasizing conversational skills."
+      },
+      {
+        "title": "Language for Travelers: Italian",
+        "explanation": "An accessible resource that highlights important Italian expressions and cultural insights for travelers."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "French in 10 minutes a day",
+        "explanation": "A practical guide for language learners, \"French in 10 Minutes a Day\" by Kristine K. Kershul offers effective strategies and engaging exercises to help readers build their French vocabulary and conversational skills quickly. This resource is perfect for those seeking to learn French efficiently within a busy schedule."
+      },
+      {
+        "title": "Master Spanish in 3 Months",
+        "explanation": "A comprehensive guide to learning Spanish with an emphasis on fluency."
+      },
+      {
+        "title": "Unlocking German: A Comprehensive Guide",
+        "explanation": "This resource provides a structured approach to learning German grammar and vocabulary."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nBased on my preferences, I'll go with:\n- Italian in 10 Minutes a Day\n- Language for Travelers: French\n- Language for Travelers: Italian",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Italian in 10 Minutes a Day",
+        "Language for Travelers: French",
+        "Language for Travelers: Italian",
+        "French in 10 minutes a day",
+        "Master Spanish in 3 Months",
+        "Unlocking German: A Comprehensive Guide"
+      ]
+    }
+  ],
+  "chosen_item": "Italian in 10 Minutes a Day",
+  "chosen_items": [
+    "Italian in 10 Minutes a Day",
+    "Language for Travelers: French",
+    "Language for Travelers: Italian"
+  ],
+  "final_state": null
+}

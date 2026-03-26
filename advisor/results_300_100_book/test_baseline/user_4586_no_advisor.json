@@ -1,0 +1,72 @@
+{
+  "user_id": "user_4586",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Victoria Holt?",
+  "ground_truth": [
+    "The Black Opal",
+    "Bride of Pendorric"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Victoria Holt"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Shadow of the Lynx",
+        "explanation": "A gripping tale of love and intrigue set against the backdrop of the English countryside."
+      },
+      {
+        "title": "The Time of the Hunter's Moon",
+        "explanation": "A suspenseful story that weaves together history and romance in a captivating narrative."
+      },
+      {
+        "title": "The Queen's Confession",
+        "explanation": "An enthralling historical fiction piece that explores the life and struggles of a powerful queen."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Bride of Pendorric",
+        "explanation": "A captivating historical fiction novel by Victoria Holt, this story weaves romance and mystery as a young woman navigates the complexities of love and loyalty in a tumultuous setting. Themes of passion and betrayal unfold against a richly detailed backdrop, making it a compelling read for fans of the genre."
+      },
+      {
+        "title": "The Shivering Sands",
+        "explanation": "Suspenseful story about a haunted island and a secret society."
+      },
+      {
+        "title": "The Black Opal",
+        "explanation": "A captivating historical fiction novel by Victoria Holt, this story weaves a tale of mystery and romance surrounding a rare black opal, exploring themes of love, betrayal, and the quest for identity. Set against a backdrop of intrigue, it invites readers into a richly detailed world filled with suspense and passion."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\n---\n\nBased on my character, I'm drawn to these two books:\n\nThe Shadow of the Lynx\nBride of Pendorric",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Shadow of the Lynx",
+        "The Time of the Hunter's Moon",
+        "The Queen's Confession",
+        "Bride of Pendorric",
+        "The Shivering Sands",
+        "The Black Opal"
+      ]
+    }
+  ],
+  "chosen_item": "The Shadow of the Lynx",
+  "chosen_items": [
+    "The Shadow of the Lynx",
+    "Bride of Pendorric"
+  ],
+  "final_state": null
+}

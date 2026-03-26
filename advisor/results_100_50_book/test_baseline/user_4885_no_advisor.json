@@ -1,0 +1,71 @@
+{
+  "user_id": "user_4885",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Vladimir Vo\u012dnovich?",
+  "ground_truth": [
+    "The Life and Extraordinary Adventures of Private Ivan Chonkin"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Vladimir Vo\u012dnovich"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Life and Extraordinary Adventures of Private Ivan Chonkin",
+        "explanation": "A satirical novel by Vladimir Vo\u012dnovich, this fiction work follows the absurd and humorous escapades of Private Ivan Chonkin during World War II, highlighting the absurdities of Soviet life and military bureaucracy. Through its engaging narrative, it critiques the nature of war and the human spirit's resilience."
+      },
+      {
+        "title": "Moscow 2042",
+        "explanation": "A dystopian satire that presents a vision of a future Russia, blending humor and social commentary on the political landscape."
+      },
+      {
+        "title": "The Ivankiad",
+        "explanation": "A comedic take on the life of a Soviet bureaucrat, reflecting on the complexities of the Soviet system and human nature."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Overcoat",
+        "explanation": "A classic novella exploring themes of poverty and alienation in 19th-century Russia."
+      },
+      {
+        "title": "The Dead Souls",
+        "explanation": "Satirical novel following a conman's scheme to buy deceased serfs as property, exposing societal hypocrisy."
+      },
+      {
+        "title": "Fathers and Sons",
+        "explanation": "A generational conflict story about the clash between traditional values and nihilistic ideas in Russia."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nYour Picks:\nThe Life and Extraordinary Adventures of Private Ivan Chonkin\nMoscow 2042",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Life and Extraordinary Adventures of Private Ivan Chonkin",
+        "Moscow 2042",
+        "The Ivankiad",
+        "The Overcoat",
+        "The Dead Souls",
+        "Fathers and Sons"
+      ]
+    }
+  ],
+  "chosen_item": "The Life and Extraordinary Adventures of Private Ivan Chonkin",
+  "chosen_items": [
+    "The Life and Extraordinary Adventures of Private Ivan Chonkin",
+    "Moscow 2042"
+  ],
+  "final_state": null
+}

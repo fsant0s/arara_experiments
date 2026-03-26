@@ -1,0 +1,120 @@
+{
+  "user_id": "user_29",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Patricia Hermes?",
+  "ground_truth": [
+    "Our new land"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Patricia Hermes"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Ghost of the Mary Celeste",
+        "explanation": "A thrilling mystery that explores the disappearance of a ship and its crew."
+      },
+      {
+        "title": "The Girl Who Could Fly",
+        "explanation": "An imaginative tale about a girl discovering her unique abilities in a world that doesn't understand her."
+      },
+      {
+        "title": "A Time to Love",
+        "explanation": "A poignant story about love and family set against the backdrop of historical events."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Summer I Turned Pretty",
+        "explanation": "Coming-of-age romance set in a beach house."
+      },
+      {
+        "title": "Our new land",
+        "explanation": "In \"Our New Land,\" Patricia Hermes tells the inspiring story of a family's journey as they adapt to a new environment, highlighting themes of resilience and the immigrant experience. This poignant narrative captures the challenges and triumphs of starting anew in an unfamiliar place."
+      },
+      {
+        "title": "Ugly Love",
+        "explanation": "A passionate story with complex characters and a focus on emotional intimacy."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a3_present_consensus",
+      "user_response": "1. The Ghost of the Mary Celeste\n   It's about this ghost ship and all these people disappearing, kinda spooky but fun.\n\n2. The Summer I Turned Pretty\n   Seems like a light, beachy read with some romance in it. I heard it's pretty good!\n\nI'll go with The Ghost of the Mary Celeste and The Summer I Turned Pretty.",
+      "advisor_message": "Based on what you've expressed so far, here are two options that align with your interests:\n\n1. **Our New Land by Patricia Hermes**: This book tells the inspiring story of a family adapting to a new environment, focusing on themes of resilience and the immigrant experience. It's an engaging narrative that captures the challenges and triumphs of starting anew, which might resonate with you if you're interested in stories of personal growth and adaptation.\n\n2. **The Girl Who Could Fly**: An imaginative tale about a girl discovering her unique abilities in a world that doesn't understand her. This story might appeal to you if you're interested in themes of self-discovery and embracing one's uniqueness.\n\nDo either of these sound interesting? Or shall we keep exploring? If you're specifically looking for more works by Patricia Hermes, let me know!",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Our new land",
+        "The Girl Who Could Fly",
+        "Our New Land by Patricia Hermes"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. Our New Land by Patricia Hermes\n   Sounds like it could be pretty inspiring with those themes of resilience and immigration. Might be a good read!\n\n2. The Girl Who Could Fly\n   That one sounds interesting too! I'd go for the adventure and self-discovery aspect. Let's go with these two:\n\nI'll go with Our New Land by Patricia Hermes and The Girl Who Could Fly.",
+      "advisor_message": "You've chosen \"Our New Land by Patricia Hermes\" and \"The Girl Who Could Fly.\" These selections beautifully align with your interest in themes of resilience, immigration, adventure, and self-discovery. \"Our New Land\" delves into the challenges and triumphs of immigration, providing a historical perspective on resilience. Meanwhile, \"The Girl Who Could Fly\" offers a unique adventure centered around self-discovery and the courage to embrace one's differences. Both titles are sure to resonate with your preferences.\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.05555555555555555,
+        "preference_dimensions": {
+          "theme": "resilience, immigration, adventure, self-discovery"
+        },
+        "items_in_session_internal_pool": [
+          "our new land",
+          "our new land by patricia hermes",
+          "the girl who could fly"
+        ],
+        "items_positive": [
+          "our new land by patricia hermes",
+          "the girl who could fly"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Summer I Turned Pretty",
+        "The Ghost of the Mary Celeste"
+      ]
+    }
+  ],
+  "chosen_item": "Our New Land by Patricia Hermes",
+  "chosen_items": [
+    "Our New Land by Patricia Hermes",
+    "The Girl Who Could Fly"
+  ],
+  "final_state": {
+    "preference_specificity": 0.05555555555555555,
+    "preference_dimensions": {
+      "theme": "resilience, immigration, adventure, self-discovery"
+    },
+    "items_in_session_internal_pool": [
+      "our new land",
+      "our new land by patricia hermes",
+      "the girl who could fly"
+    ],
+    "items_positive": [
+      "our new land by patricia hermes",
+      "the girl who could fly"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.0,
+    "turn": 1
+  }
+}

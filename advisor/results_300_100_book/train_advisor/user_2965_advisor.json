@@ -1,0 +1,122 @@
+{
+  "user_id": "user_2965",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Ellis Peters that feature the character Brother Cadfael?",
+  "ground_truth": [
+    "One Corpse Too Many",
+    "One Corpse Too Many: The Second Chronicle of Brother Cadfael"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Ellis Peters"
+    ],
+    [
+      "BELONGS_TO",
+      "Cadfael, Brother (Fictitious character)"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "A Morbid Taste for Bones",
+        "explanation": "The first novel in the Brother Cadfael series, introducing the character as a monk and herbalist who solves mysteries in medieval England."
+      },
+      {
+        "title": "One Corpse Too Many: The Second Chronicle of Brother Cadfael",
+        "explanation": "In this engaging mystery by Ellis Peters, Brother Cadfael investigates a murder amidst the turmoil of a civil war, blending historical intrigue with the complexities of human nature. The novel explores themes of justice and morality as Cadfael navigates the challenges of his monastic life while solving the crime."
+      },
+      {
+        "title": "The Sanctuary Sparrow",
+        "explanation": "A gripping mystery involving a young thief accused of murder, with Brother Cadfael stepping in to uncover the truth."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "One Corpse Too Many",
+        "explanation": "In this historical mystery by Ellis Peters, Brother Cadfael investigates a murder amidst the chaos of civil war in 12th-century England, blending intrigue with rich historical detail. The story explores themes of justice and morality as Cadfael navigates the complexities of human nature."
+      },
+      {
+        "title": "A Morbid Taste for Bones",
+        "explanation": "Cadfael uncovers a plot involving stolen relics and poison."
+      },
+      {
+        "title": "Death of an Heretic",
+        "explanation": "Cadfael faces religious tensions while investigating a suspicious death."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. A Morbid Taste for Bones: I like the sound of this one, with its mystery around stolen relics and poison.\n2. The Leper of Saint Giles: This one caught my attention because Brother Cadfael is investigating a murder at a leper colony, and that sounds intriguing!",
+      "advisor_message": "How about these two options to consider? \n\n1. **One Corpse Too Many: The Second Chronicle of Brother Cadfael**: This engaging mystery by Ellis Peters follows Brother Cadfael as he investigates a murder during the chaos of a civil war. The novel skillfully blends historical intrigue with the complexities of human nature, exploring themes of justice and morality as Cadfael navigates the challenges of his monastic life while solving the crime.\n\n2. **One Corpse Too Many**: Also by Ellis Peters, this historical mystery is set in 12th-century England amidst the turmoil of civil war. Brother Cadfael's investigation is rich with historical detail and explores similar themes of justice and morality as he uncovers the intricacies of human behavior.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "One Corpse Too Many: The Second Chronicle of Brother Cadfael",
+        "One Corpse Too Many"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. One Corpse Too Many (the second one): The part about investigating a murder amidst civil war sounds cool!\n2. One Corpse Too Many (the first one): This also seems intriguing. I'm okay with either, so let's go with these two.",
+      "advisor_message": "You have chosen: \"One Corpse Too Many: The Second Chronicle of Brother Cadfael\" and \"One Corpse Too Many.\" These selections are perfect for your interest in investigating a murder amidst civil war, as they are centered around Brother Cadfael, a fictional character created by Ellis Peters. His stories combine historical intrigue with mystery, providing a captivating backdrop during turbulent times. Enjoy your reading adventure with Brother Cadfael!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.5,
+        "preference_dimensions": {
+          "specific_topic": "investigating a murder amidst civil war"
+        },
+        "items_in_session_internal_pool": [
+          "one corpse too many",
+          "one corpse too many: the second chronicle of brother cadfael"
+        ],
+        "items_positive": [
+          "one corpse too many",
+          "one corpse too many: the second chronicle of brother cadfael"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.6,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "A Morbid Taste for Bones",
+        "The Sanctuary Sparrow"
+      ]
+    }
+  ],
+  "chosen_item": "One Corpse Too Many: The Second Chronicle of Brother Cadfael",
+  "chosen_items": [
+    "One Corpse Too Many: The Second Chronicle of Brother Cadfael",
+    "One Corpse Too Many"
+  ],
+  "final_state": {
+    "preference_specificity": 0.5,
+    "preference_dimensions": {
+      "specific_topic": "investigating a murder amidst civil war"
+    },
+    "items_in_session_internal_pool": [
+      "one corpse too many",
+      "one corpse too many: the second chronicle of brother cadfael"
+    ],
+    "items_positive": [
+      "one corpse too many",
+      "one corpse too many: the second chronicle of brother cadfael"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.6,
+    "turn": 1
+  }
+}

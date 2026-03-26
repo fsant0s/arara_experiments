@@ -1,0 +1,71 @@
+{
+  "user_id": "user_94",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCould you recommend some books written by Raymond Chandler?",
+  "ground_truth": [
+    "Big Sleep",
+    "THE LITTLE SISTER.",
+    "Simple Art of Murder"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Raymond Chandler"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Big Sleep",
+        "explanation": "A classic detective novel featuring the iconic private eye Philip Marlowe."
+      },
+      {
+        "title": "THE LITTLE SISTER.",
+        "explanation": "In Raymond Chandler's gripping detective novel, a private investigator navigates the seedy underbelly of Los Angeles while searching for a missing person, uncovering a web of deceit and danger. The story delves into themes of betrayal and moral ambiguity, characteristic of Chandler's iconic noir style."
+      },
+      {
+        "title": "Big Sleep",
+        "explanation": "In Raymond Chandler's classic noir novel, a private detective navigates the seedy underbelly of Los Angeles while unraveling a complex web of deceit and murder. The story masterfully explores themes of corruption, morality, and the dark side of human nature."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Simple Art of Murder",
+        "explanation": "In \"Simple Art of Murder,\" Raymond Chandler crafts a compelling exploration of crime and morality through the lens of hard-boiled detective fiction, showcasing his signature style and intricate plotting. The book delves into the complexities of human nature and the darker sides of society, making it a seminal work in the genre."
+      },
+      {
+        "title": "Farewell, My Lovely",
+        "explanation": "Another gripping mystery with Marlowe investigating a case of blackmail and murder."
+      },
+      {
+        "title": "The Lady in the Lake",
+        "explanation": "Marlowe gets entangled in a web of deceit and danger while searching for a missing woman."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\nThe Big Sleep\nTHE LITTLE SISTER.\nFarewell, My Lovely\nThe Lady in the Lake",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Big Sleep",
+        "THE LITTLE SISTER.",
+        "Big Sleep",
+        "Simple Art of Murder",
+        "Farewell, My Lovely",
+        "The Lady in the Lake"
+      ]
+    }
+  ],
+  "chosen_item": "The Big Sleep",
+  "chosen_items": [
+    "The Big Sleep",
+    "THE LITTLE SISTER.",
+    "Big Sleep",
+    "Farewell, My Lovely"
+  ],
+  "final_state": null
+}

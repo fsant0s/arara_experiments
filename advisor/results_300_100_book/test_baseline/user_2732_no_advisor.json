@@ -1,0 +1,72 @@
+{
+  "user_id": "user_2732",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by Richard Krafft-Ebing and Charles Gilbert Chaddock?",
+  "ground_truth": [
+    "Psychopathia sexualis: With especial reference to contrary sexual instinct: a medico-legal study",
+    "Psychopathia sexualis: With especial reference to contrary sexual instinct : a medico-legal study (Classics of psychiatry and behavioral sciences library)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Richard Krafft-Ebing"
+    ],
+    [
+      "WRITTEN_BY",
+      "Charles Gilbert Chaddock"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Psychology of Sex",
+        "explanation": "An exploration of sexual psychology and its implications on human behavior."
+      },
+      {
+        "title": "Sexual Anomalies and Perversions",
+        "explanation": "A detailed study of various sexual behaviors and their psychological underpinnings."
+      },
+      {
+        "title": "Psychopathia sexualis: With especial reference to contrary sexual instinct : a medico-legal study (Classics of psychiatry and behavioral sciences library)",
+        "explanation": "This seminal work by Richard Krafft-Ebing, translated by Charles Gilbert Chaddock, provides a comprehensive medico-legal analysis of sexual psychopathology, particularly focusing on atypical sexual instincts. It serves as a foundational text in the fields of psychiatry and behavioral sciences, exploring the complexities of human sexuality."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Psychopathia Sexualis",
+        "explanation": "Classic work on paraphilias, originally published in 1886 by Richard von Krafft-Ebing."
+      },
+      {
+        "title": "The Science of Sex Love",
+        "explanation": "A groundbreaking exploration of sexual desire and its role in human relationships by Charles Gilbert Chaddock."
+      },
+      {
+        "title": "Psychopathia sexualis: With especial reference to contrary sexual instinct: a medico-legal study",
+        "explanation": "A foundational text in the study of human sexuality, Richard Krafft-Ebing's work, translated by Charles Gilbert Chaddock, examines various sexual behaviors and disorders, particularly focusing on atypical sexual instincts. This medico-legal study provides insights into the psychological and social implications of sexual deviance in the late 19th century."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " I'll go with:\n- Psychopathia Sexualis\n- The Science of Sex Love",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Psychology of Sex",
+        "Sexual Anomalies and Perversions",
+        "Psychopathia sexualis: With especial reference to contrary sexual instinct : a medico-legal study (Classics of psychiatry and behavioral sciences library)",
+        "Psychopathia Sexualis",
+        "The Science of Sex Love",
+        "Psychopathia sexualis: With especial reference to contrary sexual instinct: a medico-legal study"
+      ]
+    }
+  ],
+  "chosen_item": "Psychopathia Sexualis",
+  "chosen_items": [
+    "Psychopathia Sexualis",
+    "The Science of Sex Love"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,120 @@
+{
+  "user_id": "user_617",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by R. L. Stine?",
+  "ground_truth": [
+    "How To Kill A Monster (Goosebumps Series)",
+    "GOOSEBUMPS: MONSTER BLOOD"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "R. L. Stine"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Last Kids on Earth and the Zombie Parade",
+        "explanation": "A fun and adventurous tale perfect for fans of R. L. Stine's spooky storytelling."
+      },
+      {
+        "title": "GOOSEBUMPS: MONSTER BLOOD",
+        "explanation": "In this thrilling installment of R. L. Stine's Goosebumps series, a boy discovers a mysterious can of monster blood that brings unexpected chaos and danger. The story explores themes of curiosity and the consequences of tampering with the unknown."
+      },
+      {
+        "title": "Fear Street: The Wrong Girl",
+        "explanation": "A gripping horror story that captures the essence of R. L. Stine's signature style."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Haunting Hour",
+        "explanation": "Collection of spooky short stories perfect for chilling nights."
+      },
+      {
+        "title": "How To Kill A Monster (Goosebumps Series)",
+        "explanation": "In this chilling installment of the Goosebumps Series by R. L. Stine, two siblings confront a terrifying creature in their new home, blending humor and horror while exploring themes of bravery and sibling bonds."
+      },
+      {
+        "title": "Goosebumps SlappyWorld: The Curse of the Mummy",
+        "explanation": "A terrifying tale starring everyone's favorite evil dummy, Slappy."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. The Last Kids on Earth and the Zombie Parade - It sounds like a fun adventure with zombies!\n2. Goosebumps: Monster Blood Is Back - I remember enjoying the original Goosebumps series, so this one might be cool too.",
+      "advisor_message": "How about these two options to consider? \n\n1. **The Last Kids on Earth and the Zombie Parade**: This is a fun and adventurous tale perfect for fans of R. L. Stine's spooky storytelling. It combines humor and excitement as young heroes navigate a post-apocalyptic world filled with zombies.\n\n2. **How To Kill A Monster (Goosebumps Series)**: In this chilling installment of the Goosebumps Series by R. L. Stine, two siblings confront a terrifying creature in their new home. The story blends humor and horror while exploring themes of bravery and sibling bonds.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Last Kids on Earth and the Zombie Parade",
+        "How To Kill A Monster (Goosebumps Series)"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. The Last Kids on Earth and the Zombie Parade - That one sounds fun! I like the idea of a post-apocalyptic world with zombies.\n2. How To Kill A Monster (Goosebumps Series) - Sure, that one also seems interesting! Confronting a terrifying creature in a new home sounds exciting and just a bit scary.\nI'll go with The Last Kids on Earth and the Zombie Parade and How To Kill A Monster (Goosebumps Series).",
+      "advisor_message": "You've chosen \"The Last Kids on Earth and the Zombie Parade\" and \"How To Kill A Monster (Goosebumps Series).\" Both of these selections are fantastic picks for your interests!\n\n\"The Last Kids on Earth and the Zombie Parade\" perfectly aligns with your preference for a post-apocalyptic setting filled with zombie-themed adventures. It's a thrilling ride that will keep you on the edge of your seat!\n\n\"How To Kill A Monster,\" part of the beloved Goosebumps series by R. L. Stine, is a great match for your interest in monsters and a touch of childhood nostalgia. Its spooky theme will surely keep you entertained.\n\nIf you're specifically looking for more books by R. L. Stine, let me know, and I can help with that too. Enjoy your reading adventures!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.1111111111111111,
+        "preference_dimensions": {
+          "setting": "post-apocalyptic",
+          "theme": "zombies"
+        },
+        "items_in_session_internal_pool": [
+          "how to kill a monster (goosebumps series)",
+          "the last kids on earth and the zombie parade"
+        ],
+        "items_positive": [
+          "how to kill a monster (goosebumps series)",
+          "the last kids on earth and the zombie parade"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "GOOSEBUMPS: MONSTER BLOOD",
+        "Goosebumps SlappyWorld: The Curse of the Mummy"
+      ]
+    }
+  ],
+  "chosen_item": "The Last Kids on Earth and the Zombie Parade",
+  "chosen_items": [
+    "The Last Kids on Earth and the Zombie Parade",
+    "How To Kill A Monster (Goosebumps Series)"
+  ],
+  "final_state": {
+    "preference_specificity": 0.1111111111111111,
+    "preference_dimensions": {
+      "setting": "post-apocalyptic",
+      "theme": "zombies"
+    },
+    "items_in_session_internal_pool": [
+      "how to kill a monster (goosebumps series)",
+      "the last kids on earth and the zombie parade"
+    ],
+    "items_positive": [
+      "how to kill a monster (goosebumps series)",
+      "the last kids on earth and the zombie parade"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.0,
+    "turn": 1
+  }
+}

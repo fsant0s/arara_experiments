@@ -1,0 +1,67 @@
+{
+  "user_id": "user_520",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Marian Keyes?",
+  "ground_truth": [
+    "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+    "Irish Girls About Town: An Anthology of Short Stories"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Marian Keyes"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Again, Rachel",
+        "explanation": "A poignant exploration of love and friendship, revisiting beloved characters from earlier works."
+      },
+      {
+        "title": "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+        "explanation": "In this collection of essays, Marian Keyes offers humorous and insightful reflections on everyday life, touching on topics like family, relationships, and personal struggles. Her witty storytelling and relatable anecdotes make for an engaging read that resonates with anyone navigating the complexities of modern life."
+      },
+      {
+        "title": "The Break",
+        "explanation": "A heartfelt story about relationships and the complexities of modern love."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Rachel's Holiday",
+        "explanation": "A woman struggles with addiction and self-discovery in this insightful novel."
+      },
+      {
+        "title": "Irish Girls About Town: An Anthology of Short Stories",
+        "explanation": "An engaging collection of short stories by Marian Keyes, this anthology showcases the diverse experiences and vibrant voices of contemporary Irish women, exploring themes of love, friendship, and resilience. Each tale offers a unique perspective on life in Ireland, making it a delightful read for fans of literary fiction."
+      },
+      {
+        "title": "The Break",
+        "explanation": "Explores themes of grief, forgiveness, and starting anew after heartbreak."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n---\nMy picks are:\n1. Rachel's Holiday\n2. The Break",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Again, Rachel",
+        "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+        "The Break",
+        "Rachel's Holiday",
+        "Irish Girls About Town: An Anthology of Short Stories"
+      ]
+    }
+  ],
+  "chosen_item": "The Break",
+  "chosen_items": [
+    "The Break",
+    "Rachel's Holiday"
+  ],
+  "final_state": null
+}

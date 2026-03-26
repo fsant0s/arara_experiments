@@ -1,0 +1,77 @@
+{
+  "user_id": "user_355",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by Jerry B. Jenkins?",
+  "ground_truth": [
+    "Desecration: Left Behind, Volume 9",
+    "Left Behind - A Novel Of The Earth's Last Days",
+    "The Mark: The Beast rules the world (Left Behind)",
+    "Apollyon: Left Behind, Volume 5",
+    "Soul Harvest: Left Behind, Volume 4",
+    "Tribulation Force: Left Behind, Volume 2",
+    "Assassins: Left Behind, Volume 6"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Jerry B. Jenkins"
+    ]
+  ],
+  "recsys_outputs": {
+    "mixtral:8x7b": [
+      {
+        "title": "Tribulation Force: Left Behind, Volume 2",
+        "explanation": "In this second volume of the Left Behind series by Jerry B. Jenkins, the story continues to follow a group of believers navigating a world plunged into chaos after the Rapture. Themes of faith, survival, and the struggle against evil are explored as the characters confront the challenges of the Tribulation period."
+      },
+      {
+        "title": "Soul Harvest: Left Behind, Volume 4",
+        "explanation": "In this gripping installment of the Left Behind series by Jerry B. Jenkins, the struggle for survival intensifies as the characters face the consequences of their choices during the Tribulation. Themes of faith, redemption, and the battle between good and evil are explored in a post-apocalyptic setting."
+      },
+      {
+        "title": "Assassins: Left Behind, Volume 6",
+        "explanation": "In this thrilling installment of the Left Behind series by Jerry B. Jenkins, the story delves into the lives of assassins navigating a post-apocalyptic world while grappling with their moral dilemmas. The narrative explores themes of redemption, faith, and survival amidst chaos."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Apollyon: Left Behind, Volume 5",
+        "explanation": "In the fifth volume of the Left Behind series by Jerry B. Jenkins, the struggle between good and evil intensifies as characters face unprecedented challenges during the tribulation. This gripping narrative delves into themes of faith, sacrifice, and the fight for survival in a world spiraling into chaos."
+      },
+      {
+        "title": "Left Behind - A Novel Of The Earth's Last Days",
+        "explanation": "In this gripping apocalyptic novel by Jerry B. Jenkins, a group of survivors grapples with the chaos following the sudden disappearance of millions, exploring themes of faith, redemption, and the struggle for survival in a world transformed by the End Times."
+      },
+      {
+        "title": "The Mark: The Beast rules the world (Left Behind)",
+        "explanation": "In this gripping installment of the Left Behind series by Jerry B. Jenkins, the struggle between good and evil intensifies as the world falls under the control of the Antichrist. The narrative explores themes of faith, survival, and the consequences of choices in a dystopian future."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "I'll go with Tribulation Force: Left Behind, Volume 2  \nSoul Harvest: Left Behind, Volume 4  \nAssassins: Left Behind, Volume 6  \nApollyon: Left Behind, Volume 5  \nLeft Behind - A Novel Of The Earth's Last Days  \nThe Mark: The Beast rules the world (Left Behind)",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Tribulation Force: Left Behind, Volume 2",
+        "Soul Harvest: Left Behind, Volume 4",
+        "Assassins: Left Behind, Volume 6",
+        "Apollyon: Left Behind, Volume 5",
+        "Left Behind - A Novel Of The Earth's Last Days",
+        "The Mark: The Beast rules the world (Left Behind)"
+      ]
+    }
+  ],
+  "chosen_item": "Tribulation Force: Left Behind, Volume 2",
+  "chosen_items": [
+    "Tribulation Force: Left Behind, Volume 2",
+    "Soul Harvest: Left Behind, Volume 4",
+    "Assassins: Left Behind, Volume 6",
+    "Apollyon: Left Behind, Volume 5",
+    "Left Behind - A Novel Of The Earth's Last Days",
+    "The Mark: The Beast rules the world (Left Behind)"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,70 @@
+{
+  "user_id": "user_1463",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some fiction books?",
+  "ground_truth": [
+    "By Dawn's Early Light",
+    "Hot Springs",
+    "Choosers of the Slain"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Lessons in Chemistry",
+        "explanation": "A unique blend of science and personal struggle, this novel features a strong female protagonist in a male-dominated field."
+      },
+      {
+        "title": "Hot Springs",
+        "explanation": "In this gripping work of fiction, the author delves into the complexities of human relationships against the backdrop of a small town's hidden secrets. The narrative intertwines themes of love, betrayal, and redemption, making for a compelling read."
+      },
+      {
+        "title": "By Dawn's Early Light",
+        "explanation": "A gripping work of fiction, this novel delves into the complexities of human relationships and the impact of choices made at pivotal moments. Through its richly developed characters, it explores themes of redemption, loss, and the dawn of new beginnings."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The House in the Cerulean Sea",
+        "explanation": "Whimsical fantasy novel about found family and acceptance."
+      },
+      {
+        "title": "Piranesi",
+        "explanation": "Mysterious and atmospheric tale set in a labyrinthine world."
+      },
+      {
+        "title": "Choosers of the Slain",
+        "explanation": "A gripping fiction novel by John E. Stith that delves into the complexities of choice and consequence, as characters navigate a world where their decisions lead to life-altering repercussions. The story intertwines themes of morality and survival in a richly imagined setting."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\n1. The House in the Cerulean Sea\n2. Piranesi\n3. Lessons in Chemistry",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Lessons in Chemistry",
+        "Hot Springs",
+        "By Dawn's Early Light",
+        "The House in the Cerulean Sea",
+        "Piranesi",
+        "Choosers of the Slain"
+      ]
+    }
+  ],
+  "chosen_item": "Lessons in Chemistry",
+  "chosen_items": [
+    "Lessons in Chemistry",
+    "The House in the Cerulean Sea",
+    "Piranesi"
+  ],
+  "final_state": null
+}

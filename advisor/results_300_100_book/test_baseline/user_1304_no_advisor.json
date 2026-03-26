@@ -1,0 +1,68 @@
+{
+  "user_id": "user_1304",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books that belong to the Biography & Autobiography category?",
+  "ground_truth": [
+    "The Way It's Never Been Done Before : My Friendship with Marlon Brando",
+    "Down and out in Paris and London,"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Biography & Autobiography"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Light We Carry: Overcoming in Uncertain Times",
+        "explanation": "Michelle Obama shares her personal insights and experiences to inspire readers during challenging times."
+      },
+      {
+        "title": "Down and out in Paris and London,",
+        "explanation": "An insightful autobiographical account by George Orwell, this book chronicles his experiences living in poverty in Paris and London, highlighting the struggles of the working class and the harsh realities of life on the margins. Through vivid storytelling, Orwell explores themes of social injustice and human resilience."
+      },
+      {
+        "title": "Lessons in Chemistry",
+        "explanation": "This novel features a strong female protagonist whose life story navigates the challenges of gender and scientific ambition."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Way It's Never Been Done Before : My Friendship with Marlon Brando",
+        "explanation": "A candid memoir by [Author], this biography delves into the author's unique friendship with Marlon Brando, revealing personal anecdotes and insights into the enigmatic actor's life. It explores themes of creativity, loyalty, and the complexities of fame."
+      },
+      {
+        "title": "Educated",
+        "explanation": "Powerful story of a young woman's journey to self-discovery through education."
+      },
+      {
+        "title": "Becoming",
+        "explanation": "Michelle Obama's memoir detailing her life, from childhood to becoming First Lady."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n---\n\nMy picks are:\n- The Way It's Never Been Done Before : My Friendship with Marlon Brando\n- Educated",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Light We Carry: Overcoming in Uncertain Times",
+        "Down and out in Paris and London,",
+        "Lessons in Chemistry",
+        "The Way It's Never Been Done Before : My Friendship with Marlon Brando",
+        "Educated",
+        "Becoming"
+      ]
+    }
+  ],
+  "chosen_item": "The Way It's Never Been Done Before : My Friendship with Marlon Brando",
+  "chosen_items": [
+    "The Way It's Never Been Done Before : My Friendship with Marlon Brando",
+    "Educated"
+  ],
+  "final_state": null
+}

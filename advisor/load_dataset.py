@@ -11,7 +11,7 @@ class InstructRecDataset:
     This class normalizes all dataset formats (list, dict, DataFrame)
     into a consistent pandas DataFrame and provides convenient accessors
     for sampling, column inspection, item retrieval, and list-based fields
-    such as `asin` and `ranked_lists`.
+    such as `ranked_lists`.
 
     Each dataset entry typically includes:
         - reviewText      (list of review snippets)
@@ -19,7 +19,6 @@ class InstructRecDataset:
         - description     (list of item descriptions)
         - instruction     (user instruction/query)
         - persona         (persona description)
-        - asin            (list of candidate item IDs)
         - ranked_lists    (ranked list of recommendation labels)
     """
 
@@ -192,12 +191,6 @@ class InstructRecDataset:
         """
         return self.get_item_field(idx, "persona")
 
-    def get_asins(self, idx: int) -> List[str]:
-        """
-        Return the list of candidate item identifiers (ASIN IDs).
-        """
-        return self.get_item_field(idx, "asin")
-
     def get_ranked_list(self, idx: int) -> List[Any]:
         """
         Return the ranked list (pseudo-ground truth ordering)
@@ -225,12 +218,10 @@ import pandas as pd
 
 class ItemIndex:
     """
-    Index-based lookup for Yelp items used in the InstructRec dataset.
+    Index-based lookup for InstructRec items.
 
-    This class loads the CSV file `combined_yelp_asin_mapping.csv`,
-    which contains real item metadata (index, asin, title, description),
-    and exposes accessor methods based on the value in the `index` column,
-    not the DataFrame row position.
+    Loads a CSV mapping file (index, title, description) and exposes
+    accessor methods based on the value in the `index` column.
     """
 
     def __init__(self, csv_path: str):
@@ -239,7 +230,6 @@ class ItemIndex:
 
         Expected columns:
             - index (or Index)
-            - asin
             - title
             - description
         """
@@ -254,7 +244,7 @@ class ItemIndex:
         else:
             raise ValueError("CSV file must contain an 'index' or 'Index' column.")
 
-        required = {"index", "asin", "title", "description"}
+        required = {"index", "title", "description"}
         missing = required - set(df.columns)
         if missing:
             raise ValueError(f"CSV file is missing required columns: {missing}")
@@ -262,19 +252,13 @@ class ItemIndex:
         self.df = df
         self.index_col = index_col
 
-        # Build a dictionary: index_value -> metadata
         self._by_index = {}
-        # Build a dictionary: asin -> metadata (for reverse lookup)
-        self._by_asin = {}
         for _, row in df.iterrows():
             key = int(row[self.index_col])
-            item = {
-                "asin": str(row["asin"]).strip(),
+            self._by_index[key] = {
                 "title": row["title"],
                 "description": row["description"],
             }
-            self._by_index[key] = item
-            self._by_asin[item["asin"]] = item
 
     # ---------------------------------------------------------
     # Index-based getters (using the value in the `index` column)
@@ -282,8 +266,7 @@ class ItemIndex:
 
     def get_item_by_index(self, index_value: int) -> dict:
         """
-        Return the full item metadata for a given `index` value
-        (as stored in the CSV column `index`), not the row position.
+        Return item metadata (title, description) for a given `index` value.
 
         Parameters
         ----------
@@ -292,13 +275,7 @@ class ItemIndex:
 
         Returns
         -------
-        dict
-            Example:
-            {
-                "asin": "...",
-                "title": "...",
-                "description": "..."
-            }
+        dict with keys: title, description
 
         Raises
         ------
@@ -309,28 +286,6 @@ class ItemIndex:
         if index_value not in self._by_index:
             raise KeyError(f"No item found for index {index_value}.")
         return self._by_index[index_value]
-
-    def get_item_by_asin(self, asin: str) -> Optional[Dict[str, Any]]:
-        """
-        Return the full item metadata for a given ASIN.
-
-        Parameters
-        ----------
-        asin : str
-            Amazon Standard Identification Number (e.g. "0486448460").
-
-        Returns
-        -------
-        dict or None
-            Item metadata with keys: asin, title, description.
-            Returns None if no item exists for the given ASIN.
-        """
-        asin_str = str(asin).strip()
-        return self._by_asin.get(asin_str)
-
-    def get_asin(self, index_value: int) -> str:
-        """Return the ASIN for the given `index` value."""
-        return self.get_item_by_index(index_value)["asin"]
 
     def get_title(self, index_value: int) -> str:
         """Return the item title for the given `index` value."""

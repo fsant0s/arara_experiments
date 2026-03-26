@@ -1,0 +1,75 @@
+{
+  "user_id": "user_1955",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some Fiction books?",
+  "ground_truth": [
+    "Brave New World",
+    "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+    "Oryx and Crake",
+    "Any Bitter Thing",
+    "Brave new world; (Harper's modern classics)",
+    "Brave new world,: A novel"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+        "explanation": "In \"Guilty Pleasures,\" the first book of the Anita Blake Vampire Hunter series by Laurell K. Hamilton, readers are introduced to a world where vampires coexist with humans, and Anita Blake navigates the complexities of her role as a vampire hunter while grappling with her own moral dilemmas. This gripping urban fantasy blends horror and romance, exploring themes of power, desire, and the supernatural"
+      },
+      {
+        "title": "Brave new world; (Harper's modern classics)",
+        "explanation": "A dystopian fiction novel by Aldous Huxley, it explores a technologically advanced society that prioritizes conformity and consumerism over individuality and emotional depth. The narrative raises profound questions about freedom, happiness, and the cost of progress."
+      },
+      {
+        "title": "Any Bitter Thing",
+        "explanation": "In this poignant work of fiction, the complexities of love, loss, and redemption are explored through the intertwined lives of a grieving mother and a troubled teenager. The narrative delves into themes of forgiveness and the impact of past choices on the present."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Brave new world,: A novel",
+        "explanation": "A dystopian fiction novel by Aldous Huxley, exploring themes of technological advancement, societal control, and the loss of individuality in a future world. The story delves into the implications of a society driven by consumerism and artificial happiness."
+      },
+      {
+        "title": "Brave New World",
+        "explanation": "A dystopian fiction novel by Aldous Huxley, it explores a technologically advanced society that prioritizes conformity and consumerism over individuality and freedom. The story raises profound questions about humanity, ethics, and the cost of progress."
+      },
+      {
+        "title": "Oryx and Crake",
+        "explanation": "In this thought-provoking work of fiction by Margaret Atwood, a dystopian future unfolds through the eyes of Snowman, the last human survivor in a world ravaged by genetic engineering and corporate greed, exploring themes of humanity, ethics, and environmental collapse."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\nGuilty Pleasures (Anita Blake Vampire Hunter Ser.)\nBrave new world; (Harper's modern classics)\nAny Bitter Thing\nOryx and Crake\nBrave New World\nGuilty Pleasures (Anita Blake, Vampire Hunter, No. 1)",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+        "Brave new world; (Harper's modern classics)",
+        "Any Bitter Thing",
+        "Brave new world,: A novel",
+        "Brave New World",
+        "Oryx and Crake"
+      ]
+    }
+  ],
+  "chosen_item": "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+  "chosen_items": [
+    "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+    "Brave new world; (Harper's modern classics)",
+    "Any Bitter Thing",
+    "Brave New World",
+    "Oryx and Crake"
+  ],
+  "final_state": null
+}

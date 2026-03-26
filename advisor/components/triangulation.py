@@ -34,7 +34,13 @@ def _normalize_title(title: str) -> str:
 
 
 def compute_item_convergence(outputs: Dict[str, List[dict]]) -> float:
-    """Jaccard similarity across all LLM Top-K item sets."""
+    """
+    Average pairwise Jaccard similarity across all LLM Top-K item sets.
+
+    The original strict intersection (all LLMs must agree) yielded γ=0
+    almost always because 3 independent 7B models rarely return the exact
+    same titles.  Pairwise averaging captures partial overlap.
+    """
     if len(outputs) < 2:
         return 0.0
 
@@ -43,11 +49,16 @@ def compute_item_convergence(outputs: Dict[str, List[dict]]) -> float:
         titles = {_normalize_title(it["title"]) for it in items if "title" in it}
         title_sets.append(titles)
 
-    intersection = set.intersection(*title_sets)
-    union = set.union(*title_sets)
-    if not union:
-        return 0.0
-    return len(intersection) / len(union)
+    pairwise_jaccards = []
+    for i in range(len(title_sets)):
+        for j in range(i + 1, len(title_sets)):
+            union = title_sets[i] | title_sets[j]
+            if not union:
+                continue
+            inter = title_sets[i] & title_sets[j]
+            pairwise_jaccards.append(len(inter) / len(union))
+
+    return float(np.mean(pairwise_jaccards)) if pairwise_jaccards else 0.0
 
 
 def compute_explanation_convergence(

@@ -1,0 +1,71 @@
+{
+  "user_id": "user_1323",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books?",
+  "ground_truth": [
+    "An American tragedy",
+    "Bleak House",
+    "Bleak House (Bantam Classics (Turtleback))"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Covenant of Water",
+        "explanation": "A sweeping narrative that explores family and faith in a lush, tropical setting."
+      },
+      {
+        "title": "Bleak House",
+        "explanation": "A complex and richly woven narrative by Charles Dickens, this fiction classic delves into the intricacies of the British legal system, social injustice, and the lives of its diverse characters, offering a profound commentary on society."
+      },
+      {
+        "title": "The Wishing Game",
+        "explanation": "A heartwarming tale about love, ambition, and the magic of storytelling."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Bleak House (Bantam Classics (Turtleback))",
+        "explanation": "A complex narrative by Charles Dickens, this fiction classic delves into the intricacies of the British legal system and social injustices through a rich tapestry of interconnected characters. Themes of poverty, class, and the quest for justice are vividly explored in this enduring masterpiece."
+      },
+      {
+        "title": "An American tragedy",
+        "explanation": "A gripping exploration of ambition and moral decay in early 20th-century America, Theodore Dreiser's fiction delves into the consequences of desire and social class through the tragic story of Clyde Griffiths. The novel raises profound questions about fate, responsibility, and the American Dream."
+      },
+      {
+        "title": "Circe",
+        "explanation": "Retelling of Greek mythology from the perspective of the sorceress Circe."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " You can pick books that were recommended more than once or only one time, as long as they fit your preferences.\n\nI'll go with:\n- The Covenant of Water\n- Bleak House (Bantam Classics (Turtleback))\n- An American Tragedy\n- Circe",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Covenant of Water",
+        "Bleak House",
+        "The Wishing Game",
+        "Bleak House (Bantam Classics (Turtleback))",
+        "An American tragedy",
+        "Circe"
+      ]
+    }
+  ],
+  "chosen_item": "The Covenant of Water",
+  "chosen_items": [
+    "The Covenant of Water",
+    "Bleak House",
+    "Bleak House (Bantam Classics (Turtleback))",
+    "An American tragedy"
+  ],
+  "final_state": null
+}

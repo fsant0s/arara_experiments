@@ -1,0 +1,71 @@
+{
+  "user_id": "user_4469",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Harriette Arnow?",
+  "ground_truth": [
+    "The dollmaker"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Harriette Arnow"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Dollmaker",
+        "explanation": "A powerful tale of a woman's struggle to maintain her identity and family amidst the changing landscape of post-war America."
+      },
+      {
+        "title": "Seedtime",
+        "explanation": "An evocative story that explores the complexities of rural life and the challenges faced by a farming family."
+      },
+      {
+        "title": "The Good Earth",
+        "explanation": "A vivid depiction of the cycle of life and the connection to the land, focusing on the resilience of the human spirit."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The dollmaker",
+        "explanation": "A poignant exploration of family, sacrifice, and the struggles of rural life, Harriette Arnow's fiction delves into the life of a woman who finds solace and purpose in her craft as a dollmaker amidst the challenges of her environment."
+      },
+      {
+        "title": "Teacher at Blackrock",
+        "explanation": "Set in the Appalachian Mountains, this story follows a teacher's journey amidst poverty and prejudice."
+      },
+      {
+        "title": "The Wind Comes to the Mountainside",
+        "explanation": "This novel explores themes of love, loss, and tradition against the backdrop of rural Kentucky."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\nThe dollmaker\nTeacher at Blackrock",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Dollmaker",
+        "Seedtime",
+        "The Good Earth",
+        "The dollmaker",
+        "Teacher at Blackrock",
+        "The Wind Comes to the Mountainside"
+      ]
+    }
+  ],
+  "chosen_item": "The Dollmaker",
+  "chosen_items": [
+    "The Dollmaker",
+    "Teacher at Blackrock"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,163 @@
+{
+  "user_id": "user_991",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by Janet Evanovich?",
+  "ground_truth": [
+    "One for the Money",
+    "Full House",
+    "Hard Eight",
+    "Full Speed",
+    "To the Nines"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Janet Evanovich"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "To the Nines",
+        "explanation": "In \"To the Nines,\" Janet Evanovich delivers a humorous and action-packed installment in the Stephanie Plum series, where the quirky bounty hunter navigates a web of danger and eccentric characters while trying to solve a mysterious disappearance. This engaging story blends wit and suspense, making it a delightful read for fans of cozy mysteries."
+      },
+      {
+        "title": "Full House",
+        "explanation": "In \"Full House,\" Janet Evanovich delivers a humorous and fast-paced story featuring a resourceful heroine who navigates the chaos of family and romance while solving a mystery. This engaging novel explores themes of love, loyalty, and the complexities of modern life."
+      },
+      {
+        "title": "Full Speed",
+        "explanation": "In \"Full Speed,\" Janet Evanovich delivers a fast-paced adventure filled with humor and romance, as the protagonist navigates a thrilling world of crime and chaos while uncovering secrets from her past. This engaging novel explores themes of resilience and the pursuit of justice."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "One for the Money",
+        "explanation": "In this thrilling debut by Janet Evanovich, a down-on-her-luck woman becomes a bounty hunter, navigating the challenges of her new career while uncovering a web of crime and deception. The story blends humor and suspense, offering a fresh take on the crime genre."
+      },
+      {
+        "title": "Hard Eight",
+        "explanation": "In \"Hard Eight,\" Janet Evanovich delivers a thrilling and humorous adventure as bounty hunter Stephanie Plum navigates a high-stakes case involving a missing person and a mysterious babysitter. The novel combines suspense with Evanovich's signature wit, making it a captivating read for fans of the series."
+      },
+      {
+        "title": "Hard Eight",
+        "explanation": "Another thrilling entry in the Stephanie Plum series with plenty of laughs and suspense."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. The Recovery Agent - It sounds like a fun adventure!\n2. Game On - I've heard good things about this one, let's try it.\n3. The Stolen Letter - A captivating mystery? That sounds intriguing!\n4. Twisted Twenty-Six - More Stephanie Plum antics? Sure, why not!\n5. High Five - This one seems short and lighthearted, I'll give it a shot.\n\nI'll go with The Recovery Agent, Game On, The Stolen Letter, Twisted Twenty-Six, and High Five.",
+      "advisor_message": "How about these two options from Janet Evanovich's collection? \n\n- **One for the Money**: This is a thrilling debut where a down-on-her-luck woman turns into a bounty hunter. As she navigates her new career, she uncovers a web of crime and deception. The story is a blend of humor and suspense, offering a fresh take on the crime genre.\n\n- **To the Nines**: In this humorous and action-packed installment of the Stephanie Plum series, the quirky bounty hunter deals with a web of danger and eccentric characters while trying to solve a mysterious disappearance. It's an engaging mix of wit and suspense, perfect for fans of cozy mysteries.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "One for the Money",
+        "To the Nines"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a5_synthesize_decision",
+      "user_response": "1. One for the Money - A thrilling debut with humor and suspense? I'm in!\n2. To the Nines - The Stephanie Plum series sounds fun, let's give this one a shot too.\n\nI'll go with One for the Money and To the Nines. These two sound interesting, so let's start with these!",
+      "advisor_message": "During our exploration session, we delved into some engaging titles, focusing on humor and suspense. You responded positively to \"one for the money\" and \"to the nines,\" both of which align with your interest in humor and suspense. These titles are also authored by Janet Evanovich, which seems to be a key interest for you.\n\nHere's a shortlist of titles for you to consider:\n\n1. one for the money\n2. to the nines\n\nPlease let me know if you are specifically looking for more books by Janet Evanovich, or if there are other authors or styles you're open to exploring. \n\nWhich 5 would you like to go with?",
+      "belief_state": {
+        "preference_specificity": 0.1111111111111111,
+        "preference_dimensions": {
+          "genre": "humor",
+          "sub_genre": "suspense"
+        },
+        "items_in_session_internal_pool": [
+          "one for the money",
+          "to the nines"
+        ],
+        "items_positive": [
+          "one for the money",
+          "to the nines"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "Full House",
+        "Hard Eight"
+      ]
+    },
+    {
+      "turn": 2,
+      "action": "a6_end_session",
+      "user_response": "1. One for the Money - I remember enjoying this one!\n2. To the Nines - This Stephanie Plum novel seems entertaining too.\n3. The Recovery Agent - A thrilling adventure featuring a resourceful heroine on a quest to locate a missing treasure.\n4. Game On - Let's see what happens with bounty hunter Stephanie Plum in this one!\n5. Twisted Twenty-Six - I liked the sound of more Stephanie Plum antics.\n\nI'll go with One for the Money, To the Nines, The Recovery Agent, Game On, and Twisted Twenty-Six! These titles caught my eye and seem like a great fit.",
+      "advisor_message": "You've chosen \"One for the Money\" and \"To the Nines.\" These titles are perfect picks for you! Both books feature Janet Evanovich's signature humor and suspense, with a resourceful heroine leading the charge. They align beautifully with your interest in a humorous suspense genre starring a dynamic protagonist. Enjoy your reading adventure!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.16666666666666666,
+        "preference_dimensions": {
+          "genre": "humor",
+          "sub_genre": "suspense",
+          "protagonist_type": "resourceful heroine"
+        },
+        "items_in_session_internal_pool": [
+          "full house",
+          "hard eight",
+          "one for the money",
+          "to the nines"
+        ],
+        "items_positive": [
+          "game on",
+          "one for the money",
+          "the recovery agent",
+          "to the nines",
+          "twisted twenty-six"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 2
+      },
+      "items_considered_for_internal_turn_state": [
+        "Full Speed"
+      ]
+    }
+  ],
+  "chosen_item": "One for the Money",
+  "chosen_items": [
+    "One for the Money",
+    "To the Nines"
+  ],
+  "final_state": {
+    "preference_specificity": 0.16666666666666666,
+    "preference_dimensions": {
+      "genre": "humor",
+      "sub_genre": "suspense",
+      "protagonist_type": "resourceful heroine"
+    },
+    "items_in_session_internal_pool": [
+      "full house",
+      "hard eight",
+      "one for the money",
+      "to the nines"
+    ],
+    "items_positive": [
+      "game on",
+      "one for the money",
+      "the recovery agent",
+      "to the nines",
+      "twisted twenty-six"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.0,
+    "turn": 2
+  }
+}

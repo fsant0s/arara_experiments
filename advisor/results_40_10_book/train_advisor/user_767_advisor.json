@@ -1,0 +1,124 @@
+{
+  "user_id": "user_767",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Sarah Zettel?",
+  "ground_truth": [
+    "Usurper's Crown:A Novel Of Isavalta",
+    "A Sorcerer's Treason (Isavalta, Book 1)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Sarah Zettel"
+    ]
+  ],
+  "recsys_outputs": {
+    "mixtral:8x7b": [
+      {
+        "title": "The Quiltmaker's Ghost",
+        "explanation": "A whimsical, magical tale from Sarah Zettel."
+      },
+      {
+        "title": "Usurper's Crown:A Novel Of Isavalta",
+        "explanation": "In \"Usurper's Crown,\" Sarah Zettel weaves a captivating tale of political intrigue and magic in the land of Isavalta, where a young woman must navigate treachery and ambition to reclaim her rightful place. This novel explores themes of power, identity, and the complexities of loyalty in a richly imagined fantasy world."
+      },
+      {
+        "title": "Beneath the Glittering Sea",
+        "explanation": "An enchanting young adult fantasy novel by Sarah Zettel."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Broken Earth",
+        "explanation": "A sci-fi fantasy epic exploring themes of power and survival in a fractured world."
+      },
+      {
+        "title": "New York Times Bestselling Author: Sarah Zettel",
+        "explanation": "A collection of short stories showcasing Zettel's diverse writing style."
+      },
+      {
+        "title": "A Sorcerer's Treason (Isavalta, Book 1)",
+        "explanation": "In \"A Sorcerer's Treason,\" the first book of the Isavalta series by Sarah Zettel, a young sorceress navigates a treacherous world of political intrigue and magical betrayal while uncovering her own powerful abilities. This fantasy novel explores themes of loyalty, identity, and the struggle for power in a richly imagined setting."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "Hmm, I found a couple of books by Sarah Zettel that sound kind of fun. \n\nThere's **The Quiltmaker's Ghost**, which is a whimsical, magical tale. That could be nice and light. And then there's **Dancing at the Victory Club**, which is set in World War II Detroit \u2014 sounds interesting, but maybe a bit heavier? \n\nWhat do you think?",
+      "advisor_message": "How about these two options by Sarah Zettel? \n\nFirst, \"Usurper's Crown: A Novel Of Isavalta.\" This novel offers a fascinating blend of political intrigue and magic, set in the imaginative land of Isavalta. It's a story about a young woman's quest to reclaim her rightful place amidst a web of treachery and ambition. The themes of power, identity, and loyalty are expertly woven into this rich fantasy world.\n\nThen there's \"A Sorcerer's Treason (Isavalta, Book 1).\" This is the first book in the Isavalta series and introduces us to a young sorceress who must navigate a world filled with political intrigue and magical betrayal. As she uncovers her own powerful abilities, the novel delves into themes of loyalty and the struggle for power, all set against a richly imagined backdrop.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Usurper's Crown:A Novel Of Isavalta",
+        "A Sorcerer's Treason (Isavalta, Book 1)",
+        "Beneath the Glittering Sea"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "Oh, those sound kind of cool! **Usurper's Crown: A Novel Of Isavalta** seems like it has a lot going on with the political intrigue and magic. I like that kind of stuff. And then there's **A Sorcerer's Treason (Isavalta, Book 1)**, which also sounds fun with the young sorceress and all.\n\nI think I might go with those two. They both seem like they could be an adventure! \n\nI'll go with Usurper's Crown: A Novel Of Isavalta and A Sorcerer's Treason (Isavalta, Book 1).",
+      "advisor_message": "You've chosen \"Usurper's Crown: A Novel Of Isavalta\" and \"A Sorcerer's Treason (Isavalta, Book 1)\"\u2014great picks! Both novels, authored by Sarah Zettel, delve into magical realms and feature young sorceresses at the heart of their stories, perfectly aligning with your interest in magic-themed narratives.\n\nIf you have any more questions or need further assistance, feel free to reach out. Enjoy your magical journey through Isavalta!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.1111111111111111,
+        "preference_dimensions": {
+          "theme": "magic",
+          "protagonist_type": "young sorceress"
+        },
+        "items_in_session_internal_pool": [
+          "a sorcerer's treason (isavalta, book 1)",
+          "beneath the glittering sea",
+          "usurper's crown:a novel of isavalta"
+        ],
+        "items_positive": [
+          "a sorcerer's treason (isavalta, book 1)",
+          "usurper's crown:a novel of isavalta"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.4,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "New York Times Bestselling Author: Sarah Zettel",
+        "The Quiltmaker's Ghost",
+        "The Broken Earth"
+      ]
+    }
+  ],
+  "chosen_item": "Usurper's Crown:A Novel Of Isavalta",
+  "chosen_items": [
+    "Usurper's Crown:A Novel Of Isavalta",
+    "A Sorcerer's Treason (Isavalta, Book 1)"
+  ],
+  "final_state": {
+    "preference_specificity": 0.1111111111111111,
+    "preference_dimensions": {
+      "theme": "magic",
+      "protagonist_type": "young sorceress"
+    },
+    "items_in_session_internal_pool": [
+      "a sorcerer's treason (isavalta, book 1)",
+      "beneath the glittering sea",
+      "usurper's crown:a novel of isavalta"
+    ],
+    "items_positive": [
+      "a sorcerer's treason (isavalta, book 1)",
+      "usurper's crown:a novel of isavalta"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.4,
+    "turn": 1
+  }
+}

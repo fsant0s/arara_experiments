@@ -1,0 +1,68 @@
+{
+  "user_id": "user_756",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Tom Clancy?",
+  "ground_truth": [
+    "Without Remorse",
+    "Airborne (Tom Clancy's Military Reference)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Tom Clancy"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Red Storm Rising",
+        "explanation": "A gripping techno-thriller that explores a hypothetical World War III scenario."
+      },
+      {
+        "title": "The Sum of All Fears",
+        "explanation": "An intense political thriller that delves into the dangers of nuclear terrorism."
+      },
+      {
+        "title": "Clear and Present Danger",
+        "explanation": "A compelling narrative that examines U.S. involvement in Colombia's drug war."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Command Authority",
+        "explanation": "A Jack Ryan Jr. novel dealing with cyberwarfare and political intrigue."
+      },
+      {
+        "title": "Airborne (Tom Clancy's Military Reference)",
+        "explanation": "A comprehensive military reference by Tom Clancy, this book delves into the intricacies of airborne operations, providing insights into tactics, equipment, and the strategic importance of air mobility in modern warfare."
+      },
+      {
+        "title": "Without Remorse",
+        "explanation": "In this gripping fiction novel by Tom Clancy, a former Navy SEAL embarks on a personal mission of vengeance against drug lords and terrorists, delving into themes of justice and morality. The story intricately weaves action and political intrigue, showcasing Clancy's signature storytelling style."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n---------------------------------------------------------------\n\nMy picks are:\nRed Storm Rising\nThe Sum of All Fears",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Red Storm Rising",
+        "The Sum of All Fears",
+        "Clear and Present Danger",
+        "Command Authority",
+        "Airborne (Tom Clancy's Military Reference)",
+        "Without Remorse"
+      ]
+    }
+  ],
+  "chosen_item": "Red Storm Rising",
+  "chosen_items": [
+    "Red Storm Rising",
+    "The Sum of All Fears"
+  ],
+  "final_state": null
+}

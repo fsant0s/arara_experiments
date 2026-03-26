@@ -1,0 +1,68 @@
+{
+  "user_id": "user_317",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Laura Ingalls Wilder?",
+  "ground_truth": [
+    "Little Town on the Prairie",
+    "A Little House Sampler: A Charming Collection of Early Stories and Reminiscences"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Laura Ingalls Wilder"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Little Town on the Prairie",
+        "explanation": "In this installment of the Little House series by Laura Ingalls Wilder, the Ingalls family navigates life in a small prairie town, highlighting themes of community, resilience, and the challenges of growing up in a changing world. The story captures the joys and struggles of pioneer life through the eyes of young Laura."
+      },
+      {
+        "title": "The Laura Ingalls Wilder Companion: A Chapter-by-Chapter Guide",
+        "explanation": "This companion offers a detailed look at Wilder's works, including context and analysis of her beloved stories."
+      },
+      {
+        "title": "The Wilder Life: My Adventures in the Lost World of Little House on the Prairie",
+        "explanation": "A memoir exploring the author's journey to understand the legacy of Laura Ingalls Wilder and the impact of her stories."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The First Four Years",
+        "explanation": "A memoir of Wilder's childhood and early family life in Wisconsin."
+      },
+      {
+        "title": "A Little House Sampler: A Charming Collection of Early Stories and Reminiscences",
+        "explanation": "A delightful collection of early stories and reminiscences by Laura Ingalls Wilder, this book offers a nostalgic glimpse into pioneer life and the author's formative experiences. It beautifully captures the essence of family, resilience, and the simplicity of rural living."
+      },
+      {
+        "title": "Little Town on the Prairie",
+        "explanation": "Chronicles the Ingalls family's move to their new home in De Smet, South Dakota."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n---\nMy picks are:\n- Little Town on the Prairie\n- The First Four Years\n- A Little House Sampler: A Charming Collection of Early Stories and Reminiscences",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Little Town on the Prairie",
+        "The Laura Ingalls Wilder Companion: A Chapter-by-Chapter Guide",
+        "The Wilder Life: My Adventures in the Lost World of Little House on the Prairie",
+        "The First Four Years",
+        "A Little House Sampler: A Charming Collection of Early Stories and Reminiscences"
+      ]
+    }
+  ],
+  "chosen_item": "Little Town on the Prairie",
+  "chosen_items": [
+    "Little Town on the Prairie",
+    "The First Four Years",
+    "A Little House Sampler: A Charming Collection of Early Stories and Reminiscences"
+  ],
+  "final_state": null
+}

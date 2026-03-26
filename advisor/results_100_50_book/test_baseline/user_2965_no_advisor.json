@@ -1,0 +1,72 @@
+{
+  "user_id": "user_2965",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Ellis Peters that feature the character Brother Cadfael?",
+  "ground_truth": [
+    "One Corpse Too Many",
+    "One Corpse Too Many: The Second Chronicle of Brother Cadfael"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Ellis Peters"
+    ],
+    [
+      "BELONGS_TO",
+      "Cadfael, Brother (Fictitious character)"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "A Morbid Taste for Bones",
+        "explanation": "The first book in the Brother Cadfael series, introducing the medieval monk and herbalist as he investigates a murder in a Welsh village."
+      },
+      {
+        "title": "One Corpse Too Many: The Second Chronicle of Brother Cadfael",
+        "explanation": "In this historical mystery by Ellis Peters, Brother Cadfael investigates a murder amidst the chaos of a civil war, blending his herbal knowledge with keen insight to unravel the truth. The novel explores themes of justice and morality in a turbulent medieval setting."
+      },
+      {
+        "title": "Saint Peter's Fair",
+        "explanation": "Brother Cadfael navigates a fair and the ensuing mystery, showcasing his keen observation and deductive skills."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "One Corpse Too Many",
+        "explanation": "In this historical mystery by Ellis Peters, Brother Cadfael investigates a murder amidst the chaos of civil war in 12th-century England, blending elements of intrigue and moral complexity. The story explores themes of justice and the impact of conflict on human lives."
+      },
+      {
+        "title": "The Leper of Saint Giles",
+        "explanation": "Brother Cadfael uses his knowledge of herbs and history to solve a complex case involving a leper colony."
+      },
+      {
+        "title": "Raven's Procession",
+        "explanation": "Brother Cadfael uncovers a web of deceit surrounding the arrival of a mysterious procession at Shrewsbury Abbey."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n---\n\nI'll go with \"A Morbid Taste for Bones\" and \"One Corpse Too Many: The Second Chronicle of Brother Cadfael\".",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "A Morbid Taste for Bones",
+        "One Corpse Too Many: The Second Chronicle of Brother Cadfael",
+        "Saint Peter's Fair",
+        "One Corpse Too Many",
+        "The Leper of Saint Giles",
+        "Raven's Procession"
+      ]
+    }
+  ],
+  "chosen_item": "A Morbid Taste for Bones",
+  "chosen_items": [
+    "A Morbid Taste for Bones",
+    "One Corpse Too Many: The Second Chronicle of Brother Cadfael"
+  ],
+  "final_state": null
+}

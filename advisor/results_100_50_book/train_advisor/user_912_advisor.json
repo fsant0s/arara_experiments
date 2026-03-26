@@ -1,0 +1,118 @@
+{
+  "user_id": "user_912",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Sue Grafton?",
+  "ground_truth": [
+    "\"D\" is for Deadbeat",
+    "\"C\" is for Corpse (A Kinsey Millhone mystery, Book 3)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Sue Grafton"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "\"D\" is for Deadbeat",
+        "explanation": "In \"D\" is for Deadbeat, Sue Grafton delivers a gripping mystery as private investigator Kinsey Millhone takes on a case involving a missing person and a suspicious death, unraveling secrets that challenge her skills and instincts. This installment explores themes of deception and the complexities of human relationships."
+      },
+      {
+        "title": "Sue Grafton's Kinsey Millhone: The Complete Collection",
+        "explanation": "A definitive edition that features all of Grafton's iconic detective stories, offering a deep dive into her captivating world."
+      },
+      {
+        "title": "\"C\" is for Corpse (A Kinsey Millhone mystery, Book 3)",
+        "explanation": "In this third installment of Sue Grafton's Kinsey Millhone mystery series, private investigator Kinsey is drawn into a complex case involving a murder at a local funeral home, blending suspense with Grafton's signature wit and keen observations of human nature. The story explores themes of deception and the intricacies of life and death."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "G Is for Gumshoe",
+        "explanation": "Mystery novel featuring the alphabet-themed series protagonist, Kinsey Millhone."
+      },
+      {
+        "title": "H Is for Homicide",
+        "explanation": "Another installment in the Alphabet Series, with Kinsey investigating a murder linked to her past."
+      },
+      {
+        "title": "I Is for Innocent",
+        "explanation": "Kinsey tackles a complex case involving a young woman accused of a crime she may not have committed."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. The Kinsey Millhone Alphabet Series: A Complete Collection\nIt's got all the books in one place, so I don't have to pick just one!\n\nOR\n\n2. G Is for Gumshoe\nI like the sound of \"Gumshoe\". It seems fun and not too heavy.",
+      "advisor_message": "How about these two options to explore Sue Grafton's world?\n\n1. **Sue Grafton's Kinsey Millhone: The Complete Collection**: This definitive edition gathers all of Grafton's iconic detective stories into one collection. It's perfect if you're looking for an immersive experience with Kinsey Millhone, offering a deep dive into her captivating and mysterious world.\n\n2. **G Is for Gumshoe**: This mystery novel is part of the beloved alphabet-themed series featuring the protagonist, Kinsey Millhone. It's a great choice if you're interested in a single, thrilling installment to get a taste of Grafton's writing style.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Sue Grafton's Kinsey Millhone: The Complete Collection",
+        "G Is for Gumshoe"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. Sue Grafton's Kinsey Millhone: The Complete Collection\nI like the idea of having everything together. It feels cozy and exciting!\n\nOR\n\n2. G Is for Gumshoe\nYeah, that one sounds interesting too. I guess I'll go with both options\u2014it's nice to have a variety!",
+      "advisor_message": "You've chosen \"Sue Grafton's Kinsey Millhone: The Complete Collection\" and \"G Is for Gumshoe.\" Great picks! These titles perfectly align with your interest in Sue Grafton's work. The complete collection offers a comprehensive dive into the world of Kinsey Millhone, while \"G Is for Gumshoe\" stands out as an engaging installment in the series. Enjoy your time with these thrilling mysteries!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.05555555555555555,
+        "preference_dimensions": {
+          "scope": "complete collection"
+        },
+        "items_in_session_internal_pool": [
+          "g is for gumshoe",
+          "sue grafton's kinsey millhone: the complete collection"
+        ],
+        "items_positive": [
+          "g is for gumshoe",
+          "sue grafton's kinsey millhone: the complete collection"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "\"C\" is for Corpse (A Kinsey Millhone mystery, Book 3)",
+        "I Is for Innocent"
+      ]
+    }
+  ],
+  "chosen_item": "Sue Grafton's Kinsey Millhone: The Complete Collection",
+  "chosen_items": [
+    "Sue Grafton's Kinsey Millhone: The Complete Collection",
+    "G Is for Gumshoe"
+  ],
+  "final_state": {
+    "preference_specificity": 0.05555555555555555,
+    "preference_dimensions": {
+      "scope": "complete collection"
+    },
+    "items_in_session_internal_pool": [
+      "g is for gumshoe",
+      "sue grafton's kinsey millhone: the complete collection"
+    ],
+    "items_positive": [
+      "g is for gumshoe",
+      "sue grafton's kinsey millhone: the complete collection"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.0,
+    "turn": 1
+  }
+}

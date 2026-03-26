@@ -1,0 +1,69 @@
+{
+  "user_id": "user_1044",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Georgette Heyer?",
+  "ground_truth": [
+    "Behold, Here's Poison",
+    "Cotillion",
+    "The Reluctant Widow"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Georgette Heyer"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Cotillion",
+        "explanation": "In this charming Regency romance by Georgette Heyer, a spirited young woman navigates the complexities of society and love during her coming-out ball, blending wit and humor with a delightful cast of characters. The novel explores themes of independence and societal expectations in a richly detailed historical setting."
+      },
+      {
+        "title": "The Reluctant Widow",
+        "explanation": "In Georgette Heyer's witty historical romance, a young woman finds herself unexpectedly wed to a mysterious man, leading her into a world of intrigue and adventure. This delightful tale combines humor, romance, and clever plot twists, showcasing Heyer's signature style."
+      },
+      {
+        "title": "Cotillion",
+        "explanation": "A lively story about love and social expectations, highlighting Heyer's trademark humor and engaging plot."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Behold, Here's Poison",
+        "explanation": "In this witty mystery by Georgette Heyer, a group of eccentric characters gathers for a dinner party that turns deadly when poison is discovered. The novel cleverly combines humor and intrigue, showcasing Heyer's signature style and sharp dialogue."
+      },
+      {
+        "title": "These Old Shades",
+        "explanation": "A historical romance set in the 18th century, full of intrigue and adventure."
+      },
+      {
+        "title": "Penhallow",
+        "explanation": "A charming story of love and deception during the Napoleonic era."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\n- Cotillion\n- The Reluctant Widow\n- These Old Shades",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Cotillion",
+        "The Reluctant Widow",
+        "Behold, Here's Poison",
+        "These Old Shades",
+        "Penhallow"
+      ]
+    }
+  ],
+  "chosen_item": "Cotillion",
+  "chosen_items": [
+    "Cotillion",
+    "The Reluctant Widow",
+    "These Old Shades"
+  ],
+  "final_state": null
+}

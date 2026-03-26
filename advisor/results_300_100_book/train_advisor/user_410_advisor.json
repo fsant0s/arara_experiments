@@ -1,0 +1,159 @@
+{
+  "user_id": "user_410",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest books written by Lisa Wingate?",
+  "ground_truth": [
+    "Over the Moon at the Big Lizard Diner (Texas Hill Country Series #3)",
+    "Texas Cooking (Texas Hill Country Series #1)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Lisa Wingate"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Over the Moon at the Big Lizard Diner (Texas Hill Country Series #3)",
+        "explanation": "In the third installment of the Texas Hill Country Series by Lisa Wingate, a charming story unfolds at the Big Lizard Diner, where love, community, and the complexities of life intertwine. This heartwarming narrative captures the essence of small-town life and the bonds that form over shared meals and experiences."
+      },
+      {
+        "title": "Before We Were Strangers",
+        "explanation": "A poignant tale about lost love and the impact of choices made throughout life."
+      },
+      {
+        "title": "Texas Cooking (Texas Hill Country Series #1)",
+        "explanation": "In \"Texas Cooking,\" the first book in the Texas Hill Country Series by Lisa Wingate, readers are treated to a delightful blend of regional recipes and heartfelt stories that celebrate the rich culinary traditions of Texas. The narrative intertwines food with community, showcasing how cooking can bring people together in meaningful ways."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Book Woman of Troublesome Creek",
+        "explanation": "Historical fiction set in Depression-era Kentucky, following a woman who delivers books to isolated communities."
+      },
+      {
+        "title": "Before We Were Yours",
+        "explanation": "A powerful novel about children stolen from their families and placed in a Tennessee home for unwed mothers."
+      },
+      {
+        "title": "The Last Train to Key West",
+        "explanation": "A story of family secrets and redemption set against the backdrop of World War II."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a4_highlight_divergence",
+      "user_response": "1. The Book of Lost Friends - I like the idea of connecting past and present, exploring heritage and family sounds interesting.\n2. Before We Were Yours - This one seems intriguing with its focus on lost love and life choices.\n\nI'll go with The Book of Lost Friends and Before We Were Yours.",
+      "advisor_message": "It seems like you're interested in exploring some book options. Based on different perspectives, we have two recommendations that highlight unique themes.\n\n1. From one perspective, **\"Over the Moon at the Big Lizard Diner (Texas Hill Country Series #3)\"** by Lisa Wingate offers a delightful narrative set in a small town. It captures the warmth of community, love, and the intricate relationships that develop in such a setting. This book is perfect if you're looking for something heartwarming and community-focused.\n\n2. Another perspective introduces **\"The Last Train to Key West\"** by Chanel Cleeton, which dives into themes of family secrets and redemption during the backdrop of World War II. This choice is great if you're drawn to historical settings and stories of personal growth and discovery.\n\nThe divergence between these two comes down to the setting and focus: one is centered around small-town life and personal connections, while the other delves into historical drama and family dynamics.\n\nGiven that your request is strongly tied to the author Lisa Wingate, the first option, \"Over the Moon at the Big Lizard Diner,\" aligns well with your interests. However, if you're open to exploring beyond Wingate's works, \"The Last Train to Key West\" offers a compelling alternative.\n\nWhich direction sounds better to you? Are you specifically looking for books by Lisa Wingate, or are you open to exploring other authors as well?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Over the Moon at the Big Lizard Diner (Texas Hill Country Series #3)",
+        "The Last Train to Key West"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a5_synthesize_decision",
+      "user_response": "1. Over the Moon at the Big Lizard Diner - Small-town stories with personal connections always sound interesting, so I'll pick this one!\n\nI'll go with Over the Moon at the Big Lizard Diner by Lisa Wingate.",
+      "advisor_message": "In our exploration session, we looked at a couple of books. You reacted positively to \"over the moon at the big lizard diner (texas hill country series #3)\", which is set in a small-town environment and features themes of personal connections, aligning well with your preferences. We also discussed \"the last train to key west\".\n\nGiven your interest in small-town settings, personal connections, and the works of Lisa Wingate, let's focus on those aspects. Since Lisa Wingate's work seems to be a key interest, are you specifically looking for more books by her?\n\nHere's a shortlist based on what we discussed:\n\n1. over the moon at the big lizard diner (texas hill country series #3)\n2. the last train to key west\n\nWhich 2 would you like to go with?",
+      "belief_state": {
+        "preference_specificity": 0.16666666666666666,
+        "preference_dimensions": {
+          "setting": "small-town",
+          "theme": "personal connections",
+          "author": "Lisa Wingate"
+        },
+        "items_in_session_internal_pool": [
+          "over the moon at the big lizard diner (texas hill country series #3)",
+          "the last train to key west"
+        ],
+        "items_positive": [
+          "over the moon at the big lizard diner (texas hill country series #3)"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.5,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "Texas Cooking (Texas Hill Country Series #1)",
+        "The Book Woman of Troublesome Creek"
+      ]
+    },
+    {
+      "turn": 2,
+      "action": "a6_end_session",
+      "user_response": "1. Over the Moon at the Big Lizard Diner - I'm excited to explore this small-town story!\n2. The Last Train to Key West - Although it is not by Lisa Wingate, its historical setting and personal growth themes caught my attention.\n\nMy picks are: Over the Moon at the Big Lizard Diner and The Last Train to Key West.",
+      "advisor_message": "You've chosen \"Over the Moon at the Big Lizard Diner\" and \"The Last Train to Key West,\" and they both align beautifully with what you're looking for. \"Over the Moon at the Big Lizard Diner\" offers that charming small-town setting and the theme of personal connections you enjoy, all wrapped up in Lisa Wingate's engaging storytelling. Meanwhile, \"The Last Train to Key West\" provides a captivating historical backdrop, immersing you in a different time period while exploring deep personal connections. Both selections are sure to offer you a heartfelt reading experience.\n\nThank you for sharing your preferences with me. It was a pleasure helping you find these books. Enjoy your literary journey!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.2222222222222222,
+        "preference_dimensions": {
+          "setting": "small-town",
+          "theme": "personal connections",
+          "author": "Lisa Wingate",
+          "time_period": "historical"
+        },
+        "items_in_session_internal_pool": [
+          "over the moon at the big lizard diner (texas hill country series #3)",
+          "texas cooking (texas hill country series #1)",
+          "the book woman of troublesome creek",
+          "the last train to key west"
+        ],
+        "items_positive": [
+          "over the moon at the big lizard diner",
+          "over the moon at the big lizard diner (texas hill country series #3)",
+          "the last train to key west"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.5,
+        "overload_risk": 0.0,
+        "turn": 2
+      },
+      "items_considered_for_internal_turn_state": [
+        "Before We Were Yours",
+        "Before We Were Strangers"
+      ]
+    }
+  ],
+  "chosen_item": "Over the Moon at the Big Lizard Diner",
+  "chosen_items": [
+    "Over the Moon at the Big Lizard Diner",
+    "The Last Train to Key West"
+  ],
+  "final_state": {
+    "preference_specificity": 0.2222222222222222,
+    "preference_dimensions": {
+      "setting": "small-town",
+      "theme": "personal connections",
+      "author": "Lisa Wingate",
+      "time_period": "historical"
+    },
+    "items_in_session_internal_pool": [
+      "over the moon at the big lizard diner (texas hill country series #3)",
+      "texas cooking (texas hill country series #1)",
+      "the book woman of troublesome creek",
+      "the last train to key west"
+    ],
+    "items_positive": [
+      "over the moon at the big lizard diner",
+      "over the moon at the big lizard diner (texas hill country series #3)",
+      "the last train to key west"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.5,
+    "overload_risk": 0.0,
+    "turn": 2
+  }
+}

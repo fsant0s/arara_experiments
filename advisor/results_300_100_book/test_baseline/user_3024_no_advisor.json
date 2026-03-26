@@ -1,0 +1,73 @@
+{
+  "user_id": "user_3024",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some drama books written by Dale Wasserman?",
+  "ground_truth": [
+    "Man of La Mancha;: A musical play,",
+    "Man of La Mancha"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Dale Wasserman"
+    ],
+    [
+      "BELONGS_TO",
+      "Drama"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Man of La Mancha",
+        "explanation": "A powerful drama by Dale Wasserman, this story follows the idealistic Don Quixote as he embarks on a quest to revive chivalry and pursue his dreams, exploring themes of imagination and the human spirit."
+      },
+      {
+        "title": "The Rainmaker",
+        "explanation": "A compelling courtroom drama that delves into justice, hope, and the human spirit."
+      },
+      {
+        "title": "Magic and Madness",
+        "explanation": "A captivating exploration of the fine line between genius and insanity, showcasing Wasserman's storytelling prowess."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "One Flew Over the Cuckoo's Nest",
+        "explanation": "A powerful and thought-provoking play about rebellion and freedom in a mental institution."
+      },
+      {
+        "title": "Man of La Mancha;: A musical play,",
+        "explanation": "A poignant musical play by Dale Wasserman, this drama tells the story of Don Quixote's quest to revive chivalry and his battle against the harsh realities of life. Through powerful songs and rich characters, it explores themes of idealism, imagination, and the human spirit."
+      },
+      {
+        "title": "Rhinoceros",
+        "explanation": "A darkly comic play examining conformity and the dangers of extremism."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\nMan of La Mancha\nThe Rainmaker\nOne Flew Over the Cuckoo's Nest",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Man of La Mancha",
+        "The Rainmaker",
+        "Magic and Madness",
+        "One Flew Over the Cuckoo's Nest",
+        "Man of La Mancha;: A musical play,",
+        "Rhinoceros"
+      ]
+    }
+  ],
+  "chosen_item": "Man of La Mancha",
+  "chosen_items": [
+    "Man of La Mancha",
+    "The Rainmaker",
+    "One Flew Over the Cuckoo's Nest"
+  ],
+  "final_state": null
+}

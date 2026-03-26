@@ -1,0 +1,68 @@
+{
+  "user_id": "user_1331",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books?",
+  "ground_truth": [
+    "Three Men in a Boat",
+    "The Day Of The Triffids"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Day Of The Triffids",
+        "explanation": "A gripping science fiction novel by John Wyndham, exploring a post-apocalyptic world overrun by deadly, mobile plants known as Triffids. The story delves into themes of survival, human resilience, and societal collapse."
+      },
+      {
+        "title": "The Seven Husbands of Evelyn Hugo",
+        "explanation": "A captivating story of a reclusive Hollywood icon recounting her glamorous and tumultuous past."
+      },
+      {
+        "title": "Three Men in a Boat",
+        "explanation": "A humorous fiction classic by Jerome K. Jerome, this novel follows three friends and a dog on a boating holiday along the Thames, blending comedic misadventures with witty observations about life and friendship."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Circe",
+        "explanation": "A captivating reimagining of the Greek myth, exploring themes of power and female agency."
+      },
+      {
+        "title": "The Midnight Library",
+        "explanation": "A thought-provoking novel about second chances and the infinite possibilities of life."
+      },
+      {
+        "title": "Piranesi",
+        "explanation": "A hauntingly beautiful story set in a mysterious labyrinth, filled with wonder and suspense."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\nThe Seven Husbands of Evelyn Hugo\nPiranesi",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Day Of The Triffids",
+        "The Seven Husbands of Evelyn Hugo",
+        "Three Men in a Boat",
+        "Circe",
+        "The Midnight Library",
+        "Piranesi"
+      ]
+    }
+  ],
+  "chosen_item": "The Seven Husbands of Evelyn Hugo",
+  "chosen_items": [
+    "The Seven Husbands of Evelyn Hugo",
+    "Piranesi"
+  ],
+  "final_state": null
+}

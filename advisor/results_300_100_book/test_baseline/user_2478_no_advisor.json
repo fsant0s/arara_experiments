@@ -1,0 +1,72 @@
+{
+  "user_id": "user_2478",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend books written by the Library of Congress. Copyright Office that belong to the Copyright category?",
+  "ground_truth": [
+    "Absalom, Absalom! (The Modern library of the world's best books, 271)",
+    "The history of Troilus and Cressida (Signet classics, CD172. The Signet classic Shakespeare)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Library of Congress. Copyright Office"
+    ],
+    [
+      "BELONGS_TO",
+      "Copyright"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The history of Troilus and Cressida (Signet classics, CD172. The Signet classic Shakespeare)",
+        "explanation": "This edition of Troilus and Cressida, part of the Signet Classics series, offers a comprehensive exploration of Shakespeare's take on love and betrayal set against the backdrop of the Trojan War. Published by the Library of Congress, it provides valuable insights into the themes and historical context of this complex play."
+      },
+      {
+        "title": "The Copyright Handbook: How to Protect & Use Written Works",
+        "explanation": "An authoritative resource that provides practical advice on copyright issues for authors and creators."
+      },
+      {
+        "title": "Understanding Copyright Law",
+        "explanation": "This book offers a comprehensive overview of copyright law, making complex concepts accessible to readers."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Law and Practice of Copyright in the United States",
+        "explanation": "Comprehensive guide to U.S. copyright law, published by the Copyright Office."
+      },
+      {
+        "title": "Absalom, Absalom! (The Modern library of the world's best books, 271)",
+        "explanation": "A complex narrative by the Library of Congress, this work delves into the intricacies of Southern identity and the legacy of the Civil War, exploring themes of family, memory, and the haunting nature of history."
+      },
+      {
+        "title": "Copyright Registration: A Practical Guide",
+        "explanation": "Step-by-step instructions for registering copyrighted works with the U.S. Copyright Office."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nMy picks are:\n1. The Copyright Handbook: How to Protect & Use Written Works\n2. Absalom, Absalom! (The Modern library of the world's best books, 271)",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The history of Troilus and Cressida (Signet classics, CD172. The Signet classic Shakespeare)",
+        "The Copyright Handbook: How to Protect & Use Written Works",
+        "Understanding Copyright Law",
+        "The Law and Practice of Copyright in the United States",
+        "Absalom, Absalom! (The Modern library of the world's best books, 271)",
+        "Copyright Registration: A Practical Guide"
+      ]
+    }
+  ],
+  "chosen_item": "The Copyright Handbook: How to Protect & Use Written Works",
+  "chosen_items": [
+    "The Copyright Handbook: How to Protect & Use Written Works",
+    "Absalom, Absalom! (The Modern library of the world's best books, 271)"
+  ],
+  "final_state": null
+}

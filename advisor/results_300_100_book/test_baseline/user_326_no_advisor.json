@@ -1,0 +1,68 @@
+{
+  "user_id": "user_326",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by Carlos Castaneda?",
+  "ground_truth": [
+    "The teachings of Don Juan: a yaqui Way of Knowledge"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Carlos Castaneda"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Active Side of Infinity",
+        "explanation": "A collection of previously unpublished writings that delve into Castaneda's experiences with Don Juan and the lessons learned."
+      },
+      {
+        "title": "The Art of Dreaming",
+        "explanation": "Explores the concept of dreaming as a tool for personal growth and spiritual insight, expanding on Castaneda's teachings."
+      },
+      {
+        "title": "The Fire from Within",
+        "explanation": "Offers profound insights into the nature of reality and perception, continuing Castaneda's exploration of shamanism and consciousness."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The teachings of Don Juan: a yaqui Way of Knowledge",
+        "explanation": "In this influential work by Carlos Castaneda, the author recounts his experiences with a Yaqui shaman, exploring spiritual teachings and the pursuit of knowledge through altered states of consciousness. The book delves into themes of perception, reality, and the nature of existence."
+      },
+      {
+        "title": "The Teachings of Don Juan: A Yaqui Way of Knowledge",
+        "explanation": "Castaneda's first book detailing his apprenticeship under the Yaqui sorcerer Don Juan Matus."
+      },
+      {
+        "title": "Tales of Power",
+        "explanation": "Explores the concept of power and its use in shamanic traditions through Castaneda's experiences with Don Juan."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\n- The Active Side of Infinity\n- The Art of Dreaming\n- The teachings of Don Juan: a yaqui Way of Knowledge",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Active Side of Infinity",
+        "The Art of Dreaming",
+        "The Fire from Within",
+        "The teachings of Don Juan: a yaqui Way of Knowledge",
+        "The Teachings of Don Juan: A Yaqui Way of Knowledge",
+        "Tales of Power"
+      ]
+    }
+  ],
+  "chosen_item": "The Active Side of Infinity",
+  "chosen_items": [
+    "The Active Side of Infinity",
+    "The Art of Dreaming",
+    "The teachings of Don Juan: a yaqui Way of Knowledge"
+  ],
+  "final_state": null
+}

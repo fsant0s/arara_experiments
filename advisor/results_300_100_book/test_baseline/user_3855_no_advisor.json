@@ -1,0 +1,84 @@
+{
+  "user_id": "user_3855",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Bodie Thoene and Brock Thoene?",
+  "ground_truth": [
+    "Jerusalem Interlude (Zion Covenant, Book 4)",
+    "Danzig Passage (The Zion Covenant #5)",
+    "Munich Signature (The Zion Covenant, Book 3)",
+    "Vienna Prelude (Zion Covenant, Book 1)",
+    "Prague Counterpoint (Zion Covenant, Book 2)",
+    "Warsaw Requiem (The Zion Covenant, # 6)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Bodie Thoene"
+    ],
+    [
+      "WRITTEN_BY",
+      "Brock Thoene"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Munich Signature (The Zion Covenant, Book 3)",
+        "explanation": "In this gripping historical fiction by Bodie and Brock Thoene, the third installment of The Zion Covenant series delves into the tumultuous events leading up to World War II, highlighting the struggles of Jewish families in Munich as they navigate the rising tide of Nazi oppression. Themes of faith, resilience, and the fight for survival are intricately woven throughout the narrative."
+      },
+      {
+        "title": "Prague Counterpoint (Zion Covenant, Book 2)",
+        "explanation": "In this gripping historical fiction by Bodie and Brock Thoene, the second installment of the Zion Covenant series delves into the complexities of love and faith against the backdrop of World War II Europe. The narrative intertwines personal struggles with the broader themes of survival and resilience during a tumultuous time in history."
+      },
+      {
+        "title": "Jerusalem Interlude (Zion Covenant, Book 4)",
+        "explanation": "In this gripping installment of the Zion Covenant series by Bodie and Brock Thoene, readers are immersed in the tumultuous backdrop of World War II as characters navigate the complexities of faith, love, and survival in Jerusalem. The narrative intertwines historical events with personal struggles, offering a poignant exploration of hope amidst despair."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Warsaw Requiem (The Zion Covenant, # 6)",
+        "explanation": "In this gripping installment of The Zion Covenant series by Bodie and Brock Thoene, the harrowing experiences of Jewish families during World War II are brought to life, highlighting themes of resilience and faith amidst the horrors of war. The narrative weaves historical events with personal stories, offering a poignant reflection on survival and hope."
+      },
+      {
+        "title": "Vienna Prelude (Zion Covenant, Book 1)",
+        "explanation": "Set against the backdrop of pre-World War II Europe, this historical fiction by Bodie and Brock Thoene follows the lives of Jewish families in Vienna as they navigate rising tensions and the threat of Nazi oppression. The story intricately weaves themes of faith, resilience, and the struggle for survival in a time of great uncertainty."
+      },
+      {
+        "title": "Danzig Passage (The Zion Covenant #5)",
+        "explanation": "In this gripping installment of The Zion Covenant series by Bodie and Brock Thoene, the story unfolds against the backdrop of World War II, intertwining personal struggles with the broader historical context of the Jewish experience in Europe. The narrative explores themes of faith, resilience, and the fight for survival amidst the horrors of war."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nMy picks are:\n1. Munich Signature (The Zion Covenant, Book 3)\n2. Prague Counterpoint (Zion Covenant, Book 2)\n3. Jerusalem Interlude (Zion Covenant, Book 4)\n4. Warsaw Requiem (The Zion Covenant, # 6)\n5. Vienna Prelude (Zion Covenant, Book 1)\n6. Danzig Passage (The Zion Covenant #5)",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Munich Signature (The Zion Covenant, Book 3)",
+        "Prague Counterpoint (Zion Covenant, Book 2)",
+        "Jerusalem Interlude (Zion Covenant, Book 4)",
+        "Warsaw Requiem (The Zion Covenant, # 6)",
+        "Vienna Prelude (Zion Covenant, Book 1)",
+        "Danzig Passage (The Zion Covenant #5)"
+      ]
+    }
+  ],
+  "chosen_item": "Munich Signature (The Zion Covenant, Book 3)",
+  "chosen_items": [
+    "Munich Signature (The Zion Covenant, Book 3)",
+    "Prague Counterpoint (Zion Covenant, Book 2)",
+    "Jerusalem Interlude (Zion Covenant, Book 4)",
+    "Warsaw Requiem (The Zion Covenant, # 6)",
+    "Vienna Prelude (Zion Covenant, Book 1)",
+    "Danzig Passage (The Zion Covenant #5)"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,158 @@
+{
+  "user_id": "user_1310",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books that belong to the Fiction genre?",
+  "ground_truth": [
+    "The Other Boleyn Girl",
+    "City of Night (Dean Koontz's Frankenstein, Book 2)",
+    "Vanish",
+    "In the Company of the Courtesan: A Novel",
+    "True Believer (Large Print)"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Other Boleyn Girl",
+        "explanation": "A captivating historical fiction novel by Philippa Gregory, this story delves into the life of Mary Boleyn, sister to Anne, as she navigates the treacherous court of King Henry VIII, exploring themes of ambition, betrayal, and the complexities of sisterhood."
+      },
+      {
+        "title": "City of Night (Dean Koontz's Frankenstein, Book 2)",
+        "explanation": "In this gripping fiction sequel, Dean Koontz continues the thrilling saga of Frankenstein, delving into the dark underbelly of a city where humanity and monstrosity collide. The story explores themes of identity, morality, and the battle between good and evil."
+      },
+      {
+        "title": "Vanish",
+        "explanation": "In this gripping fiction novel, a woman grapples with her mysterious past while uncovering dark secrets that threaten her future. The story intricately weaves themes of identity and survival, keeping readers on the edge of their seats."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "True Believer (Large Print)",
+        "explanation": "A gripping fiction novel by Nicholas Sparks that delves into the complexities of love and loss, as a man grapples with his past while seeking redemption and a second chance at happiness. The story intertwines themes of faith and belief, making it a poignant read for those who enjoy emotional narratives."
+      },
+      {
+        "title": "In the Company of the Courtesan: A Novel",
+        "explanation": "Set in 16th-century Venice, this historical fiction novel by Sarah Dunant follows the life of a courtesan and her loyal dwarf companion as they navigate love, ambition, and betrayal in a city rich with intrigue and beauty. The story delves into themes of power and survival in a world dominated by social hierarchies."
+      },
+      {
+        "title": "The Guest List",
+        "explanation": "A locked-room mystery set on a remote island during a lavish wedding celebration."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. The Covenant of Water - I like the sound of this one, it seems like there's a lot to explore in it.\n2. Yellowface - Sure, that sounds interesting! It caught my eye right away.\n3. The Invisible Life of Addie LaRue - This one seems mysterious and exciting, I'm curious about it.\n4. Piranesi - Hmm, this one seems unique, I think I would enjoy getting lost in a labyrinthine world.\n5. The Guest List - A locked-room mystery? That sounds cool, let me give that one a try too!\n\nMy picks are: The Covenant of Water, Yellowface, The Invisible Life of Addie LaRue, Piranesi, and The Guest List.",
+      "advisor_message": "How about these two options? \n\n1. **Vanish**: This is a gripping fiction novel where a woman grapples with her mysterious past while uncovering dark secrets that threaten her future. It's a thrilling story that intricately weaves themes of identity and survival, keeping readers on the edge of their seats.\n\n2. **True Believer (Large Print)**: A fiction novel by Nicholas Sparks that delves into the complexities of love and loss. It follows a man as he grapples with his past while seeking redemption and a second chance at happiness. This story intertwines themes of faith and belief, making it a poignant read for those who enjoy emotional narratives.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Vanish",
+        "True Believer (Large Print)"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a5_synthesize_decision",
+      "user_response": "1. Vanish - That sounds intense! I'm always up for a good mystery and this one seems to have some intriguing themes.\n2. True Believer (Large Print) - Hmm, I do enjoy a good Nicholas Sparks novel from time to time. This one sounds emotional and thought-provoking.\n\nI think both sound interesting! Let's go with these two: Vanish and True Believer (Large Print).",
+      "advisor_message": "During our exploration session, we delved into a selection of fiction titles that align with themes of mystery, identity, survival, love, loss, faith, and belief. You reacted positively to \"true believer (large print)\" and \"vanish,\" which suggests an interest in stories that weave together elements of mystery and exploration of personal beliefs.\n\nBased on your interests and the positive reactions, here is a shortlist of titles discussed:\n\n1. true believer (large print)\n2. vanish\n\nPlease select 5 titles from the list above that you would like to go with. Which 5 would you like to go with?",
+      "belief_state": {
+        "preference_specificity": 0.1111111111111111,
+        "preference_dimensions": {
+          "theme": "mystery, identity, survival, love, loss, faith, belief",
+          "genre": "fiction"
+        },
+        "items_in_session_internal_pool": [
+          "true believer (large print)",
+          "vanish"
+        ],
+        "items_positive": [
+          "true believer (large print)",
+          "vanish"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "In the Company of the Courtesan: A Novel",
+        "City of Night (Dean Koontz's Frankenstein, Book 2)"
+      ]
+    },
+    {
+      "turn": 2,
+      "action": "a6_end_session",
+      "user_response": "1. True Believer (Large Print) - I enjoyed the emotional depth and exploration of personal beliefs in this novel.\n2. Vanish - The mystery and intrigue in this story caught my attention, and it seems like it will be an exciting read!\n\nI would like to go with these two titles: True Believer (Large Print) and Vanish. Although I initially reacted positively to the other titles on the list, upon further consideration, I feel most drawn to these two options.",
+      "advisor_message": "You've chosen \"True Believer (Large Print)\" and \"Vanish,\" which beautifully align with your interest in mystery and exploration of personal beliefs, wrapped in the rich emotional depth of fiction. \"True Believer\" offers a profound dive into personal transformation, while \"Vanish\" keeps you on the edge with its intriguing mystery. Both will satisfy your craving for engaging and thought-provoking narratives.\n\nIf you have any other preferences or questions in the future, feel free to ask. Enjoy your reads!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.16666666666666666,
+        "preference_dimensions": {
+          "theme": "mystery, exploration of personal beliefs",
+          "genre": "fiction",
+          "emotional_register": "emotional depth"
+        },
+        "items_in_session_internal_pool": [
+          "city of night (dean koontz's frankenstein, book 2)",
+          "in the company of the courtesan: a novel",
+          "true believer (large print)",
+          "vanish"
+        ],
+        "items_positive": [
+          "true believer (large print)",
+          "vanish"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 2
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Other Boleyn Girl",
+        "The Guest List"
+      ]
+    }
+  ],
+  "chosen_item": "True Believer (Large Print)",
+  "chosen_items": [
+    "True Believer (Large Print)",
+    "Vanish"
+  ],
+  "final_state": {
+    "preference_specificity": 0.16666666666666666,
+    "preference_dimensions": {
+      "theme": "mystery, exploration of personal beliefs",
+      "genre": "fiction",
+      "emotional_register": "emotional depth"
+    },
+    "items_in_session_internal_pool": [
+      "city of night (dean koontz's frankenstein, book 2)",
+      "in the company of the courtesan: a novel",
+      "true believer (large print)",
+      "vanish"
+    ],
+    "items_positive": [
+      "true believer (large print)",
+      "vanish"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.0,
+    "turn": 2
+  }
+}

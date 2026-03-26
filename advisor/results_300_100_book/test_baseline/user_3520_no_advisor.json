@@ -1,0 +1,70 @@
+{
+  "user_id": "user_3520",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nPlease recommend books written by James Baldwin that belong to the Biography & Autobiography category.",
+  "ground_truth": [
+    "Nobody Knows My Name: More Notes of a Native Son"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "James Baldwin"
+    ],
+    [
+      "BELONGS_TO",
+      "Biography & Autobiography"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Fire Next Time",
+        "explanation": "A powerful essay that explores race relations in America, blending personal narrative with social commentary."
+      },
+      {
+        "title": "Nobody Knows My Name: More Notes of a Native Son",
+        "explanation": "In this collection of essays, James Baldwin reflects on his experiences as a Black man in America, offering profound insights into identity, race, and the struggle for belonging. His powerful narrative captures the complexities of the human experience, making it a significant work in the Biography & Autobiography genre."
+      },
+      {
+        "title": "The Price of the Ticket",
+        "explanation": "This retrospective collection of Baldwin's essays and writings reveals his profound insights into the complexities of race and sexuality."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Fire Next Time",
+        "explanation": "A collection of essays exploring race and identity in America."
+      },
+      {
+        "title": "Notes of a Native Son",
+        "explanation": "Essays examining Baldwin's personal experiences with racism and societal injustice."
+      },
+      {
+        "title": "Just Above My Head",
+        "explanation": "Autobiographical account of Baldwin's life and his artistic journey."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\n- The Fire Next Time\n- Just Above My Head",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Fire Next Time",
+        "Nobody Knows My Name: More Notes of a Native Son",
+        "The Price of the Ticket",
+        "Notes of a Native Son",
+        "Just Above My Head"
+      ]
+    }
+  ],
+  "chosen_item": "The Fire Next Time",
+  "chosen_items": [
+    "The Fire Next Time",
+    "Just Above My Head"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,74 @@
+{
+  "user_id": "user_64",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by John Saul?",
+  "ground_truth": [
+    "Punish the Sinners",
+    "Nathaniel",
+    "CRY FOR THE STRANGERS",
+    "comes the blind fury"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "John Saul"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Punish the Sinners",
+        "explanation": "In \"Punish the Sinners,\" John Saul weaves a gripping narrative that delves into the dark secrets of a small town, exploring themes of guilt, redemption, and the consequences of past sins. The story follows a chilling series of events that unfold when a mysterious figure begins to exact revenge on those who have wronged others."
+      },
+      {
+        "title": "Nathaniel",
+        "explanation": "In John Saul's gripping novel, a family's dark secrets unravel as they confront a malevolent force tied to their ancestral home. This chilling tale explores themes of legacy, fear, and the supernatural."
+      },
+      {
+        "title": "comes the blind fury",
+        "explanation": "In \"Comes the Blind Fury,\" John Saul weaves a chilling narrative about a young girl who becomes the target of supernatural forces after her family moves to a small town. The story explores themes of fear, isolation, and the struggle against dark influences."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Devil's Workshop",
+        "explanation": "Suspenseful thriller with a supernatural element."
+      },
+      {
+        "title": "The House of Shadows",
+        "explanation": "Psychological horror novel about a haunted house."
+      },
+      {
+        "title": "CRY FOR THE STRANGERS",
+        "explanation": "In John Saul's gripping novel, a small town is haunted by a series of mysterious disappearances, leading to a chilling exploration of fear and the unknown. The story delves into the dark secrets that bind the community, revealing the lengths to which people will go to protect their own."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\nPunish the Sinners\nNathaniel\nComes the Blind Fury\nThe Devil's Workshop\nThe House of Shadows\nCRY FOR THE STRANGERS",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Punish the Sinners",
+        "Nathaniel",
+        "comes the blind fury",
+        "The Devil's Workshop",
+        "The House of Shadows",
+        "CRY FOR THE STRANGERS"
+      ]
+    }
+  ],
+  "chosen_item": "Punish the Sinners",
+  "chosen_items": [
+    "Punish the Sinners",
+    "Nathaniel",
+    "comes the blind fury",
+    "The Devil's Workshop",
+    "The House of Shadows",
+    "CRY FOR THE STRANGERS"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,125 @@
+{
+  "user_id": "user_2910",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by William Walker Atkinson and Ramacharaka that are related to Yoga?",
+  "ground_truth": [
+    "Fourteen lessons in Yogi philosophy and Oriental occultism,"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "William Walker Atkinson"
+    ],
+    [
+      "WRITTEN_BY",
+      "Ramacharaka"
+    ],
+    [
+      "BELONGS_TO",
+      "Yoga"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Science of Being Great",
+        "explanation": "Explores the mental and spiritual aspects of yoga and personal development."
+      },
+      {
+        "title": "The Law of Attraction",
+        "explanation": "Discusses the principles behind attracting positive experiences, akin to yoga's focus on mindfulness."
+      },
+      {
+        "title": "Fourteen lessons in Yogi philosophy and Oriental occultism,",
+        "explanation": "A comprehensive guide to Yogi philosophy and Oriental occultism by William Walker Atkinson, this book offers practical insights and teachings on spiritual development and self-realization within the Yoga genre. It explores various aspects of Eastern wisdom, aiming to enhance the reader's understanding of the mind and the universe."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Power of Will",
+        "explanation": "Explores the power of concentration and willpower in achieving personal growth, aligning with yogic principles."
+      },
+      {
+        "title": "The Yogi's  Philosophy",
+        "explanation": "Delves into the philosophical underpinnings of yoga, examining its teachings on self-realization and liberation."
+      },
+      {
+        "title": "A Key to Yoga",
+        "explanation": "Provides a practical guide to the practice of yoga, including postures, breathing exercises, and meditation techniques."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a7_inject_gt_probe",
+      "user_response": "1. The Power of Will - It sounds like it's about concentration and willpower, which seems interesting.\n2. A Key to Yoga - I like that this one is specifically about yoga; maybe it has some good exercises or something.",
+      "advisor_message": "What about this one: *Fourteen Lessons in Yogi Philosophy and Oriental Occultism* by William Walker Atkinson? It sounds like it could be right up your alley. This book dives deep into Yogi philosophy and offers practical insights into spiritual development and self-realization. It explores Eastern wisdom, which might be exactly what you're looking to understand better.\n\nDoes this sound like something you'd be interested in, or would you like to continue exploring other options? If you're looking for works by specific authors like William Walker Atkinson or Ramacharaka, let me know, and we can focus on those.",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Fourteen lessons in Yogi philosophy and Oriental occultism,",
+        "A Key to Yoga"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. A Key to Yoga - I liked that one already, but now I'm even more curious about it since it's specifically about yoga.\n2. Fourteen Lessons in Yogi Philosophy and Oriental Occultism - This one sounds cool too because it focuses on the philosophy and insights of yoga. Let's go with these two!",
+      "advisor_message": "You have chosen \"A Key to Yoga\" and \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism.\" These books are perfect for your interest in Yogi philosophy, offering insights into the teachings of William Walker Atkinson and Ramacharaka. They align beautifully with your exploration of Yoga and Oriental Occultism. Enjoy your reading journey!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.05555555555555555,
+        "preference_dimensions": {
+          "specific_topic": "Yogi philosophy"
+        },
+        "items_in_session_internal_pool": [
+          "a key to yoga",
+          "fourteen lessons in yogi philosophy and oriental occultism,"
+        ],
+        "items_positive": [
+          "a key to yoga",
+          "fourteen lessons in yogi philosophy and oriental occultism"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Law of Attraction",
+        "The Yogi's  Philosophy"
+      ]
+    }
+  ],
+  "chosen_item": "A Key to Yoga",
+  "chosen_items": [
+    "A Key to Yoga",
+    "Fourteen Lessons in Yogi Philosophy and Oriental Occultism"
+  ],
+  "final_state": {
+    "preference_specificity": 0.05555555555555555,
+    "preference_dimensions": {
+      "specific_topic": "Yogi philosophy"
+    },
+    "items_in_session_internal_pool": [
+      "a key to yoga",
+      "fourteen lessons in yogi philosophy and oriental occultism,"
+    ],
+    "items_positive": [
+      "a key to yoga",
+      "fourteen lessons in yogi philosophy and oriental occultism"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.0,
+    "turn": 1
+  }
+}

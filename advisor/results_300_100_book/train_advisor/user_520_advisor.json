@@ -1,0 +1,124 @@
+{
+  "user_id": "user_520",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Marian Keyes?",
+  "ground_truth": [
+    "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+    "Irish Girls About Town: An Anthology of Short Stories"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Marian Keyes"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Again, Rachel",
+        "explanation": "A heartfelt sequel that revisits beloved characters and explores themes of love and friendship."
+      },
+      {
+        "title": "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+        "explanation": "In this collection of essays, Marian Keyes offers a humorous and candid look at everyday life, tackling topics like family, relationships, and personal struggles with her signature wit. The book provides a relatable exploration of the ups and downs of modern living."
+      },
+      {
+        "title": "Grown Ups",
+        "explanation": "A witty exploration of family dynamics and secrets among three siblings and their partners."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Again, Rachel",
+        "explanation": "Follows a woman navigating life and love after a devastating betrayal."
+      },
+      {
+        "title": "Irish Girls About Town: An Anthology of Short Stories",
+        "explanation": "An engaging collection of short stories edited by Marian Keyes, this anthology showcases the diverse voices and experiences of contemporary Irish women, exploring themes of love, friendship, and resilience. Each story offers a unique perspective on life in Ireland, making it a captivating read for fans of literary fiction."
+      },
+      {
+        "title": "Grown Ups",
+        "explanation": "Chronicles the lives and intertwined stories of a dysfunctional Irish family."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. Again, Rachel - It's about a woman finding her way after a betrayal, which sounds interesting.\n2. The Break - I like the idea of exploring relationships and self-discovery among friends.",
+      "advisor_message": "How about these two options by Marian Keyes? \n\n1. **Under the Duvet: Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities**: This is a delightful collection of essays where Marian Keyes shares her humorous and candid take on everyday life. She tackles topics like family, relationships, and personal struggles, all with her signature wit. It's a relatable exploration of the ups and downs of modern living.\n\n2. **Irish Girls About Town: An Anthology of Short Stories**: Edited by Marian Keyes, this anthology gathers engaging short stories that highlight the diverse voices and experiences of contemporary Irish women. The themes of love, friendship, and resilience are central here, offering unique perspectives on life in Ireland. It's a captivating read for fans of literary fiction.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+        "Irish Girls About Town: An Anthology of Short Stories"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. Under the Duvet - I like the sound of relatable essays about everyday life with humor, that seems fun!\n2. Irish Girls About Town - The anthology edited by Marian Keyes sounds intriguing, showcasing diverse voices and experiences of Irish women.\n\nThese two options are quite different from each other, but both seem interesting. Let's go with these!",
+      "advisor_message": "You've chosen \"Under the Duvet: Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities\" and \"Irish Girls About Town: An Anthology of Short Stories\". Both selections beautifully align with your preference for humorous, informal stories that explore everyday life, especially focusing on the diverse voices and experiences of Irish women. Marian Keyes, known for her witty and relatable writing, is a perfect match for what you're looking for. Enjoy diving into these delightful reads!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.2222222222222222,
+        "preference_dimensions": {
+          "tone": "humorous",
+          "formality": "informal",
+          "theme": "everyday life",
+          "specific_topic": "diverse voices and experiences of Irish women"
+        },
+        "items_in_session_internal_pool": [
+          "irish girls about town: an anthology of short stories",
+          "under the duvet : shoes, reviews, having the blues, builders, babies, families and other calamities"
+        ],
+        "items_positive": [
+          "irish girls about town: an anthology of short stories",
+          "under the duvet : shoes, reviews, having the blues, builders, babies, families and other calamities"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.4,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "Again, Rachel",
+        "Grown Ups"
+      ]
+    }
+  ],
+  "chosen_item": "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+  "chosen_items": [
+    "Under the Duvet : Shoes, Reviews, Having the Blues, Builders, Babies, Families and Other Calamities",
+    "Irish Girls About Town: An Anthology of Short Stories"
+  ],
+  "final_state": {
+    "preference_specificity": 0.2222222222222222,
+    "preference_dimensions": {
+      "tone": "humorous",
+      "formality": "informal",
+      "theme": "everyday life",
+      "specific_topic": "diverse voices and experiences of Irish women"
+    },
+    "items_in_session_internal_pool": [
+      "irish girls about town: an anthology of short stories",
+      "under the duvet : shoes, reviews, having the blues, builders, babies, families and other calamities"
+    ],
+    "items_positive": [
+      "irish girls about town: an anthology of short stories",
+      "under the duvet : shoes, reviews, having the blues, builders, babies, families and other calamities"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.4,
+    "turn": 1
+  }
+}

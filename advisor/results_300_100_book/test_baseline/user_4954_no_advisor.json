@@ -1,0 +1,70 @@
+{
+  "user_id": "user_4954",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Francine Rivers?",
+  "ground_truth": [
+    "The Atonement Child",
+    "Redeeming Love"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Francine Rivers"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Masterpiece",
+        "explanation": "A poignant story about love and redemption, exploring the intersection of faith and art."
+      },
+      {
+        "title": "The Atonement Child",
+        "explanation": "In this poignant fiction by Francine Rivers, a young woman grapples with the aftermath of a traumatic event and seeks redemption and healing. The story explores themes of forgiveness, faith, and the complexities of love and choice."
+      },
+      {
+        "title": "Redeeming Love",
+        "explanation": "A powerful historical fiction novel by Francine Rivers, exploring themes of love, redemption, and faith through the story of a woman seeking freedom from a life of despair. Set against the backdrop of the California Gold Rush, it delves into the transformative power of unconditional love."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Redeeming Love",
+        "explanation": "A powerful retelling of the biblical story of Hosea, set in the California Gold Rush."
+      },
+      {
+        "title": "The Atonement Child",
+        "explanation": "A moving story about a woman who finds healing and forgiveness after experiencing tragedy."
+      },
+      {
+        "title": "A Lineage of Grace",
+        "explanation": "A sweeping historical novel that follows generations of women in a powerful family."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nAfter reviewing the options, I'll go with:\n- The Atonement Child\n- Redeeming Love",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Masterpiece",
+        "The Atonement Child",
+        "Redeeming Love",
+        "A Lineage of Grace"
+      ]
+    }
+  ],
+  "chosen_item": "The Atonement Child",
+  "chosen_items": [
+    "The Atonement Child",
+    "Redeeming Love"
+  ],
+  "final_state": null
+}

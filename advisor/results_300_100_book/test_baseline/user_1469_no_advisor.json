@@ -1,0 +1,72 @@
+{
+  "user_id": "user_1469",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend me some fiction books?",
+  "ground_truth": [
+    "A Death in the Family",
+    "Watership Down",
+    "Jacob's Room",
+    "WATERSHIP DOWN - AVON #19810"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "WATERSHIP DOWN - AVON #19810",
+        "explanation": "A gripping adventure in the Fiction genre by Richard Adams, this novel follows a group of rabbits as they escape their warren in search of a new home, exploring themes of survival, leadership, and the importance of community."
+      },
+      {
+        "title": "The Last House on Needless Street",
+        "explanation": "An unconventional thriller that weaves together multiple perspectives in a haunting narrative."
+      },
+      {
+        "title": "A Death in the Family",
+        "explanation": "A poignant exploration of grief and loss in the context of family dynamics, this fiction novel delves into the emotional aftermath of a sudden death and its impact on those left behind. Through rich character development, it examines the complexities of love and memory."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Jacob's Room",
+        "explanation": "In this poignant work of fiction by Virginia Woolf, the narrative delves into the life of Jacob Flanders, exploring themes of identity, loss, and the passage of time through a stream-of-consciousness style. Woolf's innovative prose captures the complexities of human experience and the impact of societal expectations."
+      },
+      {
+        "title": "Watership Down",
+        "explanation": "A gripping adventure in the fiction genre by Richard Adams, this tale follows a group of rabbits as they escape their warren to seek a new home, exploring themes of survival, leadership, and the importance of community."
+      },
+      {
+        "title": "Piranesi",
+        "explanation": "A mysterious and atmospheric novel set in a labyrinthine world."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\n1. Watership Down - AVON #19810\n2. Piranesi\n3. Jacob's Room\n4. The Last House on Needless Street",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "WATERSHIP DOWN - AVON #19810",
+        "The Last House on Needless Street",
+        "A Death in the Family",
+        "Jacob's Room",
+        "Watership Down",
+        "Piranesi"
+      ]
+    }
+  ],
+  "chosen_item": "WATERSHIP DOWN - AVON #19810",
+  "chosen_items": [
+    "WATERSHIP DOWN - AVON #19810",
+    "The Last House on Needless Street",
+    "Jacob's Room",
+    "Watership Down"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,72 @@
+{
+  "user_id": "user_4526",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some fiction books written by John Norman?",
+  "ground_truth": [
+    "Slave Girl of Gor",
+    "Witness of Gor"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "John Norman"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Slave Girl of Gor",
+        "explanation": "In this provocative work of fiction by John Norman, the story delves into themes of power dynamics and gender roles through the eyes of a young woman navigating a society that embraces slavery and dominance. The narrative combines elements of adventure and philosophical exploration, set in the fantastical world of Gor."
+      },
+      {
+        "title": "Witness of Gor",
+        "explanation": "In this fiction novel by John Norman, the story delves into the intricate dynamics of power and submission on the planet Gor, as characters navigate a world defined by its brutal social structures and philosophical underpinnings. Themes of dominance, freedom, and the nature of reality are explored through a compelling narrative."
+      },
+      {
+        "title": "Priest-Kings of Gor",
+        "explanation": "A captivating narrative that delves into the political and social structures of Gor, filled with action and philosophical themes."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Empire of the Ptolemies",
+        "explanation": "A science fantasy novel set in ancient Egypt with interplanetary warfare."
+      },
+      {
+        "title": "Blood of the Gods",
+        "explanation": "The first book in the 'Gods' series, featuring a battle between good and evil for control of the universe."
+      },
+      {
+        "title": "Tarnsman Saga",
+        "explanation": "A fantasy series that follows a hero on his journey through a magical world."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nMy picks are:\n- Slave Girl of Gor\n- Witness of Gor",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Slave Girl of Gor",
+        "Witness of Gor",
+        "Priest-Kings of Gor",
+        "Empire of the Ptolemies",
+        "Blood of the Gods",
+        "Tarnsman Saga"
+      ]
+    }
+  ],
+  "chosen_item": "Slave Girl of Gor",
+  "chosen_items": [
+    "Slave Girl of Gor",
+    "Witness of Gor"
+  ],
+  "final_state": null
+}

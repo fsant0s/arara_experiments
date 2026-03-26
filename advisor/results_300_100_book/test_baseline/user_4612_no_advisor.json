@@ -1,0 +1,70 @@
+{
+  "user_id": "user_4612",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some juvenile fiction books written by L.M. Montgomery?",
+  "ground_truth": [
+    "Pat of Silver Bush"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "L.M. Montgomery"
+    ],
+    [
+      "BELONGS_TO",
+      "Juvenile Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Story Girl Returns",
+        "explanation": "A delightful continuation of the beloved stories from the original, featuring the charm of Avonlea."
+      },
+      {
+        "title": "Emily of New Moon",
+        "explanation": "Follows the journey of a young girl with dreams of becoming a writer, showcasing Montgomery's signature style."
+      },
+      {
+        "title": "Pat of Silver Bush",
+        "explanation": "In this charming juvenile fiction by L.M. Montgomery, a young girl named Pat experiences the joys and challenges of growing up on her beloved Silver Bush farm, highlighting themes of family, friendship, and the passage of time. The story captures the essence of rural life and the deep connections to home and nature."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Blue Castle",
+        "explanation": "A coming-of-age story about a young woman finding her voice and independence."
+      },
+      {
+        "title": "Anne of Green Gables",
+        "explanation": "Classic tale of a spirited orphan girl finding her place in the world."
+      },
+      {
+        "title": "Emily of New Moon",
+        "explanation": "Follows a young poet navigating life's challenges with imagination and resilience."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n-------------------------------------------------------------\n\nI'll go with:\n\nThe Blue Castle\nEmily of New Moon",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Story Girl Returns",
+        "Emily of New Moon",
+        "Pat of Silver Bush",
+        "The Blue Castle",
+        "Anne of Green Gables"
+      ]
+    }
+  ],
+  "chosen_item": "Emily of New Moon",
+  "chosen_items": [
+    "Emily of New Moon",
+    "The Blue Castle"
+  ],
+  "final_state": null
+}

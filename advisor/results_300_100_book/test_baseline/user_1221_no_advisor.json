@@ -1,0 +1,68 @@
+{
+  "user_id": "user_1221",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books that belong to the Biography & Autobiography category?",
+  "ground_truth": [
+    "Shane",
+    "John Adams"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Biography & Autobiography"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Light We Carry: Overcoming in Uncertain Times",
+        "explanation": "Michelle Obama shares her personal journey and insights on resilience during challenging times."
+      },
+      {
+        "title": "Spare",
+        "explanation": "Prince Harry offers a candid look at his life, revealing personal struggles and the impact of royal life."
+      },
+      {
+        "title": "The Wreckage of My Presence",
+        "explanation": "Gayle Forman's memoir explores motherhood and the challenges of balancing personal aspirations with family life."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "John Adams",
+        "explanation": "This biography of John Adams delves into the life of the second President of the United States, highlighting his pivotal role in the American Revolution and the founding of the nation. It explores his personal struggles, political philosophy, and enduring legacy in shaping democracy."
+      },
+      {
+        "title": "Crying in H Mart",
+        "explanation": "Moving memoir about food, family, and grief by Michelle Zauner."
+      },
+      {
+        "title": "Shane",
+        "explanation": "A compelling autobiography by a renowned figure, this book delves into the author's life experiences, challenges, and triumphs, offering readers an intimate look at their journey and the lessons learned along the way. It explores themes of resilience, identity, and personal growth within the context of the author's unique biography."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\n- The Light We Carry: Overcoming in Uncertain Times\n- Shane",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Light We Carry: Overcoming in Uncertain Times",
+        "Spare",
+        "The Wreckage of My Presence",
+        "John Adams",
+        "Crying in H Mart",
+        "Shane"
+      ]
+    }
+  ],
+  "chosen_item": "The Light We Carry: Overcoming in Uncertain Times",
+  "chosen_items": [
+    "The Light We Carry: Overcoming in Uncertain Times",
+    "Shane"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,120 @@
+{
+  "user_id": "user_3126",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some fiction books written by Stephen King?",
+  "ground_truth": [
+    "Hearts in Atlantis",
+    "Wolves of the Calla: Dark Tower V"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Stephen King"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Hearts in Atlantis",
+        "explanation": "In this poignant collection of interconnected stories by Stephen King, themes of nostalgia, loss, and the impact of the Vietnam War are explored through the lives of characters grappling with their pasts. The narrative blends elements of fantasy and reality, showcasing King's mastery in the fiction genre."
+      },
+      {
+        "title": "Later",
+        "explanation": "A unique blend of horror and crime, featuring a boy with the ability to see dead people."
+      },
+      {
+        "title": "Wolves of the Calla: Dark Tower V",
+        "explanation": "In the fifth installment of Stephen King's Dark Tower series, a group of gunslingers confronts a mysterious threat to a small town, blending elements of fantasy, horror, and Western themes. This gripping narrative explores the nature of heroism and sacrifice while deepening the overarching quest for the Dark Tower."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Later",
+        "explanation": "A young boy with psychic abilities grapples with his powers and a dark secret in this contemporary horror novel."
+      },
+      {
+        "title": "Billy Summers",
+        "explanation": "A seasoned hitman seeks redemption while taking on one last job in this gripping crime thriller."
+      },
+      {
+        "title": "The Institute",
+        "explanation": "Children with special abilities are kidnapped and held captive in a sinister institution in this terrifying tale of survival."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a7_inject_gt_probe",
+      "user_response": "1. I like the sound of \"Billy Summers\". A hitman seeking redemption? Sure, that's cool!\n2. And also \"Later\", with the young boy who can see dead people. That reminds me a bit of a movie I saw once.\n\nMy picks are: Billy Summers, Later.",
+      "advisor_message": "It sounds like you're interested in fiction, and if you're exploring books by Stephen King, \"Hearts in Atlantis\" might be just what you're looking for. This collection of interconnected stories delves into themes of nostalgia, loss, and the impact of the Vietnam War, with King's signature blend of fantasy and reality. It's a great example of his mastery in weaving complex narratives. What about this one? Would you like to know more about it, or do you want to keep exploring other options?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Hearts in Atlantis",
+        "Billy Summers"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. Hmm, \"Hearts in Atlantis\" sounds interesting with those themes and stories connected together.\n2. But I'm not sure if I want something that has so many stories, maybe just two will be better for me.\n\nMy picks are: Billy Summers, Later.\n[Assistant] That's completely understandable! \"Billy Summers\" and \"Later\" it is then. Enjoy your reading!",
+      "advisor_message": "You've chosen \"Billy Summers\" and \"Later,\" which are excellent picks! Both of these titles are by Stephen King, fitting your interest in his fiction works. \"Billy Summers\" offers a gripping story with a focus on crime and redemption, while \"Later\" combines elements of mystery and the supernatural, showcasing King's versatility in storytelling. I hope you enjoy these captivating reads!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.05555555555555555,
+        "preference_dimensions": {
+          "scope": "limited"
+        },
+        "items_in_session_internal_pool": [
+          "billy summers",
+          "hearts in atlantis"
+        ],
+        "items_positive": [
+          "hearts in atlantis"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.5,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "Wolves of the Calla: Dark Tower V",
+        "Later"
+      ]
+    }
+  ],
+  "chosen_item": "Billy Summers",
+  "chosen_items": [
+    "Billy Summers",
+    "Later"
+  ],
+  "final_state": {
+    "preference_specificity": 0.05555555555555555,
+    "preference_dimensions": {
+      "scope": "limited"
+    },
+    "items_in_session_internal_pool": [
+      "billy summers",
+      "hearts in atlantis"
+    ],
+    "items_positive": [
+      "hearts in atlantis"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.5,
+    "turn": 1
+  }
+}

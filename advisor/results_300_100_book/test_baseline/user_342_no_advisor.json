@@ -1,0 +1,67 @@
+{
+  "user_id": "user_342",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Will Eisner?",
+  "ground_truth": [
+    "The Spirit Archives, Vol. 2: January 5 - June 29, 1941"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Will Eisner"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Plot: The Secret Story of The Protocols of the Elders of Zion",
+        "explanation": "A compelling exploration of the origins and impact of the infamous forgery."
+      },
+      {
+        "title": "A Contract with God: And Other Tenement Stories",
+        "explanation": "A groundbreaking graphic novel that intertwines human struggle and resilience in urban life."
+      },
+      {
+        "title": "The Spirit Archives, Vol. 2: January 5 - June 29, 1941",
+        "explanation": "This volume of Will Eisner's classic comic series continues the adventures of the Spirit, blending crime, mystery, and humor while showcasing Eisner's innovative storytelling and artistic techniques from 1941. It offers a fascinating glimpse into the early days of comic book history and the cultural landscape of the time."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Spirit: The Complete Library",
+        "explanation": "A collection of classic stories featuring the enigmatic superhero, The Spirit."
+      },
+      {
+        "title": "A Contract with God and Other Tenement Stories",
+        "explanation": "Groundbreaking graphic novel exploring themes of faith, community, and social justice in a New York tenement building."
+      },
+      {
+        "title": "Comics and Sequential Art",
+        "explanation": "Eisner's seminal work on the theory and practice of comics storytelling."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Based on the provided description, you select:\n\nA Contract with God and Other Tenement Stories\nThe Spirit Archives, Vol. 2: January 5 - June 29, 1941",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Plot: The Secret Story of The Protocols of the Elders of Zion",
+        "A Contract with God: And Other Tenement Stories",
+        "The Spirit Archives, Vol. 2: January 5 - June 29, 1941",
+        "The Spirit: The Complete Library",
+        "A Contract with God and Other Tenement Stories",
+        "Comics and Sequential Art"
+      ]
+    }
+  ],
+  "chosen_item": "The Spirit Archives, Vol. 2: January 5 - June 29, 1941",
+  "chosen_items": [
+    "The Spirit Archives, Vol. 2: January 5 - June 29, 1941",
+    "A Contract with God and Other Tenement Stories"
+  ],
+  "final_state": null
+}

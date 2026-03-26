@@ -3,10 +3,17 @@ Central registry of LLM client configs for the Advisor experiment.
 
 All LLM configs (user, advisor, recsys) are defined here. ExperimentConfig
 selects from this registry and passes configs to the appropriate actors.
+
+Swapped roles (user ↔ recsys):
+  - Simulated user: Ollama mixtral:8x7b (former recsys strongest model)
+    → weaker / noisier role-play vs OpenAI.
+  - Recsys: mixed — 1 agent on OpenAI gpt-4o-mini (former user model),
+    the other 2 on Ollama (gemma2:9b, llama3.2) as before.
 """
 
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, Optional
 
 
@@ -33,39 +40,62 @@ def _build_config(
     return {"config_list": [config]}
 
 
-# ─── User & Advisor (Ollama local) ────────────────────────────
+# ─── User (Ollama — former strongest recsys) ─────────────────
 
 OLLAMA_BASE = dict(
     client="ollama",
     base_url="http://localhost:11434",
 )
 
+# Strongest model among the old recsys trio (local).
+USER_MODEL = "gpt-4o-mini"
+USER_TEMPERATURE = 0.7
+def get_user_config() -> Dict[str, Any]:
+    """Simulated user on local Ollama (weaker role-play than OpenAI mini)."""
+    return _build_config(
+        client="openai",
+        model=USER_MODEL,
+        temperature=USER_TEMPERATURE,
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
 
-def get_user_config(model: str = "mistral:7b", temperature: float = 0.7) -> Dict[str, Any]:
-    """Config for the simulated user (Ollama)."""
-    return _build_config(**{**OLLAMA_BASE, "model": model, "temperature": temperature})
+# ─── Advisor (OpenAI) ────────────────────────────────────────
+
+# Model and temperature for Advisor. Set here only.
+ADVISOR_MODEL = "gpt-4o"
+ADVISOR_TEMPERATURE = 0.7
+def get_advisor_config() -> Dict[str, Any]:
+    """Config for the Advisor (OpenAI). Model and temperature set in this file."""
+    return {
+        "config_list": [
+            {
+                "client": "openai",
+                "temperature": ADVISOR_TEMPERATURE,
+                "model": ADVISOR_MODEL,
+                "api_key": os.getenv("OPENAI_API_KEY"),
+            }
+        ]
+    }
 
 
-def get_advisor_config(model: str = "qwen2.5:7b") -> Dict[str, Any]:
-    """Config for the Advisor (Ollama, temperature=0)."""
-    return _build_config(**{**OLLAMA_BASE, "model": model, "temperature": 0.0})
+# ─── Recsys (mixed: 1 OpenAI + 2 Ollama) ────────────────────
 
-
-# ─── Recsys (Ollama local) ───────────────────────────────────
-
+# Lower (e.g. 0.0) for more repeatable lists; paired advisor/baseline still need
+# ``no_advisor_recsys_cache_dir`` (train_test_split) for identical pools.
+RECSYS_TEMPERATURE = 0.7
 OLLAMA_RECSYS_BASE = dict(
     **OLLAMA_BASE,
     response_format="json_object",
-    temperature=0.7,
+    format="json",
+    think=False,
+    temperature=RECSYS_TEMPERATURE,
 )
-
-
 def get_recsys_configs() -> Dict[str, Dict[str, Any]]:
-    """Default recsys agent configs (Ollama)."""
+    """Three recsys slots: gpt-4o-mini (OpenAI), gemma2:9b and llama3.2 (Ollama)."""
     return {
-        "qwen4b": _build_config(**{**OLLAMA_RECSYS_BASE, "model": "qwen:4b"}),
-        "deepseekr17b": _build_config(**{**OLLAMA_RECSYS_BASE, "model": "deepseek-r1:7b"}),
-        "llama38b": _build_config(**{**OLLAMA_RECSYS_BASE, "model": "llama3:8b"}),
+        "mixtral:8x7b": _build_config(**{**OLLAMA_RECSYS_BASE, "model": "mixtral:8x7b"}),
+        "gemma2:9b": _build_config(**{**OLLAMA_RECSYS_BASE, "model": "gemma2:9b"}),
+       # "llama3.2": _build_config(**{**OLLAMA_RECSYS_BASE, "model": "llama3.2"}),
     }
 
 

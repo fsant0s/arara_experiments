@@ -1,0 +1,68 @@
+{
+  "user_id": "user_744",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by Michael Crichton?",
+  "ground_truth": [
+    "Case of Need",
+    "The Terminal Man."
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Michael Crichton"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Dragon Teeth",
+        "explanation": "A thrilling historical novel set in the Wild West, exploring the rivalry between paleontologists."
+      },
+      {
+        "title": "Case of Need",
+        "explanation": "In this gripping medical thriller by Michael Crichton, a brilliant pathologist uncovers a web of conspiracy and ethical dilemmas surrounding a controversial abortion case. The narrative delves into the complexities of medical ethics and the pursuit of truth in the face of societal pressures."
+      },
+      {
+        "title": "Pirate Latitudes",
+        "explanation": "An adventurous story set in the Caribbean during the 17th century, featuring pirates and treasure."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Terminal Man.",
+        "explanation": "In Michael Crichton's gripping novel, a man with a violent past undergoes experimental surgery to control his seizures, leading to unforeseen consequences. The story delves into the intersection of technology and human psychology, raising questions about the ethics of medical advancements."
+      },
+      {
+        "title": "Prey",
+        "explanation": "Sci-fi novel about nanotechnology gone wrong."
+      },
+      {
+        "title": "State of Fear",
+        "explanation": "Thriller exploring the dangers of environmental alarmism."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nMy picks are:\n- Dragon Teeth\n- The Terminal Man.",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Dragon Teeth",
+        "Case of Need",
+        "Pirate Latitudes",
+        "The Terminal Man.",
+        "Prey",
+        "State of Fear"
+      ]
+    }
+  ],
+  "chosen_item": "Dragon Teeth",
+  "chosen_items": [
+    "Dragon Teeth",
+    "The Terminal Man."
+  ],
+  "final_state": null
+}

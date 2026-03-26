@@ -1,0 +1,153 @@
+{
+  "user_id": "user_3458",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some self-help books written by Betty Bethards?",
+  "ground_truth": [
+    "Be your own guru",
+    "The Dream Book: Symbols for Self-Understanding"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Betty Bethards"
+    ],
+    [
+      "BELONGS_TO",
+      "Self-Help"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Dream Book: A Young Person's Guide to Understanding Dreams",
+        "explanation": "This insightful guide helps young readers understand and interpret their dreams, fostering self-awareness and personal growth."
+      },
+      {
+        "title": "A Woman's Guide to Power and Freedom",
+        "explanation": "This book offers practical advice and empowering strategies for women seeking to take control of their lives and pursue their goals."
+      },
+      {
+        "title": "The Power of Your Subconscious Mind",
+        "explanation": "A transformative book that teaches readers how to harness the potential of their subconscious to improve their lives and achieve their dreams."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Dream Book: Symbols for Self-Understanding",
+        "explanation": "In this insightful self-help guide, Betty Bethards explores the meanings behind common dream symbols, offering readers tools for self-understanding and personal growth. The book encourages introspection and empowers individuals to interpret their dreams for deeper insights into their lives."
+      },
+      {
+        "title": "Be your own guru",
+        "explanation": "In this self-help guide, Betty Bethards empowers readers to discover their inner wisdom and cultivate personal growth through self-reflection and mindfulness practices. The book encourages individuals to embrace their unique journeys and become their own source of guidance and inspiration."
+      },
+      {
+        "title": "Power Up Your Life",
+        "explanation": "Provides strategies for overcoming challenges and maximizing potential."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a1_clarify_preference",
+      "user_response": "1. The Dream Book: A Young Person's Guide to Understanding Dreams\nIt sounds kinda cool, learning about dreams. I don't know much about it, but it might be fun to learn.\n2. The Power of Your Subconscious Mind\nThis one caught my eye. I like the sound of harnessing some inner power or something. It feels right.",
+      "advisor_message": "Are you interested in exploring more works by Betty Bethards, or are you open to trying self-help books by other authors?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Be your own guru",
+        "The Dream Book: A Young Person's Guide to Understanding Dreams"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a0_suggest_pair",
+      "user_response": "1. Sure, let's see what else Betty Bethards has written. I kinda like her style.\nOR\n2. Hmm, maybe we can check out some other authors too. I'm open to suggestions!",
+      "advisor_message": "How about these two options? \n\nFirst, \"The Dream Book: Symbols for Self-Understanding\" by Betty Bethards. This insightful self-help guide dives into the meanings behind common dream symbols. It's all about introspection and personal growth, empowering you to interpret your dreams and gain deeper insights into your life.\n\nThe second option is \"A Woman's Guide to Power and Freedom.\" This book provides practical advice and empowering strategies for women who want to take control of their lives and achieve their goals.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.05555555555555555,
+        "preference_dimensions": {
+          "author": "Betty Bethards"
+        },
+        "items_in_session_internal_pool": [
+          "be your own guru",
+          "the dream book: a young person's guide to understanding dreams"
+        ],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.5,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Dream Book: Symbols for Self-Understanding",
+        "A Woman's Guide to Power and Freedom"
+      ]
+    },
+    {
+      "turn": 2,
+      "action": "a6_end_session",
+      "user_response": "1. The Dream Book: Symbols for Self-Understanding by Betty Bethards sounds cool! I like the idea of understanding my dreams better.\n2. A Woman's Guide to Power and Freedom also seems interesting. I know some strong women who might benefit from this one, so let's give it a shot too!",
+      "advisor_message": "You've chosen: \"The Dream Book: Symbols for Self-Understanding\" and \"A Woman's Guide to Power and Freedom.\" These selections are perfect for you! \"The Dream Book: Symbols for Self-Understanding\" aligns with your interest in understanding dreams, especially since it's authored by Betty Bethards, whose work you appreciate. \"A Woman's Guide to Power and Freedom\" complements your journey towards self-help and empowerment, providing insights into gaining personal strength and autonomy. \n\nThank you for the engaging session, and I hope these books bring you both insight and inspiration.\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.1111111111111111,
+        "preference_dimensions": {
+          "author": "Betty Bethards",
+          "specific_topic": "understanding dreams"
+        },
+        "items_in_session_internal_pool": [
+          "a woman's guide to power and freedom",
+          "be your own guru",
+          "the dream book: a young person's guide to understanding dreams",
+          "the dream book: symbols for self-understanding"
+        ],
+        "items_positive": [
+          "a woman's guide to power and freedom",
+          "the dream book: symbols for self-understanding"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.5,
+        "overload_risk": 0.0,
+        "turn": 2
+      },
+      "items_considered_for_internal_turn_state": [
+        "Power Up Your Life",
+        "The Power of Your Subconscious Mind"
+      ]
+    }
+  ],
+  "chosen_item": "The Dream Book: Symbols for Self-Understanding",
+  "chosen_items": [
+    "The Dream Book: Symbols for Self-Understanding",
+    "A Woman's Guide to Power and Freedom"
+  ],
+  "final_state": {
+    "preference_specificity": 0.1111111111111111,
+    "preference_dimensions": {
+      "author": "Betty Bethards",
+      "specific_topic": "understanding dreams"
+    },
+    "items_in_session_internal_pool": [
+      "a woman's guide to power and freedom",
+      "be your own guru",
+      "the dream book: a young person's guide to understanding dreams",
+      "the dream book: symbols for self-understanding"
+    ],
+    "items_positive": [
+      "a woman's guide to power and freedom",
+      "the dream book: symbols for self-understanding"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.5,
+    "overload_risk": 0.0,
+    "turn": 2
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "user_id": "user_2044",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend me some fiction books?",
+  "ground_truth": [
+    "Camilla",
+    "Hannah Coulter: A Novel",
+    "The Red Church"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Camilla",
+        "explanation": "In this captivating fiction novel, the story follows Camilla, a young woman navigating the complexities of love and identity in a changing world. The narrative delves into themes of self-discovery and the impact of societal expectations on personal choices."
+      },
+      {
+        "title": "The Red Church",
+        "explanation": "A gripping fiction novel, The Red Church delves into the complexities of faith, community, and the dark secrets that lie beneath the surface of a small town. Through its richly drawn characters, it explores the impact of a mysterious church on the lives of its inhabitants."
+      },
+      {
+        "title": "The Candy House",
+        "explanation": "A thought-provoking novel that examines the intersections of technology and human connection."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Circe",
+        "explanation": "A captivating mythological fantasy about the Greek goddess Circe."
+      },
+      {
+        "title": "Hannah Coulter: A Novel",
+        "explanation": "A reflective work of fiction by Wendell Berry, this novel delves into the life of a woman in a rural community, exploring themes of love, loss, and the passage of time. Through Hannah's perspective, the narrative highlights the deep connections between people and the land they inhabit."
+      },
+      {
+        "title": "Mexican Gothic",
+        "explanation": "A gothic horror novel set in 1950s Mexico with a suspenseful plot."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\nThe Red Church\nCirce\nMexican Gothic",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Camilla",
+        "The Red Church",
+        "The Candy House",
+        "Circe",
+        "Hannah Coulter: A Novel",
+        "Mexican Gothic"
+      ]
+    }
+  ],
+  "chosen_item": "The Red Church",
+  "chosen_items": [
+    "The Red Church",
+    "Circe",
+    "Mexican Gothic"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,70 @@
+{
+  "user_id": "user_2032",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books that belong to the Juvenile Fiction genre?",
+  "ground_truth": [
+    "Ella Enchanted",
+    "Harry Potter and The Sorcerer's Stone",
+    "The Good Earth"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Juvenile Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Last Kids on Earth and the Zombie Parade",
+        "explanation": "A fun and adventurous story about kids navigating a post-apocalyptic world filled with zombies."
+      },
+      {
+        "title": "Amari and the Night Brothers",
+        "explanation": "A captivating tale of a young girl discovering a magical world as she searches for her missing brother."
+      },
+      {
+        "title": "The Good Earth",
+        "explanation": "A captivating story set in rural China, this juvenile fiction novel by Pearl S. Buck follows the life of a farmer as he navigates the challenges of family, wealth, and the connection to the land. It explores themes of perseverance and the impact of nature on human life."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Ella Enchanted",
+        "explanation": "A captivating juvenile fiction story by Gail Carson Levine, this retelling of Cinderella follows Ella, who struggles against a curse of obedience while seeking her own destiny. Themes of empowerment and self-discovery shine through in this enchanting tale."
+      },
+      {
+        "title": "The One and Only Ivan",
+        "explanation": "A powerful tale of friendship and resilience told from the perspective of a gorilla."
+      },
+      {
+        "title": "Harry Potter and The Sorcerer's Stone",
+        "explanation": "A captivating introduction to the magical world of Hogwarts, this juvenile fiction novel by J.K. Rowling follows young Harry Potter as he discovers his true identity and embarks on an adventure filled with friendship, bravery, and the battle against dark forces."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\nThe Last Kids on Earth and the Zombie Parade\nAmari and the Night Brothers\nElla Enchanted",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Last Kids on Earth and the Zombie Parade",
+        "Amari and the Night Brothers",
+        "The Good Earth",
+        "Ella Enchanted",
+        "The One and Only Ivan",
+        "Harry Potter and The Sorcerer's Stone"
+      ]
+    }
+  ],
+  "chosen_item": "The Last Kids on Earth and the Zombie Parade",
+  "chosen_items": [
+    "The Last Kids on Earth and the Zombie Parade",
+    "Amari and the Night Brothers",
+    "Ella Enchanted"
+  ],
+  "final_state": null
+}

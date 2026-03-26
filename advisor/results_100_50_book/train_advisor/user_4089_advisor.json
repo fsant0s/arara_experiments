@@ -1,0 +1,156 @@
+{
+  "user_id": "user_4089",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some fiction books written by Edgar Rice Burroughs?",
+  "ground_truth": [
+    "The Return of Tarzan",
+    "Tarzan of the Apes"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Edgar Rice Burroughs"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Tarzan of the Apes",
+        "explanation": "A classic adventure novel that follows the life of a man raised by apes in the African jungle."
+      },
+      {
+        "title": "A Princess of Mars",
+        "explanation": "The first book in the Barsoom series, featuring thrilling adventures on the planet Mars."
+      },
+      {
+        "title": "The Land That Time Forgot",
+        "explanation": "A fantastical tale about a lost island populated by prehistoric creatures and a gripping survival story."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Land That Time Forgot",
+        "explanation": "A thrilling adventure set in a lost prehistoric land."
+      },
+      {
+        "title": "The Return of Tarzan",
+        "explanation": "In this thrilling sequel to the original Tarzan story, Edgar Rice Burroughs delves into the adventures of Tarzan as he navigates love, betrayal, and the complexities of civilization. The novel explores themes of identity and belonging within the rich backdrop of fiction."
+      },
+      {
+        "title": "Tarzan of the Apes",
+        "explanation": "A thrilling adventure in the fiction genre by Edgar Rice Burroughs, this novel follows the life of Tarzan, a man raised by apes in the African jungle, as he navigates the challenges of his dual identity and encounters civilization. Themes of nature, identity, and survival are intricately woven throughout the story."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. Tarzan of the Apes\n   I like the sound of this one! A man raised by apes in Africa? Cool!\n2. A Princess of Mars\n   This space adventure sounds interesting too, with John Carter on Mars!\n3. The Land That Time Forgot\n   Yeah, I'm down for a lost island with dinos and stuff!",
+      "advisor_message": "How about these two options to consider? \n\n1. **The Return of Tarzan**: This thrilling sequel to the original Tarzan story by Edgar Rice Burroughs dives into more adventures of Tarzan as he faces love, betrayal, and the complexities of civilization. It's a rich exploration of identity and belonging, wrapped in an exciting fictional backdrop.\n\n2. **The Land That Time Forgot**: This is a fantastical tale about a lost island filled with prehistoric creatures. It's a gripping survival story that takes you on an adventurous journey into the unknown.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Return of Tarzan",
+        "The Land That Time Forgot"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a5_synthesize_decision",
+      "user_response": "1. The Return of Tarzan\n   Oh, I didn't know there was a sequel! More Tarzan sounds great!\n2. The Land That Time Forgot\n   Yeah, sure! This one caught my attention too. Dinosaurs and survival\u2014I'm in!\n\nThese two sound interesting. Let's go with them!",
+      "advisor_message": "During our exploration session, we delved into the works of Edgar Rice Burroughs and discussed two of his captivating titles: \"the return of tarzan\" and \"the land that time forgot.\" Both of these works seemed to catch your attention positively, reflecting your interest in Burroughs' unique blend of adventure and fiction.\n\nNow, let's create a shortlist for you to consider. Given your interest in Edgar Rice Burroughs and fiction, here are some options you might enjoy:\n\n1. \"the return of tarzan\"\n2. \"the land that time forgot\"\n3. \"tarzan of the apes\"\n4. \"a princess of mars\"\n5. \"at the earth's core\"\n\nWhich 3 would you like to go with?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [
+          "the land that time forgot",
+          "the return of tarzan"
+        ],
+        "items_positive": [
+          "the land that time forgot",
+          "the return of tarzan"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "Tarzan of the Apes",
+        "A Princess of Mars"
+      ]
+    },
+    {
+      "turn": 2,
+      "action": "a6_end_session",
+      "user_response": "1. The Return of Tarzan\n   I liked what we talked about earlier, so this one is a must!\n2. The Land That Time Forgot\n   Absolutely, I want to see those prehistoric creatures!\n3. A Princess of Mars\n   Okay, let's add this space adventure too. Sounds intriguing!",
+      "advisor_message": "You've selected \"The Return of Tarzan,\" \"The Land That Time Forgot,\" and \"A Princess of Mars.\" These choices perfectly align with your interest in Edgar Rice Burroughs' adventurous fiction. \"The Return of Tarzan\" continues the thrilling saga of Tarzan, offering more of the lush jungle setting and action. \"The Land That Time Forgot\" takes you to a mysterious island filled with prehistoric creatures, touching on your interest in prehistoric themes. \"A Princess of Mars\" transports you to the vast expanses of space, introducing you to the fascinating world of Barsoom. Enjoy your reading adventures!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.1111111111111111,
+        "preference_dimensions": {
+          "setting": "space",
+          "specific_topic": "prehistoric creatures"
+        },
+        "items_in_session_internal_pool": [
+          "a princess of mars",
+          "tarzan of the apes",
+          "the land that time forgot",
+          "the return of tarzan"
+        ],
+        "items_positive": [
+          "a princess of mars",
+          "the land that time forgot",
+          "the return of tarzan"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.2,
+        "overload_risk": 0.0,
+        "turn": 2
+      },
+      "items_considered_for_internal_turn_state": [
+        "A Princess of Mars"
+      ]
+    }
+  ],
+  "chosen_item": "The Return of Tarzan",
+  "chosen_items": [
+    "The Return of Tarzan",
+    "The Land That Time Forgot",
+    "A Princess of Mars"
+  ],
+  "final_state": {
+    "preference_specificity": 0.1111111111111111,
+    "preference_dimensions": {
+      "setting": "space",
+      "specific_topic": "prehistoric creatures"
+    },
+    "items_in_session_internal_pool": [
+      "a princess of mars",
+      "tarzan of the apes",
+      "the land that time forgot",
+      "the return of tarzan"
+    ],
+    "items_positive": [
+      "a princess of mars",
+      "the land that time forgot",
+      "the return of tarzan"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.2,
+    "overload_risk": 0.0,
+    "turn": 2
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "user_id": "user_3978",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by T. Allan Taylor and James Robert Parish?",
+  "ground_truth": [
+    "The Complete Guide to Self-Publishing: Everything You Need to Know to Write, Publish, Promote and Sell Your Own Book (3rd edition)",
+    "A Writer's Guide to Magazine Articles for Book Promotion and Profit"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "T. Allan Taylor"
+    ],
+    [
+      "WRITTEN_BY",
+      "James Robert Parish"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Hollywood in the 1970s: The Decade of Dissent",
+        "explanation": "An insightful exploration of the film industry during a transformative decade."
+      },
+      {
+        "title": "The Golden Age of Television: The 1950s",
+        "explanation": "A comprehensive look at the pivotal shows and cultural impact of television in the 1950s."
+      },
+      {
+        "title": "A Writer's Guide to Magazine Articles for Book Promotion and Profit",
+        "explanation": "This practical guide by T. Allan Taylor and James Robert Parish offers aspiring authors essential strategies for leveraging magazine articles to enhance book promotion and generate profit. It covers effective writing techniques and marketing insights tailored for writers looking to expand their reach."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Ghost Hunters' Handbook",
+        "explanation": "Guides readers through the tools and techniques of paranormal investigation."
+      },
+      {
+        "title": "The Complete Guide to Self-Publishing: Everything You Need to Know to Write, Publish, Promote and Sell Your Own Book (3rd edition)",
+        "explanation": "This comprehensive guide by T. Allan Taylor and James Robert Parish offers aspiring authors essential insights into the self-publishing process, covering writing, publishing, promotion, and sales strategies. Perfect for anyone looking to navigate the complexities of bringing their book to market successfully."
+      },
+      {
+        "title": "The Witchcraft Handbook",
+        "explanation": "Offers a comprehensive overview of witchcraft practices, beliefs, and rituals."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a0_suggest_pair",
+      "user_response": "1. \"Hollywood in the 1970s: The Decade of Dissent\" - It sounds like an interesting look at a specific time in movie history.\n2. \"The Ghost Hunters' Handbook\" - I've always been slightly curious about paranormal stuff, so this might be fun to check out.",
+      "advisor_message": "How about these two options for you to consider? \n\n1. **The Complete Guide to Self-Publishing: Everything You Need to Know to Write, Publish, Promote and Sell Your Own Book (3rd edition)**: This comprehensive guide by T. Allan Taylor and James Robert Parish is perfect for anyone looking to navigate the complexities of bringing their book to market successfully. It offers aspiring authors essential insights into the self-publishing process, covering writing, publishing, promotion, and sales strategies.\n\n2. **A Writer's Guide to Magazine Articles for Book Promotion and Profit**: Also by T. Allan Taylor and James Robert Parish, this practical guide provides strategies for leveraging magazine articles to enhance book promotion and generate profit. It covers effective writing techniques and marketing insights tailored for writers looking to expand their reach.\n\nWhat do you think? Does either sound interesting, or should we look at others?",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Complete Guide to Self-Publishing: Everything You Need to Know to Write, Publish, Promote and Sell Your Own Book (3rd edition)",
+        "A Writer's Guide to Magazine Articles for Book Promotion and Profit"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a6_end_session",
+      "user_response": "1. \"The Complete Guide to Self-Publishing\" - That sounds like it could be really useful for someone who's thinking about writing a book. I'll go with this one.\n2. \"A Writer's Guide to Magazine Articles for Book Promotion and Profit\" - Even though I don't write, this might have some interesting tips for other areas in life, so sure, let's include it too!",
+      "advisor_message": "You have chosen \"The Complete Guide to Self-Publishing: Everything You Need to Know to Write, Publish, Promote and Sell Your Own Book (3rd edition)\" and \"A Writer's Guide to Magazine Articles for Book Promotion and Profit.\" These selections perfectly align with your interest in enhancing your self-publishing journey and effectively promoting your work. Both guides will equip you with practical strategies and insights, ensuring you are well-prepared to navigate the world of publishing and marketing your book. \n\nIf you have any further questions or need additional assistance, feel free to reach out. Happy writing and publishing!\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [
+          "a writer's guide to magazine articles for book promotion and profit",
+          "the complete guide to self-publishing: everything you need to know to write, publish, promote and sell your own book (3rd edition)"
+        ],
+        "items_positive": [
+          "a writer's guide to magazine articles for book promotion and profit",
+          "the complete guide to self-publishing: everything you need to know to write, publish, promote and sell your own book (3rd edition)"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "Hollywood in the 1970s: The Decade of Dissent",
+        "The Ghost Hunters' Handbook"
+      ]
+    }
+  ],
+  "chosen_item": "The Complete Guide to Self-Publishing: Everything You Need to Know to Write, Publish, Promote and Sell Your Own Book (3rd edition)",
+  "chosen_items": [
+    "The Complete Guide to Self-Publishing: Everything You Need to Know to Write, Publish, Promote and Sell Your Own Book (3rd edition)",
+    "A Writer's Guide to Magazine Articles for Book Promotion and Profit"
+  ],
+  "final_state": {
+    "preference_specificity": 0.0,
+    "preference_dimensions": {},
+    "items_in_session_internal_pool": [
+      "a writer's guide to magazine articles for book promotion and profit",
+      "the complete guide to self-publishing: everything you need to know to write, publish, promote and sell your own book (3rd edition)"
+    ],
+    "items_positive": [
+      "a writer's guide to magazine articles for book promotion and profit",
+      "the complete guide to self-publishing: everything you need to know to write, publish, promote and sell your own book (3rd edition)"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.0,
+    "overload_risk": 0.0,
+    "turn": 1
+  }
+}

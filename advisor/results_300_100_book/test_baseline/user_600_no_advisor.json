@@ -1,0 +1,69 @@
+{
+  "user_id": "user_600",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by Robert G. Allen?",
+  "ground_truth": [
+    "Multiple Streams of Internet Income: How Ordinary People Make Extraordinary Money Online, 2nd Edition",
+    "The One Minute Millionaire: The Enlightened Way to Wealth",
+    "Creating Wealth: Retire in Ten Years Using Allen's Seven Principles of Wealth!"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Robert G. Allen"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The One Minute Millionaire: The Enlightened Way to Wealth",
+        "explanation": "A unique blend of storytelling and practical advice on achieving financial success."
+      },
+      {
+        "title": "Multiple Streams of Income: How to Generate a Lifetime of Unlimited Wealth!",
+        "explanation": "Offers strategies for creating multiple income sources for financial security."
+      },
+      {
+        "title": "Creating Wealth: Retire in Ten Years Using Allen's Seven Principles of Wealth!",
+        "explanation": "In \"Creating Wealth,\" Robert G. Allen outlines seven principles designed to help readers achieve financial independence and retire within a decade. The book offers practical strategies for wealth-building, emphasizing real estate and investment opportunities."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The One Minute Millionaire: The Enlightened Way to Wealth",
+        "explanation": "In \"The One Minute Millionaire,\" Robert G. Allen presents a unique approach to achieving wealth through a blend of practical strategies and mindset shifts. The book emphasizes the importance of leveraging time and resources effectively to create financial success."
+      },
+      {
+        "title": "Multiple Streams of Internet Income: How Ordinary People Make Extraordinary Money Online, 2nd Edition",
+        "explanation": "In this insightful guide, Robert G. Allen reveals strategies for generating multiple streams of income online, empowering ordinary individuals to achieve financial independence through various digital avenues. The updated edition offers practical advice and real-world examples to help readers navigate the evolving landscape of online entrepreneurship."
+      },
+      {
+        "title": "Nothing Down",
+        "explanation": "Methods for acquiring real estate with little or no money down."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nMy picks are:\n1. The One Minute Millionaire: The Enlightened Way to Wealth\n2. Multiple Streams of Income: How to Generate a Lifetime of Unlimited Wealth!\n3. Nothing Down",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The One Minute Millionaire: The Enlightened Way to Wealth",
+        "Multiple Streams of Income: How to Generate a Lifetime of Unlimited Wealth!",
+        "Creating Wealth: Retire in Ten Years Using Allen's Seven Principles of Wealth!",
+        "Multiple Streams of Internet Income: How Ordinary People Make Extraordinary Money Online, 2nd Edition",
+        "Nothing Down"
+      ]
+    }
+  ],
+  "chosen_item": "The One Minute Millionaire: The Enlightened Way to Wealth",
+  "chosen_items": [
+    "The One Minute Millionaire: The Enlightened Way to Wealth",
+    "Multiple Streams of Income: How to Generate a Lifetime of Unlimited Wealth!",
+    "Nothing Down"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,73 @@
+{
+  "user_id": "user_4158",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Edith Wharton?",
+  "ground_truth": [
+    "Ethan Frome",
+    "The House of Mirth (The Best Sellers of 1905)",
+    "The House of Mirth"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Edith Wharton"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Ethan Frome",
+        "explanation": "A poignant exploration of isolation and unfulfilled desires, Edith Wharton's \"Ethan Frome\" delves into the life of a struggling farmer trapped in a loveless marriage, set against the harsh backdrop of a New England winter. The novel examines themes of duty, sacrifice, and the longing for escape."
+      },
+      {
+        "title": "The House of Mirth",
+        "explanation": "A poignant story of a woman's struggle against the constraints of society and her pursuit of happiness."
+      },
+      {
+        "title": "The Custom of the Country",
+        "explanation": "A sharp and witty examination of the American social scene through the eyes of an ambitious woman."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The House of Mirth",
+        "explanation": "A poignant exploration of social class and moral dilemmas in early 20th-century New York, Edith Wharton's \"The House of Mirth\" follows the struggles of Lily Bart as she navigates the complexities of wealth, love, and societal expectations. This fiction novel delves into themes of ambition and the consequences of choices in a rigid society."
+      },
+      {
+        "title": "Ethan Frome",
+        "explanation": "A tragic love story set in rural New England, known for its atmospheric prose and exploration of societal constraints."
+      },
+      {
+        "title": "The House of Mirth (The Best Sellers of 1905)",
+        "explanation": "In Edith Wharton's classic novel, set in the opulent society of early 20th-century New York, a young woman navigates the complexities of wealth and social status while grappling with her own desires and limitations. This poignant exploration of ambition and morality highlights the constraints placed on women in a rigidly structured society."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\n- The House of Mirth\n- Ethan Frome\n- The Custom of the Country\n- The House of Mirth (The Best Sellers of 1905)",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Ethan Frome",
+        "The House of Mirth",
+        "The Custom of the Country",
+        "The House of Mirth (The Best Sellers of 1905)"
+      ]
+    }
+  ],
+  "chosen_item": "Ethan Frome",
+  "chosen_items": [
+    "Ethan Frome",
+    "The House of Mirth",
+    "The Custom of the Country",
+    "The House of Mirth (The Best Sellers of 1905)"
+  ],
+  "final_state": null
+}

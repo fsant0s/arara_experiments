@@ -1,0 +1,74 @@
+{
+  "user_id": "user_4334",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Anne Rice?",
+  "ground_truth": [
+    "THE VAMPIRE LESTAT",
+    "The Queen of the Damned (The Vampire Chronicles)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Anne Rice"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Queen of the Damned (The Vampire Chronicles)",
+        "explanation": "In this captivating installment of The Vampire Chronicles by Anne Rice, ancient vampires awaken and confront their past while revealing the origins of their kind. The novel blends horror and fantasy, exploring themes of power, immortality, and the complexities of existence."
+      },
+      {
+        "title": "The Witching Hour",
+        "explanation": "A captivating tale that intertwines family secrets and witchcraft, showcasing Rice's signature gothic style."
+      },
+      {
+        "title": "Angel Time",
+        "explanation": "A unique blend of fantasy and spirituality, this novel introduces a new perspective on the supernatural."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "THE VAMPIRE LESTAT",
+        "explanation": "In this captivating fiction novel by Anne Rice, the story unfolds through the eyes of Lestat, a charismatic vampire who recounts his life, struggles, and the complexities of immortality. The book delves into themes of identity, love, and the search for meaning in a dark and seductive world."
+      },
+      {
+        "title": "Interview with the Vampire",
+        "explanation": "Classic vampire novel exploring themes of immortality and loneliness."
+      },
+      {
+        "title": "Lestat the Vampire",
+        "explanation": "Sequel to Interview with the Vampire, focusing on the life and experiences of Lestat de Lioncourt."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n---\n\nI'll go with:\n- The Queen of the Damned (The Vampire Chronicles)\n- The Witching Hour\n- THE VAMPIRE LESTAT\n- Interview with the Vampire",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Queen of the Damned (The Vampire Chronicles)",
+        "The Witching Hour",
+        "Angel Time",
+        "THE VAMPIRE LESTAT",
+        "Interview with the Vampire",
+        "Lestat the Vampire"
+      ]
+    }
+  ],
+  "chosen_item": "The Queen of the Damned (The Vampire Chronicles)",
+  "chosen_items": [
+    "The Queen of the Damned (The Vampire Chronicles)",
+    "The Witching Hour",
+    "THE VAMPIRE LESTAT",
+    "Interview with the Vampire"
+  ],
+  "final_state": null
+}

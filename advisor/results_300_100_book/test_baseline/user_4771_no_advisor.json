@@ -1,0 +1,76 @@
+{
+  "user_id": "user_4771",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Anne Rice?",
+  "ground_truth": [
+    "THE VAMPIRE LESTAT",
+    "Interview with the Vampire",
+    "Interview With The Vampire SIGNED First Edition",
+    "The Queen of the Damned (The Vampire Chronicles)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Anne Rice"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Interview With The Vampire SIGNED First Edition",
+        "explanation": "A captivating fiction novel by Anne Rice, this signed first edition delves into the dark and seductive world of vampires, exploring themes of immortality, desire, and the human condition through the eyes of its tormented protagonist."
+      },
+      {
+        "title": "Interview with the Vampire",
+        "explanation": "A haunting exploration of immortality and the human condition, this fiction novel by Anne Rice delves into the life of a vampire grappling with his existence and the moral dilemmas of his eternal life. Through rich prose and complex characters, it examines themes of love, loss, and the quest for meaning."
+      },
+      {
+        "title": "The Tale of the Body Thief",
+        "explanation": "A thrilling adventure featuring the vampire Lestat as he embarks on a perilous journey to reclaim his corporeal body."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Queen of the Damned (The Vampire Chronicles)",
+        "explanation": "In this captivating installment of The Vampire Chronicles by Anne Rice, ancient vampires awaken and confront their dark pasts, intertwining their stories with themes of power, immortality, and the struggle for identity. This fiction novel delves into the origins of vampirism and the complexities of eternal life."
+      },
+      {
+        "title": "Interview with the Vampire",
+        "explanation": "Classic vampire novel exploring themes of immortality and longing."
+      },
+      {
+        "title": "THE VAMPIRE LESTAT",
+        "explanation": "In this captivating fiction novel by Anne Rice, the story unfolds through the eyes of Lestat, a charismatic vampire who recounts his life, struggles, and the complexities of immortality. The narrative delves into themes of identity, love, and the eternal quest for meaning in a dark and enchanting world."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nI'll go with:\nInterview with the Vampire\nThe Queen of the Damned (The Vampire Chronicles)\nTHE VAMPIRE LESTAT\nInterview With The Vampire SIGNED First Edition\nThe Tale of the Body Thief",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Interview With The Vampire SIGNED First Edition",
+        "Interview with the Vampire",
+        "The Tale of the Body Thief",
+        "The Queen of the Damned (The Vampire Chronicles)",
+        "THE VAMPIRE LESTAT"
+      ]
+    }
+  ],
+  "chosen_item": "Interview With The Vampire SIGNED First Edition",
+  "chosen_items": [
+    "Interview With The Vampire SIGNED First Edition",
+    "Interview with the Vampire",
+    "The Tale of the Body Thief",
+    "The Queen of the Damned (The Vampire Chronicles)",
+    "THE VAMPIRE LESTAT"
+  ],
+  "final_state": null
+}

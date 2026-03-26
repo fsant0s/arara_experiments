@@ -1,9 +1,99 @@
 from __future__ import annotations
 
+import html
 import json
 import math
+import re
+import unicodedata
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 from typing import Callable, Dict, List, Optional
+
+
+def normalize_title_for_gt_match(title: str) -> str:
+    """
+    Normalize titles for ground-truth comparison: HTML entities (e.g. &amp;),
+    lowercase, collapse whitespace.
+    """
+    s = html.unescape(str(title or "")).strip().lower()
+    return re.sub(r"\s+", " ", s)
+
+
+def _strip_title(title: str) -> str:
+    """Aggressive normalization: remove diacritics, punctuation, parenthetical
+    suffixes, and subtitles after ':' or '—'."""
+    s = normalize_title_for_gt_match(title)
+    s = unicodedata.normalize("NFD", s)
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn")
+    s = re.sub(r"\s*[:(—\-–]\s*.{0,}$", "", s)
+    s = re.sub(r"\([^)]*\)", "", s)
+    s = re.sub(r"[^\w\s]", "", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _token_jaccard(a: str, b: str) -> float:
+    sa, sb = set(a.split()), set(b.split())
+    if not sa or not sb:
+        return 0.0
+    return len(sa & sb) / len(sa | sb)
+
+
+def classify_chosen_vs_gt(chosen_item: str, gt_list: List[str]) -> Optional[str]:
+    """
+    Classify whether the chosen title matches any ground-truth title.
+
+    Returns
+    -------
+    None
+        No valid chosen item or no match.
+    "strict"
+        Normalized chosen string equals normalized GT (exact after cleanup),
+        OR stripped versions match exactly.
+    "fuzzy"
+        Substring match, token Jaccard >= 0.5, or SequenceMatcher ratio >= 0.75.
+    """
+    chosen_n = normalize_title_for_gt_match(chosen_item or "")
+    if not chosen_n or chosen_n == "none":
+        return None
+    normalized_gts = [normalize_title_for_gt_match(g) for g in gt_list if g]
+    normalized_gts = [g for g in normalized_gts if g]
+    if not normalized_gts:
+        return None
+
+    chosen_s = _strip_title(chosen_item or "")
+
+    for gt_n in normalized_gts:
+        if chosen_n == gt_n:
+            return "strict"
+    for gt_n in normalized_gts:
+        gt_s = _strip_title(gt_n)
+        if chosen_s and gt_s and chosen_s == gt_s:
+            return "strict"
+
+    for gt_n in normalized_gts:
+        if chosen_n in gt_n or gt_n in chosen_n:
+            return "fuzzy"
+
+    for gt_n in normalized_gts:
+        gt_s = _strip_title(gt_n)
+        if not chosen_s or not gt_s:
+            continue
+        if chosen_s in gt_s or gt_s in chosen_s:
+            return "fuzzy"
+        if _token_jaccard(chosen_s, gt_s) >= 0.5:
+            return "fuzzy"
+        if SequenceMatcher(None, chosen_s, gt_s).ratio() >= 0.75:
+            return "fuzzy"
+
+    return None
+
+
+def classify_chosen_set_vs_gt(chosen_items: List[str], gt_list: List[str]) -> bool:
+    """Return True if ANY item in ``chosen_items`` matches ANY title in ``gt_list``."""
+    for item in chosen_items:
+        if classify_chosen_vs_gt(item, gt_list) is not None:
+            return True
+    return False
 
 
 @dataclass
@@ -13,16 +103,17 @@ class TurnLog:
     advisor_message: str
     user_response: str
     belief_state: dict
-    items_shown: list
+    # Triangulation/debiasing pool for this turn (belief, reward, bandit); may not appear in advisor text.
+    items_considered_for_internal_turn_state: list
 
     def to_dict(self) -> dict:
         return {
             "turn": self.turn,
             "action": self.action,
-            "advisor_message": self.advisor_message,
             "user_response": self.user_response,
+            "advisor_message": self.advisor_message,
             "belief_state": self.belief_state,
-            "items_shown": self.items_shown,
+            "items_considered_for_internal_turn_state": self.items_considered_for_internal_turn_state,
         }
 
 
@@ -34,15 +125,23 @@ class SessionLog:
     chosen_item: str
     final_state: Optional[dict]
     recsys_outputs: Optional[dict]
+    initial_user_message: str = ""
+    ground_truth: List[str] = field(default_factory=list)
+    shared_relationships: List = field(default_factory=list)
+    chosen_items: List[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
             "user_id": self.user_id,
             "condition": self.condition,
+            "initial_user_message": self.initial_user_message,
+            "ground_truth": self.ground_truth,
+            "shared_relationships": self.shared_relationships,
+            "recsys_outputs": self.recsys_outputs,
             "turns": [t.to_dict() for t in self.turns],
             "chosen_item": self.chosen_item,
+            "chosen_items": self.chosen_items,
             "final_state": self.final_state,
-            "recsys_outputs": self.recsys_outputs,
         }
 
 
@@ -117,9 +216,11 @@ def compute_bias_resistance(session_log: SessionLog) -> Dict[str, float]:
     if not session_log.turns or not session_log.chosen_item or session_log.chosen_item == "none":
         return result
 
-    first_items_shown = session_log.turns[0].items_shown if session_log.turns else []
-    if first_items_shown:
-        first_item = first_items_shown[0].strip().lower()
+    first_internal = (
+        session_log.turns[0].items_considered_for_internal_turn_state if session_log.turns else []
+    )
+    if first_internal:
+        first_item = first_internal[0].strip().lower()
         chosen = session_log.chosen_item.strip().lower()
         result["anchoring"] = 0.0 if chosen == first_item else 1.0
     else:
@@ -157,29 +258,145 @@ def compute_ground_truth(
     k: Optional[int] = None,
 ) -> Dict[str, float]:
     """
-    Ground-Truth Alignment: Recall@K and Precision@K of presented items
-    against ground truth.
+    Ground-truth alignment over titles shown in the session pool
+    (``items_considered_for_internal_turn_state``), exact match on
+    lowercased stripped strings.
+
+    - If ``k`` is None: use the **full** set of distinct titles shown
+      (union across turns). Recall = |GT ∩ presented| / |GT|;
+      precision = |GT ∩ presented| / |presented|.
+    - If ``k`` is set: evaluate only the first ``k`` **distinct** titles
+      in encounter order (turn order, then list order within each turn).
+      This approximates recall/precision@K when the pool is treated as
+      an ordered stream.
     """
     if not ground_truth_items:
         return {"recall_at_k": 0.0, "precision_at_k": 0.0}
 
-    gt_set = {t.strip().lower() for t in ground_truth_items}
-    if k is None:
-        k = len(gt_set)
+    gt_set = {
+        normalize_title_for_gt_match(t)
+        for t in ground_truth_items
+        if t and str(t).strip()
+    }
 
-    presented = set()
+    ordered_presented: List[str] = []
+    seen: set = set()
     for turn in session_log.turns:
-        for title in turn.items_shown:
-            presented.add(title.strip().lower())
+        for title in turn.items_considered_for_internal_turn_state:
+            t = normalize_title_for_gt_match(title)
+            if not t or t in seen:
+                continue
+            seen.add(t)
+            ordered_presented.append(t)
 
-    presented_list = list(presented)[:k] if k else list(presented)
-    presented_set = set(presented_list)
+    if k is None:
+        presented_eval = set(ordered_presented)
+    else:
+        presented_eval = set(ordered_presented[: max(0, int(k))])
 
-    hits = len(presented_set & gt_set)
+    hits = len(presented_eval & gt_set)
     recall = hits / len(gt_set) if gt_set else 0.0
-    precision = hits / len(presented_set) if presented_set else 0.0
+    precision = hits / len(presented_eval) if presented_eval else 0.0
 
     return {"recall_at_k": recall, "precision_at_k": precision}
+
+
+def compute_chosen_recall_precision(
+    session_log: SessionLog,
+    ground_truth_items: List[str],
+) -> Dict[str, float]:
+    """
+    Ground-truth alignment based on what the user ACTUALLY CHOSE (chosen_items).
+
+    recall  = |GT ∩ chosen_items| / |GT|
+    precision = |GT ∩ chosen_items| / |chosen_items|
+
+    This is the standard CRS evaluation metric: did the user end up picking
+    items that match their ground truth?  Unlike compute_ground_truth (which
+    measures coverage in the internal pool), this measures the *decision* quality.
+    """
+    if not ground_truth_items:
+        return {"chosen_recall": 0.0, "chosen_precision": 0.0}
+
+    gt_set = {
+        normalize_title_for_gt_match(t)
+        for t in ground_truth_items
+        if t and str(t).strip()
+    }
+
+    chosen = session_log.chosen_items or (
+        [session_log.chosen_item]
+        if session_log.chosen_item and session_log.chosen_item != "none"
+        else []
+    )
+    chosen_norm = {normalize_title_for_gt_match(c) for c in chosen if c}
+
+    hits = len(chosen_norm & gt_set)
+    recall = hits / len(gt_set) if gt_set else 0.0
+    precision = hits / len(chosen_norm) if chosen_norm else 0.0
+
+    return {"chosen_recall": recall, "chosen_precision": precision}
+
+
+def compute_relationship_match(
+    session_log: SessionLog,
+    shared_relationships: Optional[List] = None,
+) -> Dict[str, Any]:
+    """Check whether the chosen item matches the user's sharedRelationships.
+
+    This is a softer GT metric than exact title match: a user who asked for
+    "books by Alison Weir" and chose *The Six Wives of Henry VIII* (by Alison
+    Weir, but not in bookSubset) is still a relationship-level hit.
+
+    Returns
+    -------
+    dict with:
+        match : bool   – any relationship matched
+        matches : list  – which (rel_type, value) pairs matched
+        chosen  : str   – the chosen item
+    """
+    rels = shared_relationships or session_log.shared_relationships or []
+    chosen = (session_log.chosen_item or "").strip()
+    if not chosen or chosen == "none" or not rels:
+        return {"match": False, "matches": [], "chosen": chosen}
+
+    chosen_lower = chosen.lower()
+
+    recsys_text = ""
+    for items in (session_log.recsys_outputs or {}).values():
+        if not isinstance(items, list):
+            continue
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            title = (it.get("title") or "").strip()
+            if title.lower() == chosen_lower:
+                recsys_text = (it.get("explanation") or "").lower()
+                break
+        if recsys_text:
+            break
+
+    advisor_text = ""
+    for turn in session_log.turns:
+        if chosen_lower in turn.advisor_message.lower():
+            advisor_text += " " + turn.advisor_message.lower()
+
+    search_text = f"{chosen_lower} {recsys_text} {advisor_text}"
+
+    matched = []
+    for rel in rels:
+        if not isinstance(rel, (list, tuple)) or len(rel) < 2:
+            continue
+        rel_type, rel_value = str(rel[0]), str(rel[1])
+        val_lower = rel_value.lower()
+        if val_lower in search_text:
+            matched.append((rel_type, rel_value))
+        else:
+            val_words = val_lower.split()
+            if len(val_words) > 1 and all(w in search_text for w in val_words):
+                matched.append((rel_type, rel_value))
+
+    return {"match": len(matched) > 0, "matches": matched, "chosen": chosen}
 
 
 def compute_reward(
@@ -235,6 +452,8 @@ def compare_conditions(
             "n_turns": [],
             "recall_at_k": [],
             "precision_at_k": [],
+            "chosen_recall": [],
+            "chosen_precision": [],
         }
         for log in logs:
             metrics["articulation"].append(compute_articulation(log))
@@ -251,6 +470,10 @@ def compare_conditions(
             gt_m = compute_ground_truth(log, gt)
             metrics["recall_at_k"].append(gt_m["recall_at_k"])
             metrics["precision_at_k"].append(gt_m["precision_at_k"])
+
+            ch_m = compute_chosen_recall_precision(log, gt)
+            metrics["chosen_recall"].append(ch_m["chosen_recall"])
+            metrics["chosen_precision"].append(ch_m["chosen_precision"])
 
         return metrics
 

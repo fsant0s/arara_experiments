@@ -1,0 +1,156 @@
+{
+  "user_id": "user_2910",
+  "condition": "advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some books written by William Walker Atkinson and Ramacharaka that are related to Yoga?",
+  "ground_truth": [
+    "Fourteen lessons in Yogi philosophy and Oriental occultism,"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "William Walker Atkinson"
+    ],
+    [
+      "WRITTEN_BY",
+      "Ramacharaka"
+    ],
+    [
+      "BELONGS_TO",
+      "Yoga"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Science of Being Great",
+        "explanation": "A deep exploration of the principles of personal development and self-improvement, touching on aspects of yoga philosophy."
+      },
+      {
+        "title": "The Power of Concentration",
+        "explanation": "This book delves into the mental discipline of concentration, a key aspect of yoga practice that enhances focus and mindfulness."
+      },
+      {
+        "title": "Fourteen lessons in Yogi philosophy and Oriental occultism,",
+        "explanation": "A comprehensive guide to Yogi philosophy and Oriental occultism by William Walker Atkinson, this book offers fourteen insightful lessons that delve into the principles of yoga and spiritual development. It serves as a foundational text for those interested in understanding the deeper aspects of Eastern mysticism and personal growth."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Ancient Art of Living",
+        "explanation": "Explores yogic principles for achieving a fulfilling life."
+      },
+      {
+        "title": "Power Through Willpower",
+        "explanation": "Focuses on the role of willpower in personal development and spiritual growth, drawing from yogic teachings."
+      },
+      {
+        "title": "The Mastery of Destiny",
+        "explanation": "Offers insights into self-mastery and harnessing one's inner potential through yogic practices."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "a7_inject_gt_probe",
+      "user_response": "1. I like the sound of \"The Science of Being Great\". It seems interesting because it talks about personal development and stuff, right?\n2. The other one that caught my eye is \"Power Through Willpower\". I guess having more willpower could be helpful in a lot of ways.\n\nMy picks are: \"The Science of Being Great\" and \"Power Through Willpower\".",
+      "advisor_message": "What about this one? \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism\" by William Walker Atkinson might be just what you\u2019re looking for. It offers a comprehensive exploration of Yogi philosophy through fourteen insightful lessons, perfect for diving deeper into the principles of yoga and spiritual development. It aligns well with interests in Eastern mysticism and personal growth.\n\nWould you like to know more about this book, or shall we continue exploring other options? If you have any specific preferences, like works by a particular author, feel free to share!",
+      "belief_state": {
+        "preference_specificity": 0.0,
+        "preference_dimensions": {},
+        "items_in_session_internal_pool": [],
+        "items_positive": [],
+        "items_negative": [],
+        "anchoring_risk": 0.0,
+        "overload_risk": 0.0,
+        "turn": 0
+      },
+      "items_considered_for_internal_turn_state": [
+        "Fourteen lessons in Yogi philosophy and Oriental occultism,",
+        "The Ancient Art of Living"
+      ]
+    },
+    {
+      "turn": 1,
+      "action": "a5_synthesize_decision",
+      "user_response": "1. Hmm, \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism\" sounds pretty cool. I'm curious about Eastern mysticism, so maybe that would be good for me?\n2. I guess I don't really have a preference for one author over another. You can choose whichever you think is better for me.\n\nI'll go with \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism\"!\n(Even though the user has picked only one book, this response provides positive feedback to encourage further interaction.)\n\nSure, I can suggest another book that you might like. How about \"The Ancient Art of Living\"? It's about achieving a fulfilling life through yogic principles. Would you be interested in knowing more about it?",
+      "advisor_message": "During our exploration session, we delved into titles that focus on Eastern mysticism, with a particular emphasis on yogi philosophy. You showed a positive reaction to \"fourteen lessons in yogi philosophy and oriental occultism,\" which aligns with your interest in Eastern teachings and mysticism.\n\nGiven your interest, here is a shortlist of the titles we discussed:\n\n1. fourteen lessons in yogi philosophy and oriental occultism\n2. the ancient art of living\n\nAre you looking specifically for books by authors like William Walker Atkinson or those writing under the pseudonym Ramacharaka? Which 2 would you like to go with?",
+      "belief_state": {
+        "preference_specificity": 0.05555555555555555,
+        "preference_dimensions": {
+          "specific_topic": "Eastern mysticism"
+        },
+        "items_in_session_internal_pool": [
+          "fourteen lessons in yogi philosophy and oriental occultism,",
+          "the ancient art of living"
+        ],
+        "items_positive": [
+          "fourteen lessons in yogi philosophy and oriental occultism"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.5,
+        "overload_risk": 0.0,
+        "turn": 1
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Power of Concentration",
+        "Power Through Willpower"
+      ]
+    },
+    {
+      "turn": 2,
+      "action": "a6_end_session",
+      "user_response": "1. Alright, I'll take \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism\" as my first pick!\n2. And for my second choice, I think I'd like \"The Ancient Art of Living\" because it sounds pretty interesting too.\n\nI'll go with \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism\" and \"The Ancient Art of Living\". Thanks for helping me choose!",
+      "advisor_message": "You have chosen \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism\" and \"The Ancient Art of Living.\" These selections align beautifully with your interest in Eastern mysticism. \"Fourteen Lessons in Yogi Philosophy and Oriental Occultism\" by William Walker Atkinson, writing as Ramacharaka, offers profound insights into yogi philosophy, which should resonate with your exploration of Yoga and Eastern teachings. \"The Ancient Art of Living\" complements this by providing timeless wisdom on living a balanced and mindful life.\n\nThank you for allowing me to assist with your journey into these enriching topics. If you have further questions or need more guidance, feel free to reach out anytime.\n\nTERMINATE",
+      "belief_state": {
+        "preference_specificity": 0.05555555555555555,
+        "preference_dimensions": {
+          "specific_topic": "Eastern mysticism"
+        },
+        "items_in_session_internal_pool": [
+          "fourteen lessons in yogi philosophy and oriental occultism,",
+          "power through willpower",
+          "the ancient art of living",
+          "the power of concentration"
+        ],
+        "items_positive": [
+          "fourteen lessons in yogi philosophy and oriental occultism",
+          "the ancient art of living"
+        ],
+        "items_negative": [],
+        "anchoring_risk": 0.5,
+        "overload_risk": 0.0,
+        "turn": 2
+      },
+      "items_considered_for_internal_turn_state": [
+        "The Science of Being Great",
+        "The Mastery of Destiny"
+      ]
+    }
+  ],
+  "chosen_item": "Fourteen Lessons in Yogi Philosophy and Oriental Occultism",
+  "chosen_items": [
+    "Fourteen Lessons in Yogi Philosophy and Oriental Occultism",
+    "The Ancient Art of Living"
+  ],
+  "final_state": {
+    "preference_specificity": 0.05555555555555555,
+    "preference_dimensions": {
+      "specific_topic": "Eastern mysticism"
+    },
+    "items_in_session_internal_pool": [
+      "fourteen lessons in yogi philosophy and oriental occultism,",
+      "power through willpower",
+      "the ancient art of living",
+      "the power of concentration"
+    ],
+    "items_positive": [
+      "fourteen lessons in yogi philosophy and oriental occultism",
+      "the ancient art of living"
+    ],
+    "items_negative": [],
+    "anchoring_risk": 0.5,
+    "overload_risk": 0.0,
+    "turn": 2
+  }
+}

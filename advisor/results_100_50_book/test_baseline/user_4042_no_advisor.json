@@ -1,0 +1,74 @@
+{
+  "user_id": "user_4042",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some fiction books written by Robert Jordan?",
+  "ground_truth": [
+    "The Dragon Reborn: Book Three of 'The Wheel of Time'",
+    "New Spring - The Novel - The Wheel Of Time, In The Beginning",
+    "The Shadow Rising: Book Four of The Wheel of Time"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Robert Jordan"
+    ],
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Eye of the World",
+        "explanation": "The first book in the epic Wheel of Time series, introducing a richly crafted world and complex characters."
+      },
+      {
+        "title": "The Shadow Rising: Book Four of The Wheel of Time",
+        "explanation": "In this fourth installment of Robert Jordan's epic fantasy series, The Wheel of Time, the intricate plot deepens as alliances shift and ancient prophecies unfold, immersing readers in a richly developed world filled with magic and political intrigue. Themes of destiny, power, and the struggle between light and dark are explored as the characters face their greatest challenges yet."
+      },
+      {
+        "title": "The Dragon Reborn",
+        "explanation": "The third book in the Wheel of Time series, focusing on the quest for identity and destiny in a beautifully detailed fantasy realm."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Eye of the World",
+        "explanation": "The first book in The Wheel of Time series, introducing a vast world and epic fantasy."
+      },
+      {
+        "title": "The Dragon Reborn: Book Three of 'The Wheel of Time'",
+        "explanation": "In the third installment of 'The Wheel of Time' series by Robert Jordan, the struggle for power intensifies as Rand al'Thor grapples with his destiny as the Dragon Reborn. This epic fantasy delves into themes of identity, prophecy, and the battle between light and darkness."
+      },
+      {
+        "title": "New Spring - The Novel - The Wheel Of Time, In The Beginning",
+        "explanation": "In this prequel to the acclaimed Wheel of Time series, Robert Jordan delves into the origins of key characters and the intricate world of magic and prophecy. The novel explores themes of destiny and the struggle between light and darkness, setting the stage for the epic saga that follows."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n---\nI'll go with:\n1. The Eye of the World\n2. The Dragon Reborn: Book Three of 'The Wheel of Time'\n3. New Spring - The Novel - The Wheel Of Time, In The Beginning\n4. The Shadow Rising: Book Four of The Wheel of Time",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Eye of the World",
+        "The Shadow Rising: Book Four of The Wheel of Time",
+        "The Dragon Reborn",
+        "The Dragon Reborn: Book Three of 'The Wheel of Time'",
+        "New Spring - The Novel - The Wheel Of Time, In The Beginning"
+      ]
+    }
+  ],
+  "chosen_item": "The Eye of the World",
+  "chosen_items": [
+    "The Eye of the World",
+    "The Shadow Rising: Book Four of The Wheel of Time",
+    "The Dragon Reborn",
+    "The Dragon Reborn: Book Three of 'The Wheel of Time'"
+  ],
+  "final_state": null
+}

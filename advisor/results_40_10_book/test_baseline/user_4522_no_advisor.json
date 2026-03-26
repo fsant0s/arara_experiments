@@ -1,0 +1,71 @@
+{
+  "user_id": "user_4522",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some medical books written by Dante Cicchetti?",
+  "ground_truth": [
+    "Resilience and Vulnerability: Adaptation in the Context of Childhood Adversities"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Dante Cicchetti"
+    ],
+    [
+      "BELONGS_TO",
+      "Medical"
+    ]
+  ],
+  "recsys_outputs": {
+    "mixtral:8x7b": [
+      {
+        "title": "The Healing Power of Stories: Psychotherapy With Narrative",
+        "explanation": "A thought-provoking book on psychotherapy by Dante Cicchetti."
+      },
+      {
+        "title": "Dante Cicchetti's Contributions to Developmental Psychopathology",
+        "explanation": "Explore the author's influential work in developmental psychopathology."
+      },
+      {
+        "title": "Resilience and Vulnerability: Adaptation in the Context of Childhood Adversities",
+        "explanation": "This insightful work by Dante Cicchetti examines the interplay of resilience and vulnerability in children facing adversities, providing a comprehensive understanding of how adaptation occurs in the context of childhood challenges. It offers valuable perspectives for professionals in the medical and psychological fields."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Developmental Psychopathology, Volume 2",
+        "explanation": "Examines the psychological and social foundations of psychopathology in children and adolescents."
+      },
+      {
+        "title": "Psychopathology: A New Introduction to Psychological Disorder",
+        "explanation": "Provides a comprehensive overview of the nature and causes of mental disorders."
+      },
+      {
+        "title": "The Developmental Origins of Psychopathology, Volume 1",
+        "explanation": "Explores the developmental pathways that lead to various forms of psychopathology."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "I'll go with The Healing Power of Stories: Psychotherapy With Narrative and Resilience and Vulnerability: Adaptation in the Context of Childhood Adversities.",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Healing Power of Stories: Psychotherapy With Narrative",
+        "Dante Cicchetti's Contributions to Developmental Psychopathology",
+        "Resilience and Vulnerability: Adaptation in the Context of Childhood Adversities",
+        "Developmental Psychopathology, Volume 2",
+        "Psychopathology: A New Introduction to Psychological Disorder",
+        "The Developmental Origins of Psychopathology, Volume 1"
+      ]
+    }
+  ],
+  "chosen_item": "The Healing Power of Stories: Psychotherapy With Narrative",
+  "chosen_items": [
+    "The Healing Power of Stories: Psychotherapy With Narrative",
+    "Resilience and Vulnerability: Adaptation in the Context of Childhood Adversities"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,66 @@
+{
+  "user_id": "user_876",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books written by James Clavell?",
+  "ground_truth": [
+    "TAI-PAN"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "James Clavell"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Shogun",
+        "explanation": "A historical novel that immerses readers in the culture and politics of feudal Japan."
+      },
+      {
+        "title": "Tai-Pan",
+        "explanation": "A gripping tale of the early days of Hong Kong and the clash between East and West."
+      },
+      {
+        "title": "Noble House",
+        "explanation": "A thrilling novel that explores corporate intrigue and power struggles in 20th-century Hong Kong."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Shogun",
+        "explanation": "Epic historical novel set in feudal Japan."
+      },
+      {
+        "title": "King Rat",
+        "explanation": "Wartime thriller set in a Japanese POW camp during World War II."
+      },
+      {
+        "title": "TAI-PAN",
+        "explanation": "Set in 19th century Hong Kong, James Clavell's TAI-PAN follows the fierce rivalry and complex relationships of British traders as they navigate the challenges of establishing a new empire. The novel explores themes of ambition, power, and cultural clash in a rapidly changing world."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Based on your preferences, I will make an educated guess that you would enjoy \"Shogun\" and \"Tai-Pan\". These books seem to be popular among the systems and should offer a mix of adventure, culture clash, and historical intrigue, which may appeal to your interests.\n\nMy picks are:\n1. Shogun\n2. Tai-Pan",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Shogun",
+        "Tai-Pan",
+        "Noble House",
+        "King Rat",
+        "TAI-PAN"
+      ]
+    }
+  ],
+  "chosen_item": "Shogun",
+  "chosen_items": [
+    "Shogun",
+    "Tai-Pan"
+  ],
+  "final_state": null
+}

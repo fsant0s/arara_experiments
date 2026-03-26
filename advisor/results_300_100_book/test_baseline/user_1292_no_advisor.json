@@ -1,0 +1,70 @@
+{
+  "user_id": "user_1292",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you suggest some Young Adult Fiction books?",
+  "ground_truth": [
+    "Eva",
+    "The Two Towers: Part II of The Lord of the Rings (J.R.R. Tolkien)",
+    "The Catcher in the Rye [Audiobook] [Cd] [Unabridged] (Audio CD)"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Young Adult Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "The Two Towers: Part II of The Lord of the Rings (J.R.R. Tolkien)",
+        "explanation": "In this gripping continuation of J.R.R. Tolkien's epic saga, young readers are drawn into a world of adventure and bravery as the Fellowship faces new challenges and dark forces. Themes of loyalty, friendship, and the struggle between good and evil resonate throughout this captivating young adult fiction."
+      },
+      {
+        "title": "One of Us Is Lying",
+        "explanation": "A compelling mystery that unravels the secrets of five high school students after one of them is murdered."
+      },
+      {
+        "title": "The Catcher in the Rye [Audiobook] [Cd] [Unabridged] (Audio CD)",
+        "explanation": "A poignant exploration of teenage angst and alienation, this unabridged audiobook of J.D. Salinger's classic delves into the struggles of youth and the quest for identity. Perfect for young adult fiction enthusiasts, it captures the raw emotions of adolescence through the eyes of its iconic protagonist."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "The Inheritance Games",
+        "explanation": "A captivating mystery with a wealthy inheritance and a hidden family secret."
+      },
+      {
+        "title": "Red, White & Royal Blue",
+        "explanation": "A charming romance between the First Son of the United States and a British Prince."
+      },
+      {
+        "title": "Eva",
+        "explanation": "A gripping Young Adult Fiction novel by [Author], \"Eva\" follows a young girl's journey of self-discovery and resilience in the face of societal expectations and personal challenges. The story explores themes of identity, friendship, and the struggle for independence."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": "\n\nBased on my preferences, I'll go with:\n- The Inheritance Games\n- Eva\n- One of Us Is Lying",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "The Two Towers: Part II of The Lord of the Rings (J.R.R. Tolkien)",
+        "One of Us Is Lying",
+        "The Catcher in the Rye [Audiobook] [Cd] [Unabridged] (Audio CD)",
+        "The Inheritance Games",
+        "Red, White & Royal Blue",
+        "Eva"
+      ]
+    }
+  ],
+  "chosen_item": "One of Us Is Lying",
+  "chosen_items": [
+    "One of Us Is Lying",
+    "The Inheritance Games",
+    "Eva"
+  ],
+  "final_state": null
+}

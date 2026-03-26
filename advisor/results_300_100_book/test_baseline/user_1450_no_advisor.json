@@ -1,0 +1,75 @@
+{
+  "user_id": "user_1450",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend some books that belong to the fiction genre?",
+  "ground_truth": [
+    "Emma (World's Classics)",
+    "The Scarlet Letter (Courage Unabridged Classics)",
+    "Emma (Radio Collection)",
+    "Emma (Letras Universales / Universal Writings) (Spanish Edition)",
+    "Emma (CH) (Jane Austen Collection)"
+  ],
+  "shared_relationships": [
+    [
+      "BELONGS_TO",
+      "Fiction"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Emma (Letras Universales / Universal Writings) (Spanish Edition)",
+        "explanation": "A classic novel by Jane Austen, this edition of Emma delves into themes of social class, marriage, and self-discovery through the life of a young woman navigating love and friendship in early 19th-century England. Its sharp wit and keen observations make it a timeless piece of fiction."
+      },
+      {
+        "title": "Emma (World's Classics)",
+        "explanation": "A witty and insightful exploration of social class and romance by Jane Austen, this classic fiction novel follows the life of Emma Woodhouse, a young woman who fancies herself a matchmaker in her small English community. Through her misguided attempts to orchestrate love lives, Austen delves into themes of self-discovery and the complexities of human relationships."
+      },
+      {
+        "title": "Emma (Radio Collection)",
+        "explanation": "A delightful adaptation of Jane Austen's classic, this radio collection brings to life the witty and romantic misadventures of Emma Woodhouse in a charming audio format, perfect for fans of fiction and classic literature. Experience the social intricacies and character dynamics of early 19th-century England through engaging performances and rich storytelling."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "Emma (CH) (Jane Austen Collection)",
+        "explanation": "A witty exploration of social class and romantic entanglements, Jane Austen's \"Emma\" follows the life of a headstrong young woman who meddles in the love lives of others, ultimately leading to her own self-discovery. This classic fiction delves into themes of friendship, identity, and the complexities of human relationships."
+      },
+      {
+        "title": "The Scarlet Letter (Courage Unabridged Classics)",
+        "explanation": "A classic work of fiction by Nathaniel Hawthorne, this novel delves into themes of sin, guilt, and redemption in Puritan New England through the story of Hester Prynne and her struggle against societal judgment. The Scarlet Letter offers a profound exploration of morality and the human condition."
+      },
+      {
+        "title": "Leave the World Behind",
+        "explanation": "Suspenseful and thought-provoking story about two families facing an unknown crisis."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\n1. Emma (Letras Universales / Universal Writings) (Spanish Edition)\n2. The Scarlet Letter (Courage Unabridged Classics)\n3. Leave the World Behind\n4. Emma (World's Classics)\n5. Emma (Radio Collection)\n6. Emma (CH) (Jane Austen Collection)",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Emma (Letras Universales / Universal Writings) (Spanish Edition)",
+        "Emma (World's Classics)",
+        "Emma (Radio Collection)",
+        "Emma (CH) (Jane Austen Collection)",
+        "The Scarlet Letter (Courage Unabridged Classics)",
+        "Leave the World Behind"
+      ]
+    }
+  ],
+  "chosen_item": "Emma (Letras Universales / Universal Writings) (Spanish Edition)",
+  "chosen_items": [
+    "Emma (Letras Universales / Universal Writings) (Spanish Edition)",
+    "Emma (World's Classics)",
+    "Emma (Radio Collection)",
+    "Emma (CH) (Jane Austen Collection)",
+    "The Scarlet Letter (Courage Unabridged Classics)",
+    "Leave the World Behind"
+  ],
+  "final_state": null
+}

@@ -1,0 +1,70 @@
+{
+  "user_id": "user_913",
+  "condition": "no_advisor",
+  "initial_user_message": "USER REQUEST\nCan you recommend me some books written by Laurell K. Hamilton?",
+  "ground_truth": [
+    "Circus Of The Damned (Anita Blake, Vampire Hunter)",
+    "A Kiss of Shadows (Meredith Gentry, Book 1)",
+    "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)"
+  ],
+  "shared_relationships": [
+    [
+      "WRITTEN_BY",
+      "Laurell K. Hamilton"
+    ]
+  ],
+  "recsys_outputs": {
+    "gpt-4o-mini": [
+      {
+        "title": "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+        "explanation": "In this thrilling installment of the Anita Blake Vampire Hunter series by Laurell K. Hamilton, the protagonist navigates a dark world filled with supernatural intrigue and moral dilemmas. The story delves into themes of power, desire, and the complexities of human and vampire relationships."
+      },
+      {
+        "title": "Circus Of The Damned (Anita Blake, Vampire Hunter)",
+        "explanation": "In this thrilling installment of Laurell K. Hamilton's Anita Blake series, the vampire hunter faces a deadly circus that brings her into conflict with powerful supernatural forces. The story delves into themes of power, loyalty, and the complexities of the undead world."
+      },
+      {
+        "title": "The Laughing Corpse",
+        "explanation": "A gripping tale featuring strong characters and a dark, engaging plot."
+      }
+    ],
+    "gemma2:9b": [
+      {
+        "title": "A Kiss of Shadows (Meredith Gentry, Book 1)",
+        "explanation": "In this captivating urban fantasy by Laurell K. Hamilton, a half-fae private investigator navigates a world of political intrigue and supernatural danger while seeking her true identity and power. The story blends romance, mystery, and a richly developed magical realm."
+      },
+      {
+        "title": "Cerulean Sins",
+        "explanation": "Part of the Anita Blake series, exploring a new supernatural realm."
+      },
+      {
+        "title": "Mistral's Kiss",
+        "explanation": "A standalone novel set within the Anita Blake universe."
+      }
+    ]
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "action": "no_advisor_raw",
+      "user_response": " Here are my picks:\n\n- Guilty Pleasures (Anita Blake Vampire Hunter Ser.)\n- Circus Of The Damned (Anita Blake, Vampire Hunter)\n- A Kiss of Shadows (Meredith Gentry, Book 1)",
+      "advisor_message": "[Raw recsys output - no mediation; recsys from advisor session cache]",
+      "belief_state": {},
+      "items_considered_for_internal_turn_state": [
+        "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+        "Circus Of The Damned (Anita Blake, Vampire Hunter)",
+        "The Laughing Corpse",
+        "A Kiss of Shadows (Meredith Gentry, Book 1)",
+        "Cerulean Sins",
+        "Mistral's Kiss"
+      ]
+    }
+  ],
+  "chosen_item": "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+  "chosen_items": [
+    "Guilty Pleasures (Anita Blake Vampire Hunter Ser.)",
+    "Circus Of The Damned (Anita Blake, Vampire Hunter)",
+    "A Kiss of Shadows (Meredith Gentry, Book 1)"
+  ],
+  "final_state": null
+}
