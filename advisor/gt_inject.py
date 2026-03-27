@@ -40,6 +40,24 @@ def session_rng(seed: int, user_id: str) -> random.Random:
     return random.Random(int(digest[:16], 16))
 
 
+def distribute_gt_for_rs(
+    gt_titles: List[str],
+    rng: random.Random,
+    n_rs: int = 2,
+) -> List[List[str]]:
+    """Distribute GT titles across N recommender systems.
+
+    Returns a list of N lists, each containing the GT titles assigned to that RS.
+    Uses the provided RNG for reproducibility.
+    """
+    shuffled = list(gt_titles)
+    rng.shuffle(shuffled)
+    buckets: List[List[str]] = [[] for _ in range(n_rs)]
+    for i, title in enumerate(shuffled):
+        buckets[i % n_rs].append(title)
+    return buckets
+
+
 def _generate_explanation_openai(
     gt_title: str,
     domain: str = "book",

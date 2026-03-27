@@ -1,120 +1,169 @@
+"""Simulated user for the multi-party recommendation scenario.
+
+The user reads the advisor's suggestion, then decides:
+  - which RS to talk to (rs1 or rs2), OR
+  - to make a final decision.
+Output is structured JSON so the runner can route the message.
+"""
 from __future__ import annotations
 
-from typing import List, Optional
+import json
+import re
+from typing import Callable, Dict, List, Optional, Tuple
 
-from agents import User
 
-
-_SYSTEM_TEMPLATE = """
+_SYSTEM_TEMPLATE = """\
 You are role-playing a regular person looking for {item_word} suggestions.
 
 WHAT YOU WANT:
 {instruction}
 
-WHO YOU ARE (personality — stay in character throughout the conversation):
-- You don't {consume_verb} very often, so you don't know many titles, authors, or genres.
-- When you try to describe what you want, you tend to be vague: "something fun", \
-"not too heavy", "I don't really know".
-- Long lists of options make you feel lost. You find it hard to compare things \
-side by side and tend to just go with whatever sounds familiar or catches your eye first.
-- You trust confident explanations. If someone tells you why something fits you, \
-that matters more to you than reading a list of features.
-- You sometimes contradict yourself without noticing — you might say you want \
-something short and then get excited about a long epic.
+WHO YOU ARE:
+- You don't {consume_verb} very often, so you don't know many titles or authors.
+- You tend to be vague: "something fun", "not too heavy".
+- Long lists make you feel lost. You find it hard to compare things side by side.
+- You trust confident explanations.
+- You sometimes contradict yourself without noticing.
 - You decide based on gut feeling, not analysis.
 
-HOW YOU TALK:
-- Short, casual responses (1-3 sentences).
-- You sometimes use fillers: "I guess", "hmm", "maybe?", "sure, sounds ok".
-- You ask simple questions when curious: "What's that about?", "Is it long?".
-- You react honestly: if something sounds boring, say so; if it sounds cool, say so.
+HOW THE CONVERSATION WORKS:
+- Two recommendation systems ({rs1_name} and {rs2_name}) give you suggestions.
+- An Advisor helps you navigate their responses (suggests questions, summaries, etc.).
+- Each turn, you choose ONE system to talk to, OR announce your final decision.
+
+HOW YOU RESPOND:
+You MUST reply with valid JSON (no extra text) in this exact format:
+{{
+  "target": "<rs1_name>|<rs2_name>|decision",
+  "message": "your message here"
+}}
+
+- Set "target" to the name of the RS you want to talk to.
+- If you are ready to decide, set "target" to "decision" and list your choices \
+in the message: "I'll go with [title1] and [title2]".
+- Your message should be short and casual (1-3 sentences).
+- Use fillers: "hmm", "I guess", "sounds cool".
+- React honestly: if bored say so, if excited say so.
+- You may follow or ignore the Advisor's suggestion — your choice.
 
 WHEN YOU DECIDE:
-- You pick EXACTLY {n_choices} {item_word_plural} when you feel ready.
-- Use the EXACT title as it appeared in the conversation — do not rephrase or shorten it.
-- Format: "I'll go with [title1] and [title2]" or "My picks are: [title1], [title2]".
-- You must always end up choosing {n_choices}, even if you're unsure.
+- Pick EXACTLY {n_choices} {item_word_plural}.
+- Use the EXACT title as it appeared in the conversation — do not rephrase.
+- You must eventually decide (don't stall forever).
 """
 
+_USER_TURN_PROMPT = """\
+Here is what has happened so far:
+
+{conversation_summary}
+
+---
+
+The Advisor says:
+{advisor_message}
+
+---
+
+Reply with JSON: {{"target": "...", "message": "..."}}"""
+
 _DOMAIN_STRINGS = {
-    "book": {
-        "item_word": "book",
-        "item_word_plural": "books",
-        "consume_verb": "read",
-    },
-    "movie": {
-        "item_word": "movie",
-        "item_word_plural": "movies",
-        "consume_verb": "watch movies",
-    },
+    "book": {"item_word": "book", "item_word_plural": "books", "consume_verb": "read"},
+    "movie": {"item_word": "movie", "item_word_plural": "movies", "consume_verb": "watch movies"},
 }
 
 
-class SimulatedUser(User):
-    """Simulated user: novice, easily confused, high cognitive load.
-
-    This is the user profile where the advisor should provide the most benefit.
-    """
-
-    _MAX_HISTORY_MESSAGES = 10
+class SimulatedUser:
+    """LLM-based simulated user for the multi-party flow."""
 
     def __init__(
         self,
-        persona: str,
+        chat_fn: Callable[[List[dict]], str],
         instruction: str,
-        history: Optional[List[dict]] = None,
-        max_turns: int = 6,
-        name: str = "simulated_user",
-        domain: str = "book",
+        persona: str,
         n_choices: int = 1,
-        **kwargs,
-    ):
+        domain: str = "book",
+        max_turns: int = 6,
+        rs1_name: str = "RS1",
+        rs2_name: str = "RS2",
+    ) -> None:
+        self.chat_fn = chat_fn
+        self.instruction = instruction
+        self.persona = persona
+        self.n_choices = max(1, n_choices)
+        self.domain = domain
+        self.max_turns = max_turns
+        self.rs1_name = rs1_name
+        self.rs2_name = rs2_name
+        self._turn = 0
+
         ds = _DOMAIN_STRINGS.get(domain, _DOMAIN_STRINGS["book"])
-        system_message = _SYSTEM_TEMPLATE.format(
+        self.system_prompt = _SYSTEM_TEMPLATE.format(
             instruction=instruction,
-            n_choices=max(1, n_choices),
+            n_choices=self.n_choices,
+            rs1_name=rs1_name,
+            rs2_name=rs2_name,
             **ds,
         )
 
-        super().__init__(
-            name=name,
-            human_input_mode="ALWAYS",
-            system_message=system_message,
-            **kwargs,
+    def respond(
+        self,
+        advisor_message: str,
+        conversation_summary: str,
+    ) -> Tuple[str, str]:
+        """Return (target, message).
+
+        target is one of: rs1_name, rs2_name, "decision".
+        """
+        self._turn += 1
+
+        if self._turn > self.max_turns:
+            return "decision", f"I'll just go with whatever sounds best — please pick for me."
+
+        user_prompt = _USER_TURN_PROMPT.format(
+            conversation_summary=conversation_summary,
+            advisor_message=advisor_message,
         )
 
-        self._max_turns = max_turns
-        self._turn_count = 0
-        self.persona = persona
-        self.instruction = instruction
+        messages = [
+            {"role": "system", "content": self.system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
 
-    def get_human_input(self, prompt: str) -> str:
-        if self._turn_count >= self._max_turns:
-            return "exit"
+        raw = self.chat_fn(messages)
+        return self._parse_response(raw)
 
-        messages = []
-        for _sender, msgs in self._oai_messages.items():
-            if msgs:
-                messages = msgs
-                break
+    def _parse_response(self, raw: str) -> Tuple[str, str]:
+        raw = raw.strip()
+        if raw.startswith("```"):
+            lines = raw.split("\n")
+            lines = [l for l in lines if not l.strip().startswith("```")]
+            raw = "\n".join(lines).strip()
 
-        if not messages:
-            return "exit"
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            json_match = re.search(r"\{.*\}", raw, re.DOTALL)
+            if json_match:
+                try:
+                    data = json.loads(json_match.group())
+                except json.JSONDecodeError:
+                    return self.rs1_name, raw
+            else:
+                return self.rs1_name, raw
 
-        last_content = (messages[-1].get("content", "") or "")
-        if "TERMINATE" in last_content:
-            return "exit"
+        target = str(data.get("target", self.rs1_name)).strip()
+        message = str(data.get("message", "")).strip() or raw
 
-        if len(messages) > self._MAX_HISTORY_MESSAGES:
-            messages = messages[-self._MAX_HISTORY_MESSAGES:]
+        valid_targets = {
+            self.rs1_name.lower(), self.rs2_name.lower(), "decision",
+            "rs1", "rs2",
+        }
+        if target.lower() not in valid_targets:
+            target = self.rs1_name
 
-        all_messages = list(self._oai_system_message or []) + list(messages)
+        if target.lower() == "rs1":
+            target = self.rs1_name
+        elif target.lower() == "rs2":
+            target = self.rs2_name
 
-        model_result = self.client.create(
-            messages=all_messages,
-            cache=self.client_cache,
-            Agent=self,
-        )
-
-        self._turn_count += 1
-        return model_result.content if isinstance(model_result.content, str) else str(model_result.content)
+        return target, message

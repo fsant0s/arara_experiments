@@ -10,34 +10,28 @@ import numpy as np
 # ─── Action space ─────────────────────────────────────────────
 
 class ActionType(Enum):
-    SUGGEST_PAIR = "a0_suggest_pair"
-    CLARIFY_PREFERENCE = "a1_clarify_preference"
-    SHOW_COMPARISON = "a2_show_comparison"
-    PRESENT_CONSENSUS = "a3_present_consensus"
-    HIGHLIGHT_DIVERGENCE = "a4_highlight_divergence"
-    SYNTHESIZE_DECISION = "a5_synthesize_decision"
-    END_SESSION = "a6_end_session"
-    INJECT_GT_PROBE = "a7_inject_gt_probe"
-    RERANK_POOL = "a8_rerank_pool"
-    EXPAND_POOL = "a9_expand_pool"
+    SUGGEST_CROSS_RS_QUERY = "a0_suggest_cross_rs_query"
+    SUMMARIZE_RESPONSES = "a1_summarize_responses"
+    IDENTIFY_DIVERGENCES = "a2_identify_divergences"
+    SUGGEST_COMPARISON = "a3_suggest_comparison"
+    SIMPLIFY_AND_FOCUS = "a4_simplify_and_focus"
+    SUGGEST_CRITERION = "a5_suggest_criterion"
+    SYNTHESIZE_DECISION = "a6_synthesize_decision"
+    END_SESSION = "a7_end_session"
 
 
 ACTIONS = list(ActionType)
-_EXPLORABLE_ACTIONS = [
-    a for a in ACTIONS
-    if a not in (ActionType.END_SESSION, ActionType.INJECT_GT_PROBE)
-]
-_TRAIN_ONLY_ACTIONS = {ActionType.INJECT_GT_PROBE}
+_EXPLORABLE_ACTIONS = [a for a in ACTIONS if a != ActionType.END_SESSION]
 
 CONTEXT_KEYS = [
     "sigma",
-    "gamma",
-    "delta",
-    "alpha",
-    "omega",
     "turn",
-    "internal_pool_items_count",
-    "key_term_pool_coverage",
+    "overload_risk",
+    "anchoring_risk",
+    "n_items_discussed",
+    "rs_agreement",
+    "user_follow_rate",
+    "exploration_balance",
 ]
 
 
@@ -45,16 +39,10 @@ def _context_to_vec(context: Dict[str, float]) -> np.ndarray:
     return np.array([context.get(k, 0.0) for k in CONTEXT_KEYS], dtype=np.float64)
 
 
-# ─── LinUCB policy (contextual bandit) ───────────────────────
+# ─── LinUCB policy ────────────────────────────────────────────
 
 class LinUCBPolicy:
-    """
-    LinUCB contextual bandit for action selection with ε-greedy warm-up.
-
-    During the first ``warmup_steps`` global updates the policy picks a
-    random explorable action (a1–a5) with probability ``epsilon``; after
-    warm-up it falls back to pure UCB with the configured ``alpha``.
-    """
+    """LinUCB contextual bandit with ε-greedy warm-up."""
 
     def __init__(
         self,
@@ -74,50 +62,25 @@ class LinUCBPolicy:
         self.b = [np.zeros(d) for _ in range(n_actions)]
         self._history: List[ActionType] = []
 
-    # Actions that require a minimum number of prior turns before they become eligible.
     _MIN_TURN_FOR_ACTION: Dict[ActionType, int] = {
         ActionType.SYNTHESIZE_DECISION: 2,
-        ActionType.RERANK_POOL: 1,
-        ActionType.EXPAND_POOL: 2,
     }
 
-    # Penalty applied to UCB score per consecutive repeat of the same action.
     _REPEAT_PENALTY = 0.15
 
     def select(
         self,
         context: Dict[str, float],
         user_decided: bool = False,
-        allow_gt_actions: bool = False,
-        gt_available: bool = False,
     ) -> ActionType:
-        """
-        Select an action given the current context.
-
-        Parameters
-        ----------
-        context : dict
-            Feature vector with keys from CONTEXT_KEYS.
-        user_decided : bool
-            If True, forces END_SESSION.
-        allow_gt_actions : bool
-            If True, INJECT_GT_PROBE is eligible (training phase).
-        gt_available : bool
-            If True, there is at least one un-shown GT title available.
-        """
         if user_decided:
             action = ActionType.END_SESSION
             self._history.append(action)
             return action
 
         turn = int(context.get("turn", 0))
-
-        # Build the set of eligible actions for this call
         explorable = list(_EXPLORABLE_ACTIONS)
-        if allow_gt_actions and gt_available:
-            explorable.append(ActionType.INJECT_GT_PROBE)
 
-        # ε-greedy exploration during warm-up
         if (
             self._global_update_count < self.warmup_steps
             and _random.random() < self.epsilon
@@ -138,19 +101,12 @@ class LinUCBPolicy:
             theta = M_inv @ self.b[a]
             ucbs[a] = x @ theta + self.alpha * np.sqrt(x @ M_inv @ x)
 
-        # END_SESSION must only fire via user_decided (handled above).
         ucbs[ACTIONS.index(ActionType.END_SESSION)] = -np.inf
 
-        # INJECT_GT_PROBE only eligible if explicitly allowed AND GT is available
-        if not (allow_gt_actions and gt_available):
-            ucbs[ACTIONS.index(ActionType.INJECT_GT_PROBE)] = -np.inf
-
-        # Mask actions that are not yet eligible based on turn number.
         for act, min_turn in self._MIN_TURN_FOR_ACTION.items():
             if turn < min_turn:
                 ucbs[ACTIONS.index(act)] = -np.inf
 
-        # Penalise consecutive repetitions of the same action.
         if self._history:
             last = self._history[-1]
             consec = 0
@@ -193,17 +149,14 @@ class LinUCBPolicy:
     def load(cls, path: str) -> LinUCBPolicy:
         data = np.load(path)
         meta = data["meta"]
-        saved_n_actions, d, alpha = int(meta[0]), int(meta[1]), float(meta[2])
+        saved_n, d, alpha = int(meta[0]), int(meta[1]), float(meta[2])
         epsilon = float(meta[3]) if len(meta) > 3 else 0.4
-        warmup_steps = int(meta[4]) if len(meta) > 4 else 100
-        global_count = int(meta[5]) if len(meta) > 5 else 0
-        current_n_actions = len(ACTIONS)
-        policy = cls(
-            n_actions=current_n_actions, d=d, alpha=alpha,
-            epsilon=epsilon, warmup_steps=warmup_steps,
-        )
-        policy._global_update_count = global_count
-        for i in range(min(saved_n_actions, current_n_actions)):
+        warmup = int(meta[4]) if len(meta) > 4 else 100
+        gc = int(meta[5]) if len(meta) > 5 else 0
+        n_actions = len(ACTIONS)
+        policy = cls(n_actions=n_actions, d=d, alpha=alpha, epsilon=epsilon, warmup_steps=warmup)
+        policy._global_update_count = gc
+        for i in range(min(saved_n, n_actions)):
             policy.M[i] = data[f"M_{i}"]
             policy.b[i] = data[f"b_{i}"]
         return policy
