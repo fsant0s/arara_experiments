@@ -1,0 +1,31 @@
+# Environment variables
+.env
+
+# Virtual environments
+.venv/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# uv lock (keep or ignore depending on policy — currently ignored)
+# uv.lock
+
+# Datasets (large, not tracked)
+datasets/
+
+# Per-project docs and generated outputs (tracked separately)
+advisory_contextual_bandits/docs
+advisory_contextual_bandits/analysis_results
+advisory_contextual_bandits/notebooks
+
+# Git notes
+.gitnote
+
+# macOS metadata
+.DS_Store
+
+# IDE
+.vscode/settings.json.DS_Store

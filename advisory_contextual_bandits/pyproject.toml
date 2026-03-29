@@ -1,0 +1,16 @@
+[project]
+name = "advisory-contextual-bandits"
+version = "0.1.0"
+description = "Advisor agent experiment — multi-CRS interaction with a bandit-guided mediator."
+authors = [
+  { name = "Fillipe dos Santos", email = "fillipesantos00@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.1.3",
+    "openai>=2.26.0",
+    "scipy>=1.17.1",
+]
+
+[tool.uv]
+# Run from the advisory_contextual_bandits/ directory: uv run python run_experiment.py ...

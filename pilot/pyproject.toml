@@ -1,0 +1,26 @@
+[project]
+name = "pilot"
+version = "0.1.0"
+description = "Pilot experiment — first ARARA framework evaluation with Neo4j and multi-agent orchestration."
+authors = [
+  { name = "Fillipe dos Santos", email = "fillipesantos00@gmail.com" }
+]
+requires-python = "==3.12.6"
+dependencies = [
+    "datasets>=4.7.0",
+    "kagglehub>=0.3.13",
+    "neo4j>=6.0.2",
+    "numpy>=2.1.3",
+    "scipy>=1.17.1",
+    "sentence-transformers>=5.2.3",
+    "tensorboard>=2.19.0",
+    "tensorflow>=2.19.0",
+    "tqdm>=4.67.1",
+    "Arara",
+]
+
+[tool.uv.sources]
+Arara = { path = "../../arara", editable = true }
+
+[tool.uv]
+# Run from the pilot/ directory: uv run python book.py
