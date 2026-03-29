@@ -75,7 +75,7 @@ RS1_OLLAMA_MODEL = "llama3.1:latest"
 RS2_OLLAMA_MODEL = "mixtral:8x7b"
 
 RS1_TEMPERATURE = 0.7
-RS2_TEMPERATURE = 0.9
+RS2_TEMPERATURE = 0.7
 
 
 def get_rs1_config() -> Dict[str, Any]:
